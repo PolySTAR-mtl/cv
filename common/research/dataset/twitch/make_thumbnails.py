@@ -25,7 +25,7 @@ class ThumbnailsGenerator:
 
     def _launch_creation(self, frames):
         ffmpeg. \
-            input(self.video_path). \
+            input(str(self.video_path)). \
             filter('fps', fps=self.FPS).\
             output(f"{self.output_folder}/frame_%d.jpg", frames=frames). \
             run(quiet=True)
@@ -47,7 +47,7 @@ class ThumbnailsGenerator:
         obs.start()
 
     def _get_frame_number(self):
-        return int(ffmpeg.probe(self.video_path)['format']['duration'].split('.')[0])
+        return int(ffmpeg.probe(str(self.video_path))['format']['duration'].split('.')[0])
 
 
 if __name__ == '__main__':
