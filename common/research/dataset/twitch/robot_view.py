@@ -29,6 +29,7 @@ def process_image(path_to_image: Path):
     if is_image_from_robot_view(path_to_image):
         res_path = RES_DIR / f'{path_to_image.parent.name}-{path_to_image.name}'
         move(str(path_to_image), str(res_path))
+        print(f'{path_to_image.stem} is a robot view, moving it')
     else:
         remove(str(path_to_image))
 
