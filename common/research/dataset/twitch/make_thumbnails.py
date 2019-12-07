@@ -48,10 +48,3 @@ class ThumbnailsGenerator:
 
     def _get_frame_number(self):
         return int(ffmpeg.probe(str(self.video_path))['format']['duration'].split('.')[0])
-
-
-if __name__ == '__main__':
-    _video_name = sys.argv[1]
-    print(f'Fragmenting video {_video_name}')
-    ThumbnailsGenerator(_video_name).run()
-
