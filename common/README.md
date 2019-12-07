@@ -55,9 +55,12 @@ brew install ffmpeg
 You should follow [this tutorial](https://video.stackexchange.com/questions/20495/how-do-i-set-up-and-use-ffmpeg-in-windows).
 
 
-##### TwitchLeecher
+##### Twitch Video Downloader
 
-We use [TwitchLeecher](https://github.com/Franiac/TwitchLeecher/releases) to download the videos. Unfortunately, it is only available on Windows. If you find a way to download entire videos on Mac, please update this README.
+You have 2 options to download the videos:
+
+ - [TwitchLeecher](https://github.com/Franiac/TwitchLeecher/releases). Unfortunately, it is only available on Windows.
+ - [4k Video Downloader](https://www.4kdownload.com/products/product-videodownloader). It works on windows, Mac and Linux.
 
 #### Procedure to process a video
 
