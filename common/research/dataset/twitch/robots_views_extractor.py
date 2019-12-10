@@ -1,9 +1,7 @@
-import sys
 from pathlib import Path
 
 import cv2
 import ffmpeg
-from pyprind import ProgBar
 import numpy as np
 from tqdm import tqdm
 
