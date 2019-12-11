@@ -65,9 +65,8 @@ You have 2 options to download the videos:
 #### Procedure to process a video
 
 1. First, go on the [google sheet](https://docs.google.com/spreadsheets/d/1kIrMOjcKJ8hslZoVMx1D0H7QYj9nQLFvzUAQ1U4Le-I/edit#gid=0), and choose a video that nobody already did, and put your name in the 2nd column
-2. Download the video with TwitchLeecher, in **720p**
+2. Download the video, in **720p**
 3. Rename it using the video id on twitch, and place it in [../dataset/twitch/videos](../dataset/twitch/videos)
-4. Launch the python script [./research/scripts/monitor_new_twitch_frames.py](./research/scripts/monitor_new_twitch_frames.py) through PyCharm. It will check for new frames in the [raw-frames directory](../dataset/twitch/raw-frames), and move those that are a robot view.
-5. Launch the second python script [./research/scripts/split_video.py](./research/scripts/split_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id).
+5. Launch the python script [./research/scripts/extract_robots_views_from_video.py](./research/scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id).
 
 The frames will appear in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder.
