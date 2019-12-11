@@ -1,12 +1,7 @@
-import cv2
-from pathlib import Path
-import numpy
 import math
-import time
-from research.constants import TWITCH_DSET
-RES_DIR: Path = TWITCH_DSET / 'robots-views'
+from pathlib import Path
 
-t1 = time.time()
+import cv2
 
 Y_MIN_Z1 = 20
 Y_MAX_Z1 = 70
@@ -26,19 +21,19 @@ B = 2
 
 
 class Zone:
-    def __init__(self, y_min, y_max, threshold, img_pixels, image_mask):
+    def __init__(self, y_min, y_max, threshold, active_pixels, image_mask):
 
         self.y_min = y_min
         self.y_max = y_max
         self.pixels = [
             (pix[0], pix[1])
-            for pix in img_pixels
-            if 20 < pix[1] < 70
+            for pix in active_pixels
+            if self.y_min < pix[1] < self.y_max
         ]
 
-        self.moyenne_R = self.get_moyenne(R, image_mask)
-        self.moyenne_G = self.get_moyenne(G, image_mask)
-        self.moyenne_B = self.get_moyenne(B, image_mask)
+        self.moyenne_r = self.get_moyenne(R, image_mask)
+        self.moyenne_g = self.get_moyenne(G, image_mask)
+        self.moyenne_b = self.get_moyenne(B, image_mask)
         self.threshold = threshold
 
     def get_moyenne(self, color, img):
@@ -83,49 +78,15 @@ def process_frame_moyennes(frame, mask):
 
 def process_zone_moyennes(frame, zone):                # calculer la diff avec la moyenne des bonnes immages
     moy_r, moy_g, moy_b = zone.get_moyennes(frame)
-    if math.sqrt(pow(moy_r - zone.moyenne_R, 2) + pow(moy_g - zone.moyenne_G, 2) + pow(moy_b - zone.moyenne_B, 2)) < zone.threshold:
+    if math.sqrt(pow(moy_r - zone.moyenne_r, 2) + pow(moy_g - zone.moyenne_g, 2) + pow(moy_b - zone.moyenne_b, 2)) < zone.threshold:
         return 1
     else:
         return 0
 
 
 def is_image_from_robot_view(frame):
-    return process_frame_moyennes(frame, mask_img)
+    return process_frame_moyennes(frame, mask)
 
 
-# Opens the Video file
-mask_img = Mask(f'{__file__}/../mask.jpg')
-video_path = TWITCH_DSET / 'videos' / 'Rm.mp4'
-cap = cv2.VideoCapture(str(video_path))
-
-i = 0
-while cap.isOpened():
-    ret, rframe = cap.read()
-    if not ret:
-        break
-    if i % 15 == 0:
-        if process_frame_moyennes(rframe, mask_img):
-            cv2.imwrite(f"{RES_DIR}/NewVisionAlone/-frame-{i+1:06}.jpg", rframe)
-    i += 1
-
-
-# t1 = time.time()
-# for i in range (0, 10000):
-#     processframemoyennes(frame, mask)       # 7.43s 10.17s
-# print("FinishedFM", time.time() - t1)
-#
-# t1 = time.time()
-# for i in range (0 , 10000):
-#     processframe(frame, mask)                 # 11.26s ou 15.2s
-# print("FinishedF", time.time() - t1)
-
-# t1 = time.time()
-# for i in range (0 , 10000):                  # 41.54s
-#     ret, frame = cap.read()
-# print("FinishedCap", time.time() - t1)
-
-print("Finished New Vision Alone", time.time() - t1)
-cap.release()
-cv2.destroyAllWindows()
-
+mask = Mask(str(Path(__file__).parent / 'mask.jpg'))
 
