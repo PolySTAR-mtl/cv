@@ -13,7 +13,7 @@ class VideoFrameGenerator:
 
     def _get_video_fps(self):
         return max(
-            int(stream['avg_frame_rate'].split('/')[0])
+            int(stream['r_frame_rate'].split('/')[0])
             for stream in ffmpeg.probe(str(self.video_path))['streams']
         )
 
