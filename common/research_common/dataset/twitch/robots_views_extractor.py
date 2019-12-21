@@ -5,9 +5,9 @@ import ffmpeg
 import numpy as np
 from tqdm import tqdm
 
-from research.constants import TWITCH_DSET
-from research.dataset.twitch.mask_detector import is_image_from_robot_view
-from research.dataset.twitch.video_frame_generator import VideoFrameGenerator
+from research_common.constants import TWITCH_DSET
+from research_common.dataset.twitch.mask_detector import is_image_from_robot_view
+from research_common.dataset.twitch.video_frame_generator import VideoFrameGenerator
 
 RES_DIR: Path = TWITCH_DSET / 'robots-views'
 RES_DIR.mkdir(parents=True, exist_ok=True)

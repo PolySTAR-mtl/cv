@@ -7,12 +7,12 @@ import numpy as np
 
 
 class Zone:
-    def __init__(self, y_min, y_max, threshold, active_pixels, image_mask):
+    def __init__(self, x_min, x_max, y_min, y_max, threshold, active_pixels, image_mask):
 
         self.pixels = [
-            (pix[0], pix[1])
-            for pix in active_pixels
-            if y_min < pix[1] < y_max
+            (x, y)
+            for x, y in active_pixels
+            if (y_min <= y <= y_max) and (x_min <= x <= x_max)
         ]
 
         self.mean_r = self.get_mean(0, image_mask)
@@ -40,7 +40,7 @@ class Zone:
 
 
 class MaskDetector:
-    def __init__(self, image_path: Path, zones_params: List[Tuple[int, int, int]]):
+    def __init__(self, image_path: Path, zones_params: List[Tuple[int, int, int, int, int]]):
         image_mask = cv2.imread(str(image_path))
         active_px = [
              (a, b)
@@ -66,9 +66,9 @@ class MaskDetector:
 robot_view_detector = MaskDetector(
     Path(__file__).parent / 'mask_robot_view.jpg',
     [
-        (20, 70, 20),
-        (270, 370, 20),
-        (510, 770, 20),
+        (0, 2000, 20, 70, 20),
+        (0, 2000, 270, 370, 20),
+        (0, 2000, 510, 770, 20),
     ]
 )
 
