@@ -67,6 +67,10 @@ You have 2 options to download the videos:
 1. First, go on the [google sheet](https://docs.google.com/spreadsheets/d/1kIrMOjcKJ8hslZoVMx1D0H7QYj9nQLFvzUAQ1U4Le-I/edit#gid=0), and choose a video that nobody already did, and put your name in the 2nd column
 2. Download the video, in **720p**
 3. Rename it using the video id on twitch, and place it in [../dataset/twitch/videos](../dataset/twitch/videos)
-5. Launch the python script [./research/scripts/extract_robots_views_from_video.py](research_common/scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id). You can put multiple video ids by separating them with spaces.
+5. Launch the python script [./research_common/scripts/extract_robots_views_from_video.py](research_common/scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id). You can put multiple video ids by separating them with spaces.
 
 The frames will appear in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder.
+
+#### Aerial dataset
+
+Once you have the robots views in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder, run the python script [./research_common/scripts/move_aerial_views.py](research_common/scripts/move_aerial_views.py). It will put the aerial views in the [../dataset/twitch/aerial-views](../dataset/twitch/aerial-views) directory.
