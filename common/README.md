@@ -40,7 +40,13 @@ To use Tensorflow Image Recognition, you need to
 *Note:* Here is the [tensorflow image recognition insallation page](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md)
 
 
-## Dataset
+### Dataset
+
+#### ROCO
+
+Telechargez le dossier [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB)  du drive, contenant tous les datasets fournis par DJI, et unzippez le dans le dossier [dataset/dji_roco](../dataset/dji_roco).
+
+## Dataset creation
 
 ### Twitch
 
