@@ -6,6 +6,15 @@ This code is designed to be shared across projects
 
 ## Setup
 
+
+### Requirements
+
+Install the required python modules. From the [common](./) folder:
+```bash
+python -m pip install -r requirements.txt
+```
+
+
 ### Relative imports
 
 If you are using pycharm, then add [common](./) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`).
@@ -14,15 +23,30 @@ If you are using pycharm, then add [common](./) as `Sources Root` (right click o
 
 It will enable the relative imports.
 
+### Tensorflow Image Recognition
 
-### Requirements
+To use Tensorflow Image Recognition, you need to
 
-Install the required python modules
-```bash
-python -m pip install -r requirements.txt
-```
+ 1. clone it into the [../models](../models) folder. Run at the [root of the project](../):
+    ```bash
+    git clone https://github.com/tensorflow/models
+    ```
+2. compile protobufs librairies, using, in the [models/research](../models/research) folder:
+    ```bash
+    protoc object_detection/protos/*.proto --python_out=.
+   ```
+3. add [../models/](../models/research) as `Source Root` (as you did for [common](./)).
 
-## Dataset
+*Note:* Here is the [tensorflow image recognition insallation page](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md)
+
+
+### Dataset
+
+#### ROCO
+
+Telechargez le dossier [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB)  du drive, contenant tous les datasets fournis par DJI, et unzippez le dans le dossier [dataset/dji_roco](../dataset/dji_roco).
+
+## Dataset creation
 
 ### Twitch
 
