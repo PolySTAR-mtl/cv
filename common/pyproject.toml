@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "common"
+name = "polystar.common"
 version = "0.1.0"
 description = ""
 authors = ["Polystar"]
@@ -9,3 +9,10 @@ python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.4"
+scikit-image = "^0.16.2"
+tqdm = "^4.42.1"
+tensorflow = "^2.1.0"
+lxml = "^4.5.0"
+opencv-python = "^4.2.0"
+numpy = "^1.18.1"
+ffmpeg-python = "^0.2.0"
