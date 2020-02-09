@@ -16,11 +16,8 @@ from object_detection.utils.dataset_util import (
     recursive_parse_xml_to_dict,
 )
 from object_detection.utils.label_map_util import get_label_map_dict
-from polystar.common.utils.tensorflow import patch_tf_v2
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.dataset import Dataset
-
-patch_tf_v2()  # FIXME: Needed for version compatibility
 
 
 class TensorflowExampleFactory:
@@ -79,7 +76,7 @@ class TensorflowExampleFactory:
 
 
 def create_tf_record_from_datasets(datasets: Iterable[Dataset], name: str):
-    writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
+    writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}_.record"))
     for dataset in datasets:
         example_factory = TensorflowExampleFactory(dataset)
         for annotation_path in tqdm(dataset.annotation_paths, desc=dataset.dataset_name):

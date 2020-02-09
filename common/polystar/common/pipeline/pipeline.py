@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from polystar.common.models.object import Object
@@ -10,21 +9,11 @@ from polystar.common.pipeline.object_selectors.object_selector_abc import Object
 from polystar.common.pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.common.pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 from polystar.common.pipeline.target_factories.target_factory_abc import TargetFactoryABC
+from polystar.common.view.display_object_on_image import display_object
 
 
 class NoTargetFound(Exception):
     pass
-
-
-def display_object(image: np.ndarray, obj: Object):
-    plt.figure(figsize=(16, 12))
-    plt.imshow(image)
-    color = "red"
-    rect = plt.Rectangle((obj.x, obj.y), obj.w, obj.h, linewidth=1, edgecolor=color, fill=False)
-    print((obj.x, obj.y), obj.w, obj.h)
-    plt.gca().add_patch(rect)
-    plt.text(obj.x, obj.y - 2, f"{obj.type.name} ({int(obj.confidence * 100)}%)", color=color)
-    plt.show()
 
 
 @dataclass
