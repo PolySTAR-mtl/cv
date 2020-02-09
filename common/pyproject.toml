@@ -17,3 +17,7 @@ lxml = "^4.5.0"
 opencv-python = "^4.2.0"
 numpy = "^1.18.1"
 ffmpeg-python = "^0.2.0"
+
+[tool.black]
+line-length = 120
+target_version = ['py37']
