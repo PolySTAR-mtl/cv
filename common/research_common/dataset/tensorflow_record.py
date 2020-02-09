@@ -16,9 +16,9 @@ from object_detection.utils.dataset_util import (
     recursive_parse_xml_to_dict,
 )
 from object_detection.utils.label_map_util import get_label_map_dict
+from polystar.common.utils.tensorflow import patch_tf_v2
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.dataset import Dataset
-from research_common.tensorflow_utils import patch_tf_v2
 
 patch_tf_v2()  # FIXME: Needed for version compatibility
 
