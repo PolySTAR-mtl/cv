@@ -1,5 +1,10 @@
+from typing import Dict, Any, NewType
+
 import tensorflow as tf
+
 from object_detection.utils import ops as utils_ops
+
+LabelMap = NewType("LabelMap", Dict[int, Dict[str, Any]])
 
 
 def patch_tf_v2():
