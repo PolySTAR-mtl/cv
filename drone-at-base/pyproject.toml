@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "polystar.drone-at-base"
+version = "0.1.0"
+description = "Code to target base from our drone"
+authors = ["Polystar"]
+packages = [{ include = "polystar" }]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+"polystar.common" = {path = "../common"}
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.5"
