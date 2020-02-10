@@ -1,9 +1,8 @@
 import hashlib
-from pathlib import Path
-from typing import Dict, Any, Iterable
+from dataclasses import dataclass
+from typing import Iterable
 
 import tensorflow as tf
-from lxml import etree
 from tensorflow_core.python.lib.io import python_io
 from tqdm import tqdm
 
@@ -13,20 +12,28 @@ from object_detection.utils.dataset_util import (
     int64_feature,
     bytes_list_feature,
     int64_list_feature,
-    recursive_parse_xml_to_dict,
 )
-from object_detection.utils.label_map_util import get_label_map_dict
 from polystar.common.models.image_annotation import ImageAnnotation
+from polystar.common.utils.tensorflow import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.dataset import Dataset
 
 
-class TensorflowExampleFactory:
-    def __init__(self, dataset: Dataset):
-        self.dataset = dataset
-        self.label_map = get_label_map_dict(str(TENSORFLOW_RECORDS_DIR / "label_map.pbtxt"))
+@dataclass
+class TensorflowRecordFactory:
+    label_map: LabelMap
 
-    def from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
+    def from_datasets(self, datasets: Iterable[Dataset], name: str):
+        writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
+        for dataset in datasets:
+            for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
+                writer.write(self.example_from_image_annotation(image_annotation).SerializeToString())
+        writer.close()
+
+    def from_dataset(self, dataset: Dataset):
+        self.from_datasets([dataset], name=dataset.dataset_name)
+
+    def example_from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
         encoded_jpg = image_annotation.image_path.read_bytes()
         key = hashlib.sha256(encoded_jpg).hexdigest()
 
@@ -40,7 +47,7 @@ class TensorflowExampleFactory:
             xmax.append(float(obj.x + obj.w) / width)
             ymax.append(float(obj.y + obj.h) / height)
             classes_text.append(obj.type.name.lower().encode("utf8"))
-            classes.append(self.label_map[obj.type.name.lower()])
+            classes.append(self.label_map.id_of(obj.type.name.lower()))
 
         return tf.train.Example(
             features=tf.train.Features(
@@ -59,21 +66,3 @@ class TensorflowExampleFactory:
                 }
             )
         )
-
-    @staticmethod
-    def _load_annotation(annotation_path: Path) -> Dict[str, Any]:
-        xml = etree.fromstring(annotation_path.read_text())
-        return recursive_parse_xml_to_dict(xml)["annotation"]
-
-
-def create_tf_record_from_datasets(datasets: Iterable[Dataset], name: str):
-    writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
-    for dataset in datasets:
-        example_factory = TensorflowExampleFactory(dataset)
-        for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
-            writer.write(example_factory.from_image_annotation(image_annotation).SerializeToString())
-    writer.close()
-
-
-def create_tf_record_from_dataset(dataset: Dataset):
-    create_tf_record_from_datasets([dataset], name=dataset.dataset_name)

@@ -18,14 +18,6 @@ class RatioTargetFactoryABC(TargetFactoryABC, ABC):
 
     def _calculate_angles(self, obj: Object, image: np.ndarray) -> Tuple[float, float]:
         x, y = obj.x + obj.w // 2 - image.shape[1] // 2, image.shape[0] // 2 - obj.y + obj.h // 2
-        print(
-            x,
-            y,
-            sqrt(x ** 2 + y ** 2),
-            (image.shape[1] // 2),
-            self._coef_angle,
-            sqrt(x ** 2 + y ** 2) * self._coef_angle,
-        )
         phi = asin(sqrt(x ** 2 + y ** 2) * self._coef_angle)
         theta = atan2(y, x)
         return phi, theta

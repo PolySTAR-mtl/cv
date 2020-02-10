@@ -54,7 +54,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
         self, box: Tuple[float, float, float, float], class_id: int, image_height: int, image_width: int, score: float
     ):
         ymin, xmin, ymax, xmax = box
-        object_type = ObjectType(self.label_map[class_id]["name"])
+        object_type = ObjectType(self.label_map.name_of(class_id))
         return Object(
             type=object_type,
             confidence=score,
