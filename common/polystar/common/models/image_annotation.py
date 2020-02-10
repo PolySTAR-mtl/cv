@@ -35,11 +35,13 @@ class ImageAnnotation:
     def from_xml_file(xml_file: Path) -> ImageAnnotation:
         annotation = xmltodict.parse(xml_file.read_text())["annotation"]
 
-        objects = [ObjectJsonFactory.from_json(obj_json) for obj_json in annotation["object"]]
+        json_objects = annotation.get("object", [])
+        json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
+        objects = [ObjectJsonFactory.from_json(obj_json) for obj_json in json_objects]
 
         return ImageAnnotation(
-            width=annotation["size"]["width"],
-            height=annotation["size"]["height"],
+            width=int(annotation["size"]["width"]),
+            height=int(annotation["size"]["height"]),
             objects=objects,
             image_path=xml_file.parent.parent / "image" / f"{xml_file.stem}.jpg",
         )

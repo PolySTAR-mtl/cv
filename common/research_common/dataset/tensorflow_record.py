@@ -16,6 +16,7 @@ from object_detection.utils.dataset_util import (
     recursive_parse_xml_to_dict,
 )
 from object_detection.utils.label_map_util import get_label_map_dict
+from polystar.common.models.image_annotation import ImageAnnotation
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.dataset import Dataset
 
@@ -25,31 +26,21 @@ class TensorflowExampleFactory:
         self.dataset = dataset
         self.label_map = get_label_map_dict(str(TENSORFLOW_RECORDS_DIR / "label_map.pbtxt"))
 
-    def from_annotation_path(self, annotation_path: Path) -> tf.train.Example:
-        annotation = self._load_annotation(annotation_path)
-        return self.from_annotation(annotation, annotation_path.stem)
-
-    def from_annotation(self, annotation: Dict[str, Any], img_name: str) -> tf.train.Example:
-        full_path = (self.dataset.images_dir_path / img_name).with_suffix(".jpg")
-        encoded_jpg = full_path.read_bytes()
+    def from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
+        encoded_jpg = image_annotation.image_path.read_bytes()
         key = hashlib.sha256(encoded_jpg).hexdigest()
 
-        width = int(annotation["size"]["width"])
-        height = int(annotation["size"]["height"])
+        width, height = image_annotation.width, image_annotation.height
 
-        xmin = []
-        ymin = []
-        xmax = []
-        ymax = []
-        classes = []
-        classes_text = []
-        for obj in annotation.get("object", []):
-            xmin.append(float(obj["bndbox"]["xmin"]) / width)
-            ymin.append(float(obj["bndbox"]["ymin"]) / height)
-            xmax.append(float(obj["bndbox"]["xmax"]) / width)
-            ymax.append(float(obj["bndbox"]["ymax"]) / height)
-            classes_text.append(obj["name"].encode("utf8"))
-            classes.append(self.label_map[obj["name"]])
+        xmin, ymin, xmax, ymax, classes, classes_text = [], [], [], [], [], []
+
+        for obj in image_annotation.objects:
+            xmin.append(float(obj.x) / width)
+            ymin.append(float(obj.y) / height)
+            xmax.append(float(obj.x + obj.w) / width)
+            ymax.append(float(obj.y + obj.h) / height)
+            classes_text.append(obj.type.name.lower().encode("utf8"))
+            classes.append(self.label_map[obj.type.name.lower()])
 
         return tf.train.Example(
             features=tf.train.Features(
@@ -76,11 +67,11 @@ class TensorflowExampleFactory:
 
 
 def create_tf_record_from_datasets(datasets: Iterable[Dataset], name: str):
-    writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}_.record"))
+    writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
     for dataset in datasets:
         example_factory = TensorflowExampleFactory(dataset)
-        for annotation_path in tqdm(dataset.annotation_paths, desc=dataset.dataset_name):
-            writer.write(example_factory.from_annotation_path(annotation_path).SerializeToString())
+        for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
+            writer.write(example_factory.from_image_annotation(image_annotation).SerializeToString())
     writer.close()
 
 

@@ -17,8 +17,6 @@ class ObjectJsonFactory(JsonFactory[Object]):
         if t is not ObjectType.Armor:
             return Object(type=t, x=x, y=y, w=w, h=h)
 
-        print(json["name"], t)
-
         return Armor(type=t, x=x, y=y, w=w, h=h, numero=json["armor_class"], color=ArmorColor(json["armor_color"]))
 
     @staticmethod
