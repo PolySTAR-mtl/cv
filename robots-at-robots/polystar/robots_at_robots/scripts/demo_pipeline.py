@@ -13,8 +13,6 @@ from research_common.dataset.roco.roco_datasets import ROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
 
-MODEL_NAME = "robots/ssd_mobilenet_v2_coco_2018_03_29"
-
 
 if __name__ == "__main__":
     injector = make_injector()
