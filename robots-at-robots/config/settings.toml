@@ -1,0 +1,6 @@
+[default]
+MODEL_NAME = 'robots/ssd_mobilenet_v2_coco_2018_03_29'
+
+[development]
+
+[production]

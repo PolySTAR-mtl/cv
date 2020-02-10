@@ -5,7 +5,6 @@ import ffmpeg
 
 
 class VideoFrameGenerator:
-
     def __init__(self, video_path: Path, desired_fps: int):
         self.video_path: Path = video_path
         self.desired_fps: int = desired_fps
@@ -13,8 +12,7 @@ class VideoFrameGenerator:
 
     def _get_video_fps(self):
         return max(
-            int(stream['r_frame_rate'].split('/')[0])
-            for stream in ffmpeg.probe(str(self.video_path))['streams']
+            int(stream["r_frame_rate"].split("/")[0]) for stream in ffmpeg.probe(str(self.video_path))["streams"]
         )
 
     def generate(self):
