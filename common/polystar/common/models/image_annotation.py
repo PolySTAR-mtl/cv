@@ -8,9 +8,8 @@ from xml.dom.minidom import parseString
 import xmltodict
 from dicttoxml import dicttoxml
 
-from polystar.common.models.object import Object
-from polystar.common.view.object_json_factory import ObjectJsonFactory
 from polystar.common.models.image import Image
+from polystar.common.models.object import Object, ObjectFactory
 
 
 @dataclass
@@ -37,7 +36,7 @@ class ImageAnnotation:
 
         json_objects = annotation.get("object", [])
         json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
-        objects = [ObjectJsonFactory.from_json(obj_json) for obj_json in json_objects]
+        objects = [ObjectFactory.from_json(obj_json) for obj_json in json_objects]
 
         return ImageAnnotation(
             width=int(annotation["size"]["width"]),
@@ -52,7 +51,7 @@ class ImageAnnotation:
                 {
                     "annotation": {
                         "size": {"width": self.width, "height": self.height},
-                        "object": [ObjectJsonFactory.to_json(obj) for obj in self.objects],
+                        "object": [ObjectFactory.to_json(obj) for obj in self.objects],
                     }
                 },
                 attr_type=False,
