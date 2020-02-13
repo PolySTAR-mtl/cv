@@ -6,6 +6,8 @@ from polystar.common.utils.no_case_enum import NoCaseEnum
 
 Json = NewType("Json", Dict[str, Any])
 
+ArmorNumber = NewType("ArmorNumber", int)
+
 
 class ObjectType(NoCaseEnum):
     Car = auto()
@@ -36,7 +38,7 @@ class ArmorColor(NoCaseEnum):
 
 @dataclass
 class Armor(Object):
-    numero: int = -1
+    numero: ArmorNumber = -1
     color: ArmorColor = ArmorColor.Unknown
 
 
