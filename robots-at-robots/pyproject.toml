@@ -8,6 +8,8 @@ packages = [{ include = "polystar" }]
 [tool.poetry.dependencies]
 python = "^3.7"
 "polystar.common" = {path = "../common"}
+Cython = "^0.29.15"
+pycocotools="^2.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.5"
