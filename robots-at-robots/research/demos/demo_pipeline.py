@@ -10,6 +10,7 @@ from polystar.common.pipeline.objects_validators.type_object_validator import Ty
 from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
+from polystar.common.view.display_object_on_image import display_object
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.demos.utils import load_tf_model
 from research_common.dataset.roco.roco_datasets import ROCODataset
@@ -29,6 +30,9 @@ if __name__ == "__main__":
 
     for i, image_path in enumerate(SplitDataset(ROCODataset.CentralChina, Split.Test).image_paths):
         image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
-        print(pipeline.predict_target(image))
+        obj = pipeline.predict_best_object(image)
+
+        display_object(image, obj)
+
         if i == 0:
             break
