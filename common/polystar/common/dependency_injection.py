@@ -4,10 +4,10 @@ from math import pi
 from dynaconf import LazySettings
 from injector import Module, provider, singleton, multiprovider, Injector
 
-from polystar.common import settings
 from polystar.common.constants import LABEL_MAP_PATH
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
+from polystar.robots_at_robots.globals import settings
 
 
 def make_common_injector() -> Injector:
