@@ -29,6 +29,6 @@ if __name__ == "__main__":
 
     for i, image_path in enumerate(SplitDataset(ROCODataset.CentralChina, Split.Test).image_paths):
         image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
-        print(pipeline.process(image))
+        print(pipeline.predict_target(image))
         if i == 0:
             break
