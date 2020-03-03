@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import tensorflow as tf
 from dynaconf import LazySettings
 from injector import Injector, Module, provider, singleton
+from tensorflow.compat.v1 import Session
 
 from polystar.common.constants import MODELS_DIR
 from polystar.common.dependency_injection import CommonModule
@@ -21,5 +22,6 @@ class RobotsAtRobotsModule(Module):
     @provider
     @singleton
     def provide_model(self) -> TFModel:
-        model = tf.saved_model.load(str(MODELS_DIR / self.settings.MODEL_NAME / "saved_model"))
+        print()
+        model = tf.saved_model.load(export_dir=str(MODELS_DIR / self.settings.MODEL_NAME / "saved_model"))
         return model.signatures["serving_default"]

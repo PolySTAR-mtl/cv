@@ -7,7 +7,6 @@ packages = [{ include = "polystar" }]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-tensorflow = "1.15.x"
 dynaconf = "^2.2.2"
 opencv-python = "^4.2.0"
 injector = "^0.18.3"
@@ -24,6 +23,7 @@ seaborn = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.5"
+tensorflow = "2.1.x"
 
 [tool.black]
 line-length = 120

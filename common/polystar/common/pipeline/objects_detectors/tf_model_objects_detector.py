@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 from injector import inject
 
+from polystar.common.models.image import Image
 from polystar.common.models.object import Object, ObjectType
 from polystar.common.models.tf_model import TFModel
 from polystar.common.pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
@@ -18,7 +19,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
     model: TFModel
     label_map: LabelMap
 
-    def detect(self, image: np.array) -> List[Object]:
+    def detect(self, image: Image) -> List[Object]:
         input_tensor = self._convert_image_to_input_tensor(image)
         output_dict = self._make_single_prediction(input_tensor)
         return self._construct_objects_from_tf_results(image, output_dict)
@@ -40,7 +41,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
         output_dict["detection_classes"] = output_dict["detection_classes"].astype(np.int64)
         return output_dict
 
-    def _construct_objects_from_tf_results(self, image: np.ndarray, output_dict: Dict[str, np.ndarray]):
+    def _construct_objects_from_tf_results(self, image: Image, output_dict: Dict[str, np.ndarray]):
         image_height, image_width, *_ = image.shape
         objects: List[Object] = [
             self._construct_object_from_tf_result(box, class_id, image_height, image_width, score)

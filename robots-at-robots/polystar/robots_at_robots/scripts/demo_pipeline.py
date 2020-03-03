@@ -8,6 +8,7 @@ from polystar.common.pipeline.objects_validators.confidence_object_validator imp
 from polystar.common.pipeline.objects_validators.type_object_validator import TypeObjectValidator
 from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
+from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research_common.dataset.roco.roco_datasets import ROCODataset
 from research_common.dataset.split import Split
@@ -15,6 +16,7 @@ from research_common.dataset.split_dataset import SplitDataset
 
 
 if __name__ == "__main__":
+    patch_tf_v2()
     injector = make_injector()
 
     pipeline = Pipeline(

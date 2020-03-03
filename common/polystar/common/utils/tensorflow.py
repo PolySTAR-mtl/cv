@@ -20,9 +20,7 @@ class LabelMap:
 
     @staticmethod
     def from_file(file_path: Path) -> "LabelMap":
-        return LabelMap.from_dict(
-            label_map_util.create_category_index_from_labelmap(str(file_path), use_display_name=True)
-        )
+        return LabelMap.from_dict(label_map_util.create_category_index_from_labelmap(str(file_path)))
 
     @staticmethod
     def from_dict(d: Dict[str, Dict[str, Any]]) -> "LabelMap":

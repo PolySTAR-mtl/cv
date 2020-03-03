@@ -39,22 +39,6 @@ If you are using pycharm, then add [common](./) as `Sources Root` (right click o
 
 It will enable the relative imports.
 
-### Tensorflow Image Recognition
-
-To use Tensorflow Image Recognition, you need to
-
- 1. clone it into the [../models](../models) folder. Run at the [root of the project](../):
-    ```bash
-    git clone https://github.com/tensorflow/models
-    ```
-2. compile protobufs librairies, using, in the [models/research](../models/research) folder:
-    ```bash
-    protoc object_detection/protos/*.proto --python_out=.
-   ```
-3. add [../models/](../models/research) as `Source Root` (as you did for [common](./)).
-
-*Note:* Here is the [tensorflow image recognition insallation page](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md)
-
 
 ### Dataset
 
@@ -114,3 +98,6 @@ The frames will appear in the [../dataset/twitch/robots-views](../dataset/twitch
 #### Aerial dataset
 
 Once you have the robots views in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder, run the python script [./research_common/scripts/move_aerial_views.py](research_common/scripts/move_aerial_views.py). It will put the aerial views in the [../dataset/twitch/aerial-views](../dataset/twitch/aerial-views) directory.
+
+
+
