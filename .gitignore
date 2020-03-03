@@ -1,4 +1,8 @@
 
+# experiments
+/experiments
+/resources/models
+
 # TF models
 /models
 
