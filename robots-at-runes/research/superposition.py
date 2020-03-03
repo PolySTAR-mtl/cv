@@ -1,11 +1,60 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import cv2
 import random as rd
+from imutils import rotate_bound
 import constants as cst
+import xml.etree.ElementTree as ET
+from xml.dom.minidom import parseString
 
-percent_scale = np.round((2*rd.random())-1, 3)
+def preprocess_background(path_back):
+    background = cv2.imread(path_back)
+    return cv2.cvtColor(background, cv2.COLOR_BGR2RGB)
+
+
+def preprocess_sticker(path_item):
+    item = cv2.imread(path_item, cv2.IMREAD_UNCHANGED)
+    return cv2.cvtColor(item, cv2.COLOR_BGRA2RGBA)
+
+
+def generate_one(background, item, rotate=True, scale=True, custom_rotate=None, custom_scale=None, to_print=False,
+                 save_name=None):
+    if rotate:
+        if custom_rotate is None:
+            percent_rotate = np.round((2 * rd.random()) - 1, 3)  # entre -1 et 1
+        else:
+            percent_rotate = custom_rotate
+        item = rotate_percentage(item, percent_rotate)
+    if scale:
+        if custom_scale is None:
+            percent_scale = np.round((2 * rd.random()) - 1, 3)  # entre -1 et 1
+        else:
+            percent_scale = custom_scale
+        item = reshape_percentage(item, percent_scale)
+    mask_alpha = item[:, :, 3]
+    item = cv2.cvtColor(item, cv2.COLOR_RGBA2RGB)
+    hs, ws, _ = item.shape
+
+    background_subset, h_start, w_start = get_subset_shapes(background, hs, ws)
+    composition_subset = superimpose(background_subset, item, mask_alpha)
+
+    composition = background.copy()
+    composition[h_start:h_start + hs, w_start:w_start + ws, :] = composition_subset
+
+    labels = [h_start, w_start, h_start+hs, w_start+ws]
+
+    if not (save_name is None):
+        cv2.imwrite(save_name, cv2.cvtColor(composition, cv2.COLOR_RGB2BGR))
+
+    if to_print:
+        plt.imshow(composition)
+        plt.show()
+
+    return composition, labels
+
 
 def superimpose(img1, img2, mask):
     """
@@ -45,25 +94,47 @@ def reshape_percentage(img_base, percent):
     return cv2.resize(img_base, (w_dest, h_dest), interpolation=cv2.INTER_AREA)
 
 
-background = cv2.imread("images_sup/back1.jpg")
-background = cv2.cvtColor(background, cv2.COLOR_BGR2RGB)
+def rotate_percentage(img_base, percent):
+    angle = cst.MAX_ANGLE * percent
+    return rotate_bound(img_base, angle)
 
-logo = cv2.imread("images_sup/logo.png", cv2.IMREAD_UNCHANGED)
-logo = cv2.cvtColor(logo, cv2.COLOR_BGRA2RGBA)
-logo = reshape_percentage(logo, percent_scale)
-mask_alpha = logo[:, :, 3]
-logo = cv2.cvtColor(logo, cv2.COLOR_RGBA2RGB)
-hs, ws, _ = logo.shape
 
-background_subset, h_start, w_start = get_subset_shapes(background, hs, ws)
-composition_subset = superimpose(background_subset, logo, mask_alpha)
+path_background = "images_sup/back1.jpg"
+path_sticker = "images_sup/logo.png"
 
-composition = background.copy()
-composition[h_start:h_start + hs, w_start:w_start + ws, :] = composition_subset
+background = preprocess_background(path_background)
+sticker = preprocess_sticker(path_sticker)
 
-plt.imshow(background)
-plt.show()
-plt.imshow(logo)
-plt.show()
-plt.imshow(composition)
-plt.show()
+labels = []
+filenames = []
+for i in range(10):
+    folder = 'dataset/'
+    filename = 'image_'+str(i)+'.jpg'
+    filenames.append(filename)
+    _, label = generate_one(background, sticker, to_print=False, save_name=folder+filename)
+    labels.append(label)
+
+
+data = ET.Element('annotations')
+
+for i, [xmin, ymin, xmax, ymax] in enumerate(labels):
+    object = ET.SubElement(data, 'object')
+    sub_name = ET.SubElement(object, 'filename')
+    sub_xmin = ET.SubElement(object, 'xmin')
+    sub_ymin = ET.SubElement(object, 'ymin')
+    sub_xmax = ET.SubElement(object, 'xmax')
+    sub_ymax = ET.SubElement(object, 'ymax')
+    sub_name.text = filenames[i]
+    sub_xmin.text = str(xmin)
+    sub_ymin.text = str(ymin)
+    sub_xmax.text = str(xmax)
+    sub_ymax.text = str(ymax)
+
+dom = parseString(ET.tostring(data).decode("utf-8"))
+pretty_xml = dom.toprettyxml()
+myfile = Path("dataset/labels.xml")
+myfile.write_text(pretty_xml)
+
+# with open('dataset/labels.txt', 'w') as f:
+#     for label in labels:
+#         f.write("%s\n" % label)
