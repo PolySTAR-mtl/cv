@@ -7,7 +7,7 @@ from injector import Module, provider, singleton, multiprovider, Injector
 from polystar.common import settings
 from polystar.common.constants import LABEL_MAP_PATH
 from polystar.common.models.camera import Camera
-from polystar.common.utils.tensorflow import LabelMap
+from polystar.common.models.label_map import LabelMap
 
 
 def make_common_injector() -> Injector:

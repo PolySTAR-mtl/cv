@@ -9,7 +9,7 @@ from polystar.common.models.image import Image
 from polystar.common.models.object import Object, ObjectType
 from polystar.common.models.tf_model import TFModel
 from polystar.common.pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
-from polystar.common.utils.tensorflow import LabelMap
+from polystar.common.models.label_map import LabelMap
 
 
 @inject

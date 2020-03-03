@@ -1,16 +1,11 @@
-from pathlib import Path
-
 import cv2
 import ffmpeg
 import numpy as np
 from tqdm import tqdm
 
 from polystar.common.utils.video_frame_generator import VideoFrameGenerator
-from research_common.constants import TWITCH_DSET_DIR
+from research_common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research_common.dataset.twitch.mask_detector import is_image_from_robot_view
-
-RES_DIR: Path = TWITCH_DSET_DIR / "robots-views"
-RES_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class RobotsViewExtractor:
@@ -40,7 +35,7 @@ class RobotsViewExtractor:
             self.count += 1
 
     def _save_frame(self, frame: np.ndarray, frame_number: int):
-        cv2.imwrite(f"{RES_DIR}/{self.video_name}-frame-{frame_number + 1:06}.jpg", frame)
+        cv2.imwrite(f"{TWITCH_ROBOTS_VIEWS_DIR}/{self.video_name}-frame-{frame_number + 1:06}.jpg", frame)
 
     def _get_number_of_frames(self):
         return int(ffmpeg.probe(str(self.video_path))["format"]["duration"].split(".")[0]) * self.FPS
