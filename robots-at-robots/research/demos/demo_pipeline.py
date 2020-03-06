@@ -13,7 +13,7 @@ from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.display_object_on_image import display_object
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.demos.utils import load_tf_model
-from research_common.dataset.roco.roco_datasets import ROCODataset
+from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),
     )
 
-    for i, image_path in enumerate(SplitDataset(ROCODataset.CentralChina, Split.Test).image_paths):
+    for i, image_path in enumerate(SplitDataset(DJIROCODataset.CentralChina, Split.Test).image_paths):
         image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
         obj = pipeline.predict_best_object(image)
 
