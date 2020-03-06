@@ -17,6 +17,7 @@ from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.label_map import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
+from research_common.dataset.roco_dataset import ROCODataset
 
 
 @dataclass
@@ -30,7 +31,7 @@ class TensorflowRecordFactory:
                 writer.write(self.example_from_image_annotation(image_annotation).SerializeToString())
         writer.close()
 
-    def from_dataset(self, dataset: DirectoryROCODataset):
+    def from_dataset(self, dataset: ROCODataset):
         self.from_datasets([dataset], name=dataset.dataset_name)
 
     def example_from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
