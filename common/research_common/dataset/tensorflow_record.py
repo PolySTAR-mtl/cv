@@ -14,7 +14,7 @@ from object_detection.utils.dataset_util import (
     int64_list_feature,
 )
 from polystar.common.models.image_annotation import ImageAnnotation
-from polystar.common.utils.tensorflow import LabelMap
+from polystar.common.models.label_map import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
 from research_common.dataset.dataset import Dataset
 

@@ -1,7 +1,7 @@
 from injector import inject
 
 from polystar.common.dependency_injection import make_common_injector
-from polystar.common.utils.tensorflow import LabelMap
+from polystar.common.models.label_map import LabelMap
 from research_common.dataset.roco.roco_datasets import ROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
