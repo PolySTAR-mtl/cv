@@ -16,21 +16,21 @@ from object_detection.utils.dataset_util import (
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.label_map import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
-from research_common.dataset.roco_dataset import ROCODataset
+from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
 
 
 @dataclass
 class TensorflowRecordFactory:
     label_map: LabelMap
 
-    def from_datasets(self, datasets: Iterable[ROCODataset], name: str):
+    def from_datasets(self, datasets: Iterable[DirectoryROCODataset], name: str):
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
         for dataset in datasets:
             for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
                 writer.write(self.example_from_image_annotation(image_annotation).SerializeToString())
         writer.close()
 
-    def from_dataset(self, dataset: ROCODataset):
+    def from_dataset(self, dataset: DirectoryROCODataset):
         self.from_datasets([dataset], name=dataset.dataset_name)
 
     def example_from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
