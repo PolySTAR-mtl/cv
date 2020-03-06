@@ -10,7 +10,7 @@ from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.robots_at_robots.dependency_injection import make_injector
-from research_common.dataset.roco.roco_datasets import ROCODataset
+from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
 
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
 
-    for i, image_path in enumerate(SplitDataset(ROCODataset.CentralChina, Split.Test).image_paths):
+    for i, image_path in enumerate(SplitDataset(DJIROCODataset.CentralChina, Split.Test).image_paths):
         ret, image = cap.read()
         # objects = objects_detector.detect(image)
 

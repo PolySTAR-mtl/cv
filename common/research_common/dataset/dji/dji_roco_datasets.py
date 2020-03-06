@@ -1,10 +1,10 @@
 from enum import Enum
 
 from research_common.constants import ROCO_DSET_DIR
-from research_common.dataset.dataset import Dataset
+from research_common.dataset.roco_dataset import ROCODataset
 
 
-class ROCODataset(Dataset, Enum):
+class DJIROCODataset(ROCODataset, Enum):
     def __init__(self, competition_name: str):
         super().__init__(ROCO_DSET_DIR / competition_name, self.name)
 

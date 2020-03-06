@@ -6,8 +6,8 @@ from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.object import ObjectType, Armor, ArmorColor, ArmorNumber
 from polystar.common.pipeline.objects_validators.type_object_validator import TypeObjectValidator
-from research_common.dataset.dataset import Dataset
-from research_common.dataset.roco.roco_datasets import ROCODataset
+from research_common.dataset.roco_dataset import ROCODataset
+from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 
 
 class ArmorDatasetFactory:
@@ -19,14 +19,14 @@ class ArmorDatasetFactory:
             yield img[obj.y : obj.y + obj.h, obj.x : obj.x + obj.w], obj.color, obj.numero
 
     @staticmethod
-    def from_dataset(dataset: Dataset) -> Iterable[Tuple[Image, ArmorColor, ArmorNumber]]:
+    def from_dataset(dataset: ROCODataset) -> Iterable[Tuple[Image, ArmorColor, ArmorNumber]]:
         for image_annotation in dataset.image_annotations:
             for rv in ArmorDatasetFactory.from_image_annotation(image_annotation):
                 yield rv
 
 
 if __name__ == "__main__":
-    for i, (armor_img, c, n) in enumerate(ArmorDatasetFactory.from_dataset(ROCODataset.CentralChina)):
+    for i, (armor_img, c, n) in enumerate(ArmorDatasetFactory.from_dataset(DJIROCODataset.CentralChina)):
         print(c, n)
         plt.imshow(armor_img)
         plt.show()

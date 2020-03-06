@@ -7,7 +7,7 @@ from polystar.common.models.image_annotation import ImageAnnotation
 
 
 @dataclass
-class Dataset:
+class ROCODataset:
 
     dataset_path: Path
     dataset_name: str

@@ -1,13 +1,13 @@
 from pathlib import Path
 from typing import Iterable, List
 
-from research_common.dataset.dataset import Dataset
-from research_common.dataset.roco.roco_datasets import ROCODataset
+from research_common.dataset.roco_dataset import ROCODataset
+from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 
 
-class SplitDataset(Dataset):
-    def __init__(self, root_dataset: Dataset, split: Split):
+class SplitDataset(ROCODataset):
+    def __init__(self, root_dataset: ROCODataset, split: Split):
         super().__init__(root_dataset.dataset_path, f"{root_dataset.dataset_name}_{split.name}")
         self._load_file_names(split)
 
@@ -28,6 +28,6 @@ class SplitDataset(Dataset):
 
 if __name__ == "__main__":
     print(
-        set(SplitDataset(ROCODataset.CentralChina, Split.Train).annotation_paths)
-        & set(SplitDataset(ROCODataset.CentralChina, Split.Val).annotation_paths)
+        set(SplitDataset(DJIROCODataset.CentralChina, Split.Train).annotation_paths)
+        & set(SplitDataset(DJIROCODataset.CentralChina, Split.Val).annotation_paths)
     )
