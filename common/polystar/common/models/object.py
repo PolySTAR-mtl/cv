@@ -57,7 +57,9 @@ class ObjectFactory:
         if t is not ObjectType.Armor:
             return Object(type=t, x=x, y=y, w=w, h=h)
 
-        return Armor(type=t, x=x, y=y, w=w, h=h, numero=json["armor_class"], color=ArmorColor(json["armor_color"]))
+        armor_number = int(json["armor_class"]) if json["armor_class"] != "none" else 0
+
+        return Armor(type=t, x=x, y=y, w=w, h=h, numero=armor_number, color=ArmorColor(json["armor_color"]))
 
     @staticmethod
     def to_json(obj: Object) -> Json:
