@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List
@@ -16,11 +17,14 @@ from polystar.common.models.object import Object, ObjectFactory
 class ImageAnnotation:
 
     image_path: Path
+    xml_path: Path
 
     width: int
     height: int
 
     objects: List[Object]
+
+    has_rune: bool
 
     _image: Image = field(init=False, repr=False, default=None)
 
@@ -32,18 +36,26 @@ class ImageAnnotation:
 
     @staticmethod
     def from_xml_file(xml_file: Path) -> ImageAnnotation:
-        annotation = xmltodict.parse(xml_file.read_text())["annotation"]
+        try:
+            annotation = xmltodict.parse(xml_file.read_text())["annotation"]
 
-        json_objects = annotation.get("object", [])
-        json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
-        objects = [ObjectFactory.from_json(obj_json) for obj_json in json_objects]
+            json_objects = annotation.get("object", [])
+            json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
+            roco_json_objects = [obj_json for obj_json in json_objects if not obj_json["name"].startswith("rune")]
+            objects = [ObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
 
-        return ImageAnnotation(
-            width=int(annotation["size"]["width"]),
-            height=int(annotation["size"]["height"]),
-            objects=objects,
-            image_path=xml_file.parent.parent / "image" / f"{xml_file.stem}.jpg",
-        )
+            return ImageAnnotation(
+                width=int(annotation["size"]["width"]),
+                height=int(annotation["size"]["height"]),
+                objects=objects,
+                image_path=xml_file.parent.parent / "image" / f"{xml_file.stem}.jpg",
+                xml_path=xml_file,
+                has_rune=len(roco_json_objects) != len(json_objects),
+            )
+        except Exception as e:
+            logging.error(f"Error parsing annotation file {xml_file}")
+            logging.exception(e)
+            raise e
 
     def to_xml(self) -> str:
         return parseString(
