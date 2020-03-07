@@ -5,14 +5,17 @@ from research_common.constants import TWITCH_DSET_DIR
 
 
 class AnnotationFileCorrector:
-    FINAL_ARMOR_NAME_PATTERN = re.compile(r"<name>armor-(?P<color>\w{2,4})-(?P<num>\d)</name>")
-    ABV_ARMOR_NAME_PATTERN = re.compile(r"<name>a(?P<color>\w)(?P<num>\d)</name>")
-    ABV_RUNES_PATTERN = re.compile(r"<name>r(?P<color>\w)</name>")
-    ABV_BASE_PATTERN = re.compile(r"<name>b</name>")
-    ABV_WATCHER_PATTERN = re.compile(r"<name>w</name>")
-    ABV_CAR_PATTERN = re.compile(r"<name>c</name>")
+    FINAL_ARMOR_NAME_PATTERN = re.compile(r"<name>(armor|amor)-(?P<color>\w{2,4})-(?P<num>\d)</name>", re.IGNORECASE)
+    ABV_ARMOR_NAME_PATTERN = re.compile(r"<name>a(?P<color>\w)(?P<num>\d)</name>", re.IGNORECASE)
+    ABV_RUNES_PATTERN = re.compile(r"<name>r(?P<color>\w)</name>", re.IGNORECASE)
+    ABV_BASE_PATTERN = re.compile(r"<name>b</name>", re.IGNORECASE)
+    ABV_WATCHER_PATTERN = re.compile(r"<name>w</name>", re.IGNORECASE)
+    ABV_CAR_PATTERN = re.compile(r"<name>c</name>", re.IGNORECASE)
 
-    COLORS_MAP = {"r": "red", "red": "red", "b": "blue", "blue": "blue", "g": "gray", "grey": "gray", "gray": "gray"}
+    COLORS_MAP = {"r": "red", "red": "red", "b": "blue", "blue": "blue", "g": "grey", "grey": "grey", "gray": "grey"}
+
+    def __init__(self, save_before: bool):
+        self.save_before = save_before
 
     def correct_annotations_in_directory(self, directory: Path):
         for annotation_path in directory.glob("*.xml"):
@@ -24,16 +27,17 @@ class AnnotationFileCorrector:
         annotation_file.write_text(text)
 
     def _correct_annotation_text(self, text: str) -> str:
+        text = self._correct_mistakes(text)
         text = self._correct_abbreviations(text)
         text = self._correct_armor_format(text)
         return text
 
-    @staticmethod
-    def _save_previous_content(annotation_file: Path) -> str:
+    def _save_previous_content(self, annotation_file: Path) -> str:
         previous_content = annotation_file.read_text()
-        save_dir = annotation_file.parent / "save"
-        save_dir.mkdir(exist_ok=True)
-        (save_dir / annotation_file.name).write_text(previous_content)
+        if self.save_before:
+            save_dir = annotation_file.parent / "save"
+            save_dir.mkdir(exist_ok=True)
+            (save_dir / annotation_file.name).write_text(previous_content)
         return previous_content
 
     def _correct_abbreviations(self, text: str) -> str:
@@ -70,6 +74,12 @@ class AnnotationFileCorrector:
             return f"<name>rune-{color}</name>"
 
         return self.ABV_RUNES_PATTERN.sub(runes_abbreviation_mapping, text)
+
+    @staticmethod
+    def _correct_mistakes(text):
+        text = text.replace("\\</name>", "</name>")
+        text = text.replace("<name>care</name>", "<name>car</name>")
+        return text
 
 
 if __name__ == "__main__":
