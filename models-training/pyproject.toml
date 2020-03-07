@@ -7,12 +7,19 @@ packages = [{ include = "polystar" }]
 
 [tool.poetry.dependencies]
 python = "3.6"
-tensorflow-gpu = { version = "1.12.x", platform = "linux/win32" }
-tensorflow = { version = "1.12.x", platform = "darwin" }
+#tensorflow-gpu = { version = "1.12.x", platform = "linux/win32" }
 matplotlib = "^3.1.3"
 PILLOW = "^7.0.0"
 Cython = "^0.29.15"
 pycocotools = "^2.0.0"
+six = "^1.14.0"
+numpy = "^1.18.1"
+wheel = "^0.34.2"
+setuptools = "^45.2.0"
+mock = "^4.0.1"
+future = "^0.18.2"
+keras_applications = "^1.0.8"
+keras_preprocessing = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.5"
