@@ -17,15 +17,17 @@ class RobotsViewExtractor:
         self.video_path = TWITCH_DSET_DIR / "videos" / f"{video_name}.mp4"
         self.frame_generator: VideoFrameGenerator = VideoFrameGenerator(self.video_path, self.FPS)
         self.count = 0
+        (TWITCH_ROBOTS_VIEWS_DIR / self.video_name).mkdir(exist_ok=True)
 
     def run(self):
-        for i, frame in tqdm(
+        self._progress_bar = tqdm(
             enumerate(self.frame_generator.generate()),
             total=self._get_number_of_frames(),
             desc=f"Extracting robots views from video {self.video_name}.mp4",
             unit="frames",
             ncols=200,
-        ):
+        )
+        for i, frame in self._progress_bar:
             self._process_frame(frame, i)
         print(f"Detected {self.count} robots views")
 
@@ -33,9 +35,14 @@ class RobotsViewExtractor:
         if is_image_from_robot_view(frame):
             self._save_frame(frame, frame_number)
             self.count += 1
+            self._progress_bar.set_description(
+                f"Extracting robots views from video {self.video_name}.mp4 ({self.count} so far)"
+            )
 
     def _save_frame(self, frame: np.ndarray, frame_number: int):
-        cv2.imwrite(f"{TWITCH_ROBOTS_VIEWS_DIR}/{self.video_name}-frame-{frame_number + 1:06}.jpg", frame)
+        cv2.imwrite(
+            f"{TWITCH_ROBOTS_VIEWS_DIR}/{self.video_name}/{self.video_name}-frame-{frame_number + 1:06}.jpg", frame
+        )
 
     def _get_number_of_frames(self):
         return int(ffmpeg.probe(str(self.video_path))["format"]["duration"].split(".")[0]) * self.FPS
