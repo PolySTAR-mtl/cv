@@ -7,16 +7,17 @@ import numpy as np
 import pycuda.driver as cuda
 
 import tensorrt as trt
+
+from polystar.common.constants import RESOURCES_DIR
 from polystar.common.models.image import Image
 
 
 class TRTModel:
 
-    OUTPUT_SIZE: 7
-
     def __init__(self, trt_model_path: Path, input_size: Tuple[int, int]):
         self.input_size = input_size
 
+        self.trt_logger = trt.Logger(trt.Logger.INFO)
         self._load_plugins()
         self.engine = self._load_engine(trt_model_path)
 
@@ -38,7 +39,7 @@ class TRTModel:
         cuda.memcpy_dtoh_async(self.host_outputs[0], self.cuda_outputs[0], self.stream)
         self.stream.synchronize()
 
-        return self.host_outputs[0].reshape((-1, self.OUTPUT_SIZE))
+        return self.host_outputs[0].reshape((-1, 7))
 
     # Processing
 
@@ -52,12 +53,11 @@ class TRTModel:
 
     def _load_plugins(self):
         if trt.__version__[0] < "7":
-            ctypes.CDLL("ssd/libflattenconcat.so")
+            ctypes.CDLL(str(RESOURCES_DIR / "nano/libflattenconcat.so"))
         trt.init_libnvinfer_plugins(self.trt_logger, "")
 
-    @staticmethod
-    def _load_engine(trt_model_path: Path):
-        with trt.Runtime() as runtime:
+    def _load_engine(self, trt_model_path: Path):
+        with trt.Runtime(self.trt_logger) as runtime:
             return runtime.deserialize_cuda_engine(trt_model_path.read_bytes())
 
     def _create_context(self):

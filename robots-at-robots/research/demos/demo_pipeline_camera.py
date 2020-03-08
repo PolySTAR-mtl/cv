@@ -3,6 +3,8 @@ import sys
 
 import cv2
 
+import pycuda.autoinit  # This is needed for initializing CUDA driver
+
 from polystar.common.constants import MODELS_DIR
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.trt_model import TRTModel
@@ -13,6 +15,9 @@ from polystar.robots_at_robots.dependency_injection import make_injector
 from polystar.robots_at_robots.globals import settings
 
 WINDOWS_NAME = "TensorRT demo"
+
+
+[pycuda.autoinit]  # So pycharm won't remove the import
 
 
 def open_cam_onboard(width, height):

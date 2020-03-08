@@ -23,7 +23,7 @@ class TRTModelObjectsDetector(ObjectsDetectorABC):
         xmin = TRTResultGetters.X_MIN.get_value(result)
         xmax = TRTResultGetters.X_MAX.get_value(result)
         ymin = TRTResultGetters.Y_MIN.get_value(result)
-        ymax = TRTResultGetters.YMAX.get_value(result)
+        ymax = TRTResultGetters.Y_MAX.get_value(result)
         return Object(
             type=ObjectType(self.label_map.name_of(TRTResultGetters.CLS.get_value(result))),
             confidence=TRTResultGetters.CONF.get_value(result),
