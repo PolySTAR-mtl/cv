@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 import cv2
 
@@ -15,6 +16,9 @@ from polystar.robots_at_robots.dependency_injection import make_injector
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
+
+
+WINDOWS_NAME = "TensorRT demo"
 
 
 def open_cam_onboard(width, height):
@@ -58,7 +62,10 @@ if __name__ == "__main__":
 
     cap = open_cam_onboard(1_280, 720)
 
-    for i, image_path in enumerate(SplitDataset(DJIROCODataset.CentralChina, Split.Test).image_paths):
+    if not cap.isOpened():
+        sys.exit("Failed to open camera!")
+
+    while True:
         ret, image = cap.read()
         # objects = objects_detector.detect(image)
 
