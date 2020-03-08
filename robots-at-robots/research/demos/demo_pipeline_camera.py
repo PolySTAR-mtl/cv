@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # objects_detector = injector.get(TFModelObjectsDetector)
     # filters = [ConfidenceObjectValidator(confidence_threshold=0.5)]
 
-    cap = open_cam_onboard(0)
+    cap = open_cam_onboard(1_280, 720)
 
     for i, image_path in enumerate(SplitDataset(DJIROCODataset.CentralChina, Split.Test).image_paths):
         ret, image = cap.read()
