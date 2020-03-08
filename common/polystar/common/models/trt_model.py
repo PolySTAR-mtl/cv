@@ -13,7 +13,6 @@ from polystar.common.models.image import Image
 
 
 class TRTModel:
-
     def __init__(self, trt_model_path: Path, input_size: Tuple[int, int]):
         self.input_size = input_size
 
