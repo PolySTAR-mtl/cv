@@ -11,6 +11,7 @@ from polystar.common.models.trt_model import TRTModel
 from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
 from polystar.common.utils.tensorflow import patch_tf_v2
+from polystar.common.view.bend_object_on_image import bend_object_on_image
 from polystar.robots_at_robots.dependency_injection import make_injector
 from polystar.robots_at_robots.globals import settings
 
@@ -71,6 +72,9 @@ if __name__ == "__main__":
         objects = objects_detector.detect(image)
         for f in filters:
             objects = f.filter(objects, image)
+
+        for obj in objects:
+            bend_object_on_image(image, obj)
 
         # Display the resulting frame
         cv2.imshow("frame", image)
