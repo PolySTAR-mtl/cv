@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,7 +33,7 @@ class ImageAnnotation:
         return self._image
 
     @staticmethod
-    def from_xml_file(xml_file: Path) -> ImageAnnotation:
+    def from_xml_file(xml_file: Path) -> "ImageAnnotation":
         try:
             annotation = xmltodict.parse(xml_file.read_text())["annotation"]
 
