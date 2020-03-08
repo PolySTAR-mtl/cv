@@ -2,7 +2,6 @@ from pathlib import Path
 
 import cv2
 from nptyping import Array
-from skimage import io
 
 
 class Image(Array[int, ..., ..., 3]):
