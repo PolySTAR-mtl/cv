@@ -3,20 +3,14 @@ import sys
 
 import cv2
 
-from polystar.common.models.camera import Camera
-from polystar.common.models.object import ObjectType
-from polystar.common.pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
-from polystar.common.pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
+from polystar.common.constants import MODELS_DIR
+from polystar.common.models.label_map import LabelMap
+from polystar.common.models.trt_model import TRTModel
+from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
-from polystar.common.pipeline.objects_validators.type_object_validator import TypeObjectValidator
-from polystar.common.pipeline.pipeline import Pipeline
-from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.robots_at_robots.dependency_injection import make_injector
-from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
-from research_common.dataset.split import Split
-from research_common.dataset.split_dataset import SplitDataset
-
+from polystar.robots_at_robots.globals import settings
 
 WINDOWS_NAME = "TensorRT demo"
 
@@ -57,8 +51,10 @@ if __name__ == "__main__":
     patch_tf_v2()
     injector = make_injector()
 
-    # objects_detector = injector.get(TFModelObjectsDetector)
-    # filters = [ConfidenceObjectValidator(confidence_threshold=0.5)]
+    objects_detector = TRTModelObjectsDetector(
+        TRTModel(MODELS_DIR / settings.MODEL_NAME, (300, 300)), injector.get(LabelMap)
+    )
+    filters = [ConfidenceObjectValidator(confidence_threshold=0.5)]
 
     cap = open_cam_onboard(1_280, 720)
 
@@ -67,7 +63,9 @@ if __name__ == "__main__":
 
     while True:
         ret, image = cap.read()
-        # objects = objects_detector.detect(image)
+        objects = objects_detector.detect(image)
+        for f in filters:
+            objects = f.filter(objects, image)
 
         # Display the resulting frame
         cv2.imshow("frame", image)
