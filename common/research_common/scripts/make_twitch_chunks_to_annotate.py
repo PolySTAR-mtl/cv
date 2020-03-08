@@ -19,8 +19,8 @@ class DatasetChunker:
             image_paths_iterator = self.dataset_dir.glob("*.jpg")
             for chunk_number in count(1 + self._get_number_existing_chunks()):
                 self._make_next_chunk(chunk_number, image_paths_iterator)
-            self._zip_chunk(self._get_chunk_dir(self._get_number_existing_chunks()))
         except StopIteration:
+            self._zip_chunk(self._get_chunk_dir(self._get_number_existing_chunks() + 1))
             pass
 
     def _make_next_chunk(self, chunk_number: int, image_paths_iterator: Iterator[Path]):
@@ -28,7 +28,7 @@ class DatasetChunker:
         chunk_dir.mkdir()
         for _ in range(self.chunk_size):
             image_path = next(image_paths_iterator)
-            # move(str(image_path), str(chunk_dir / image_path.name.replace("Rm2", "").replace("Rm", "")))  # FIXME Antonin ?
+            shutil.move(str(image_path), str(chunk_dir / image_path.name))
         self._zip_chunk(chunk_dir)
 
     def _get_chunk_dir(self, chunk_number: int):
@@ -40,7 +40,6 @@ class DatasetChunker:
     @staticmethod
     def _zip_chunk(chunk_dir: Path):
         shutil.make_archive(str(chunk_dir), "zip", str(chunk_dir))
-        shutil.rmtree(str(chunk_dir))
 
 
 if __name__ == "__main__":
