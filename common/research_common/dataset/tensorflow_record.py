@@ -1,18 +1,12 @@
 import hashlib
 from dataclasses import dataclass
+from shutil import move
 from typing import Iterable
 
 import tensorflow as tf
 from tensorflow_core.python.lib.io import python_io
 from tqdm import tqdm
 
-from object_detection.utils.dataset_util import (
-    float_list_feature,
-    bytes_feature,
-    int64_feature,
-    bytes_list_feature,
-    int64_list_feature,
-)
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.label_map import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
@@ -26,10 +20,13 @@ class TensorflowRecordFactory:
 
     def from_datasets(self, datasets: Iterable[DirectoryROCODataset], name: str):
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
+        c = 0
         for dataset in datasets:
             for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
                 writer.write(self.example_from_image_annotation(image_annotation).SerializeToString())
+                c += 1
         writer.close()
+        move(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"), str(TENSORFLOW_RECORDS_DIR / f"{name}_{c}_imgs.record"))
 
     def from_dataset(self, dataset: ROCODataset):
         self.from_datasets([dataset], name=dataset.dataset_name)
@@ -67,3 +64,24 @@ class TensorflowRecordFactory:
                 }
             )
         )
+
+
+# Functions copied from https://github.com/tensorflow/models/blob/master/research/object_detection/utils/dataset_util.py
+def int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+
+def int64_list_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+
+
+def bytes_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+
+def bytes_list_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=value))
+
+
+def float_list_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=value))
