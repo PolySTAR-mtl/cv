@@ -35,7 +35,11 @@ class TRTModelObjectsDetector(ObjectsDetectorABC):
 
     def _construct_objects_from_trt_results(self, results: np.ndarray, image: Image):
         image_height, image_width, *_ = image.shape
-        return [self._construct_object_from_trt_result(result, image_height, image_width) for result in results]
+        return [
+            self._construct_object_from_trt_result(result, image_height, image_width)
+            for result in results
+            if TRTResultGetters.CLS.get_value(result) >= 0
+        ]
 
 
 class TRTResultGetters(Enum):
