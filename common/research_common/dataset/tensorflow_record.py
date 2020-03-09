@@ -1,5 +1,6 @@
 import hashlib
 from dataclasses import dataclass
+from shutil import move
 from typing import Iterable
 
 import tensorflow as tf
@@ -19,10 +20,13 @@ class TensorflowRecordFactory:
 
     def from_datasets(self, datasets: Iterable[DirectoryROCODataset], name: str):
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
+        c = 0
         for dataset in datasets:
             for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name):
                 writer.write(self.example_from_image_annotation(image_annotation).SerializeToString())
+                c += 1
         writer.close()
+        move(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"), str(TENSORFLOW_RECORDS_DIR / f"{name}_{c}_imgs.record"))
 
     def from_dataset(self, dataset: ROCODataset):
         self.from_datasets([dataset], name=dataset.dataset_name)
