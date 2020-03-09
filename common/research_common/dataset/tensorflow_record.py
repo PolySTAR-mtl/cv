@@ -6,13 +6,6 @@ import tensorflow as tf
 from tensorflow_core.python.lib.io import python_io
 from tqdm import tqdm
 
-from object_detection.utils.dataset_util import (
-    float_list_feature,
-    bytes_feature,
-    int64_feature,
-    bytes_list_feature,
-    int64_list_feature,
-)
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.label_map import LabelMap
 from research_common.constants import TENSORFLOW_RECORDS_DIR
@@ -67,3 +60,24 @@ class TensorflowRecordFactory:
                 }
             )
         )
+
+
+# Functions copied from https://github.com/tensorflow/models/blob/master/research/object_detection/utils/dataset_util.py
+def int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+
+def int64_list_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+
+
+def bytes_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+
+def bytes_list_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=value))
+
+
+def float_list_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=value))
