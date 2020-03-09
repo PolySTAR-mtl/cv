@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 import cv2
+from time import time
 
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
@@ -11,7 +12,7 @@ from polystar.common.models.trt_model import TRTModel
 from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
 from polystar.common.utils.tensorflow import patch_tf_v2
-from polystar.common.view.bend_object_on_image import bend_object_on_image
+from polystar.common.view.bend_object_on_image import bend_object_on_image, bend_boxed_text_on_image
 from polystar.robots_at_robots.dependency_injection import make_injector
 from polystar.robots_at_robots.globals import settings
 
@@ -41,13 +42,13 @@ def open_cam_onboard(width, height):
         gst_str = (
             "nvarguscamerasrc ! "
             "video/x-raw(memory:NVMM), "
-            "width=(int)1920, height=(int)1080, "
-            "format=(string)NV12, framerate=(fraction)30/1 ! "
-            "nvvidconv flip-method=2 ! "
-            "video/x-raw, width=(int){}, height=(int){}, "
+            f"width=(int){width}, height=(int){height}, "
+            "format=(string)NV12, framerate=(fraction)60/1 ! "
+            "nvvidconv flip-method=0 ! "
+            f"video/x-raw, width=(int){width}, height=(int){height}, "
             "format=(string)BGRx ! "
             "videoconvert ! appsink"
-        ).format(width, height)
+        )
     else:
         raise RuntimeError("onboard camera source not found!")
     return cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
@@ -67,20 +68,26 @@ if __name__ == "__main__":
     if not cap.isOpened():
         sys.exit("Failed to open camera!")
 
-    while True:
-        ret, image = cap.read()
-        objects = objects_detector.detect(image)
-        for f in filters:
-            objects = f.filter(objects, image)
+    fps = 0
+    try:
+        while True:
+            previous_time = time()
+            ret, image = cap.read()
+            objects = objects_detector.detect(image)
+            for f in filters:
+                objects = f.filter(objects, image)
 
-        for obj in objects:
-            bend_object_on_image(image, obj)
+            fps = .9 * fps + .1 / (time() - previous_time)
+            bend_boxed_text_on_image(image, f'FPS: {fps:.1f}', (10, 10), (0, 0, 0))
 
-        # Display the resulting frame
-        cv2.imshow("frame", image)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+            for obj in objects:
+                bend_object_on_image(image, obj)
 
-    # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
+            # Display the resulting frame
+            cv2.imshow("frame", image)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+    finally:
+        # When everything done, release the capture
+        cap.release()
+        cv2.destroyAllWindows()
