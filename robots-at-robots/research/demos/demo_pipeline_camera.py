@@ -12,7 +12,8 @@ from polystar.common.models.trt_model import TRTModel
 from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
 from polystar.common.utils.tensorflow import patch_tf_v2
-from polystar.common.view.bend_object_on_image import bend_object_on_image, bend_boxed_text_on_image
+from polystar.common.view.blend_object_on_image import blend_object_on_image
+from polystar.common.view.blend_text_on_image import blend_boxed_text_on_image
 from polystar.robots_at_robots.dependency_injection import make_injector
 from polystar.robots_at_robots.globals import settings
 
@@ -78,10 +79,10 @@ if __name__ == "__main__":
                 objects = f.filter(objects, image)
 
             fps = 0.9 * fps + 0.1 / (time() - previous_time)
-            bend_boxed_text_on_image(image, f"FPS: {fps:.1f}", (10, 10), (0, 0, 0))
+            blend_boxed_text_on_image(image, f"FPS: {fps:.1f}", (10, 10), (0, 0, 0))
 
             for obj in objects:
-                bend_object_on_image(image, obj)
+                blend_object_on_image(image, obj)
 
             # Display the resulting frame
             cv2.imshow("frame", image)
