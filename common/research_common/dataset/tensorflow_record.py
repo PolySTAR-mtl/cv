@@ -32,6 +32,7 @@ class TensorflowRecordFactory:
         self.from_datasets([dataset], name=dataset.dataset_name)
 
     def example_from_image_annotation(self, image_annotation: ImageAnnotation) -> tf.train.Example:
+        image_name = image_annotation.image_path.name
         encoded_jpg = image_annotation.image_path.read_bytes()
         key = hashlib.sha256(encoded_jpg).hexdigest()
 
@@ -50,6 +51,8 @@ class TensorflowRecordFactory:
         return tf.train.Example(
             features=tf.train.Features(
                 feature={
+                    "image/filename": bytes_feature(image_name.encode("utf8")),
+                    "image/source_id": bytes_feature(image_name.encode("utf8")),
                     "image/height": int64_feature(height),
                     "image/width": int64_feature(width),
                     "image/key/sha256": bytes_feature(key.encode("utf8")),
