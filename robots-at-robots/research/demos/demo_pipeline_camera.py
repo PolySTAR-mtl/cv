@@ -1,12 +1,10 @@
-import subprocess
-import sys
-
-import cv2
 from time import time
 
+import cv2
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
 from polystar.common.constants import MODELS_DIR
+from polystar.common.frame_generators.camera_frame_generator import CameraFrameGenerator
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.trt_model import TRTModel
 from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
@@ -23,38 +21,6 @@ WINDOWS_NAME = "TensorRT demo"
 [pycuda.autoinit]  # So pycharm won't remove the import
 
 
-def open_cam_onboard(width, height):
-    """Open the Jetson onboard camera."""
-    gst_elements = str(subprocess.check_output("gst-inspect-1.0"))
-    if "nvcamerasrc" in gst_elements:
-        # On versions of L4T prior to 28.1, you might need to add
-        # 'flip-method=2' into gst_str below.
-        gst_str = (
-            "nvcamerasrc ! "
-            "video/x-raw(memory:NVMM), "
-            "width=(int)2592, height=(int)1458, "
-            "format=(string)I420, framerate=(fraction)30/1 ! "
-            "nvvidconv ! "
-            "video/x-raw, width=(int){}, height=(int){}, "
-            "format=(string)BGRx ! "
-            "videoconvert ! appsink"
-        ).format(width, height)
-    elif "nvarguscamerasrc" in gst_elements:
-        gst_str = (
-            "nvarguscamerasrc ! "
-            "video/x-raw(memory:NVMM), "
-            f"width=(int){width}, height=(int){height}, "
-            "format=(string)NV12, framerate=(fraction)60/1 ! "
-            "nvvidconv flip-method=0 ! "
-            f"video/x-raw, width=(int){width}, height=(int){height}, "
-            "format=(string)BGRx ! "
-            "videoconvert ! appsink"
-        )
-    else:
-        raise RuntimeError("onboard camera source not found!")
-    return cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
-
-
 if __name__ == "__main__":
     patch_tf_v2()
     injector = make_injector()
@@ -64,16 +30,10 @@ if __name__ == "__main__":
     )
     filters = [ConfidenceObjectValidator(confidence_threshold=0.5)]
 
-    cap = open_cam_onboard(1_280, 720)
-
-    if not cap.isOpened():
-        sys.exit("Failed to open camera!")
-
     fps = 0
     try:
-        while True:
+        for image in CameraFrameGenerator(1_280, 720).generate():
             previous_time = time()
-            ret, image = cap.read()
             objects = objects_detector.detect(image)
             for f in filters:
                 objects = f.filter(objects, image)
@@ -90,5 +50,4 @@ if __name__ == "__main__":
                 break
     finally:
         # When everything done, release the capture
-        cap.release()
         cv2.destroyAllWindows()
