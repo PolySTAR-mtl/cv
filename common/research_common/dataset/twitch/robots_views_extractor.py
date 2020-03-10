@@ -3,7 +3,7 @@ import ffmpeg
 import numpy as np
 from tqdm import tqdm
 
-from polystar.common.utils.video_frame_generator import VideoFrameGenerator
+from polystar.common.frame_generators.fps_video_frame_generator import FPSVideoFrameGenerator
 from research_common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research_common.dataset.twitch.mask_detector import is_image_from_robot_view
 
@@ -15,7 +15,7 @@ class RobotsViewExtractor:
     def __init__(self, video_name: str):
         self.video_name: str = video_name
         self.video_path = TWITCH_DSET_DIR / "videos" / f"{video_name}.mp4"
-        self.frame_generator: VideoFrameGenerator = VideoFrameGenerator(self.video_path, self.FPS)
+        self.frame_generator: FPSVideoFrameGenerator = FPSVideoFrameGenerator(self.video_path, self.FPS)
         self.count = 0
         (TWITCH_ROBOTS_VIEWS_DIR / self.video_name).mkdir(exist_ok=True)
 

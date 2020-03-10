@@ -46,7 +46,7 @@ class TRTModel:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, self.input_size)
         img = img.transpose((2, 0, 1)).astype(np.float32)
-        img = (2.0/255.0) * img - 1.0
+        img = (2.0 / 255.0) * img - 1.0
         return img
 
     # Initialization
