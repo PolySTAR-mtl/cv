@@ -3,8 +3,10 @@ from pathlib import Path
 import cv2
 import ffmpeg
 
+from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
 
-class VideoFrameGenerator:
+
+class VideoFrameGenerator(FrameGeneratorABC):
     def __init__(self, video_path: Path, desired_fps: int):
         self.video_path: Path = video_path
         self.desired_fps: int = desired_fps
