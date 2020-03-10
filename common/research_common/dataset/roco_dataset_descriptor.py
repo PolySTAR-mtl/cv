@@ -1,13 +1,10 @@
-from __future__ import annotations
-
-from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict
 
 from pandas import DataFrame
 
-from polystar.common.models.object import ObjectType, ArmorColor, ArmorNumber
+from polystar.common.models.object import ObjectType
 from polystar.common.utils.markdown import MarkdownFile
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.roco_dataset import ROCODataset
@@ -28,7 +25,7 @@ class ROCODatasetStats:
     armors_color2num2count: Dict[str, Dict[int, int]] = field(default_factory=dict)
 
     @staticmethod
-    def from_dataset(dataset: ROCODataset) -> ROCODatasetStats:
+    def from_dataset(dataset: ROCODataset) -> "ROCODatasetStats":
         rv = ROCODatasetStats()
         colors = ["red", "grey", "blue", "total"]
         rv.armors_color2num2count = {c: {n: 0 for n in range(10)} for c in colors}

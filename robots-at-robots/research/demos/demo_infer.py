@@ -2,7 +2,7 @@ from polystar.common.models.label_map import LabelMap
 from polystar.common.pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
 from polystar.common.utils.tensorflow import patch_tf_v2
-from polystar.common.view.display_image_annotation import display_image_with_objects
+from polystar.common.view.plt_display_image_with_annotation import display_image_with_objects
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.demos.utils import load_tf_model
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset

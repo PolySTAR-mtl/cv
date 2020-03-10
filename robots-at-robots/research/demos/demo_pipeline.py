@@ -10,7 +10,7 @@ from polystar.common.pipeline.objects_validators.type_object_validator import Ty
 from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
-from polystar.common.view.display_object_on_image import display_object
+from polystar.common.view.plt_display_image_with_object import display_object
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.demos.utils import load_tf_model
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
