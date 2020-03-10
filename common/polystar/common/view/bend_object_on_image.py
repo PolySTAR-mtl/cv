@@ -39,13 +39,21 @@ def bend_boxed_text_on_image(img: Image, text: str, topleft: Tuple[int, int], co
     # the patch is used to draw boxed text
     patch = np.zeros((h, w, 3), dtype=np.uint8)
     patch[...] = color
-    cv2.putText(patch, text, (margin+1, h-margin-2), FONT, TEXT_SCALE,
-                WHITE, thickness=TEXT_THICKNESS, lineType=cv2.LINE_8)
-    cv2.rectangle(patch, (0, 0), (w-1, h-1), BLACK, thickness=1)
+    cv2.putText(
+        patch,
+        text,
+        (margin + 1, h - margin - 2),
+        FONT,
+        TEXT_SCALE,
+        WHITE,
+        thickness=TEXT_THICKNESS,
+        lineType=cv2.LINE_8,
+    )
+    cv2.rectangle(patch, (0, 0), (w - 1, h - 1), BLACK, thickness=1)
     w = min(w, img_w - topleft[0])  # clip overlay at image boundary
     h = min(h, img_h - topleft[1])
     # Overlay the boxed text onto region of interest (roi) in img
-    roi = img[topleft[1]:topleft[1]+h, topleft[0]:topleft[0]+w, :]
+    roi = img[topleft[1] : topleft[1] + h, topleft[0] : topleft[0] + w, :]
     cv2.addWeighted(patch[0:h, 0:w, :], ALPHA, roi, 1 - ALPHA, 0, roi)
     return img
 

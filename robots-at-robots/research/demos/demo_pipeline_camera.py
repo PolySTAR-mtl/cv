@@ -77,8 +77,8 @@ if __name__ == "__main__":
             for f in filters:
                 objects = f.filter(objects, image)
 
-            fps = .9 * fps + .1 / (time() - previous_time)
-            bend_boxed_text_on_image(image, f'FPS: {fps:.1f}', (10, 10), (0, 0, 0))
+            fps = 0.9 * fps + 0.1 / (time() - previous_time)
+            bend_boxed_text_on_image(image, f"FPS: {fps:.1f}", (10, 10), (0, 0, 0))
 
             for obj in objects:
                 bend_object_on_image(image, obj)
