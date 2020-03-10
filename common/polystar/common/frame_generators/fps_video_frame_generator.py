@@ -1,31 +1,26 @@
-from pathlib import Path
+from dataclasses import dataclass
+from typing import Iterable
 
-import cv2
 import ffmpeg
 
-from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
+from polystar.common.frame_generators.video_frame_generator import VideoFrameGenerator
+from polystar.common.models.image import Image
 
 
-class FPSVideoFrameGenerator(FrameGeneratorABC):
-    def __init__(self, video_path: Path, desired_fps: int):
-        self.video_path: Path = video_path
-        self.desired_fps: int = desired_fps
-        self.video_fps: int = self._get_video_fps()
+@dataclass
+class FPSVideoFrameGenerator(VideoFrameGenerator):
+
+    desired_fps: int
+
+    def __post_init__(self):
+        self.frame_rate: int = self._get_video_fps() // self.desired_fps
 
     def _get_video_fps(self):
         return max(
             int(stream["r_frame_rate"].split("/")[0]) for stream in ffmpeg.probe(str(self.video_path))["streams"]
         )
 
-    def generate(self):
-        video = cv2.VideoCapture(str(self.video_path))
-        frame_rate = self.video_fps // self.desired_fps
-        count = 0
-        while 1:
-            is_unfinished, frame = video.read()
-            if not is_unfinished:
-                video.release()
-                return
-            if not count % frame_rate:
+    def generate(self) -> Iterable[Image]:
+        for i, frame in enumerate(super().generate()):
+            if not i % self.frame_rate:
                 yield frame
-            count += 1
