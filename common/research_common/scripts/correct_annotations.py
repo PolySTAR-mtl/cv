@@ -1,8 +1,6 @@
 import re
 from pathlib import Path
 
-from research_common.constants import TWITCH_DSET_DIR
-
 
 class AnnotationFileCorrector:
     FINAL_ARMOR_NAME_PATTERN = re.compile(r"<name>(armor|amor)-(?P<color>\w{2,4})-(?P<num>\d)</name>", re.IGNORECASE)
@@ -10,7 +8,7 @@ class AnnotationFileCorrector:
     ABV_RUNES_PATTERN = re.compile(r"<name>r(?P<color>\w)</name>", re.IGNORECASE)
     ABV_BASE_PATTERN = re.compile(r"<name>b</name>", re.IGNORECASE)
     ABV_WATCHER_PATTERN = re.compile(r"<name>w</name>", re.IGNORECASE)
-    ABV_CAR_PATTERN = re.compile(r"<name>c</name>", re.IGNORECASE)
+    ABV_CAR_PATTERN = re.compile(r"<name>[cx]</name>", re.IGNORECASE)
 
     COLORS_MAP = {"r": "red", "red": "red", "b": "blue", "blue": "blue", "g": "grey", "grey": "grey", "gray": "grey"}
 
@@ -22,9 +20,13 @@ class AnnotationFileCorrector:
             self.correct_annotation_file(annotation_path)
 
     def correct_annotation_file(self, annotation_file: Path):
-        text = self._save_previous_content(annotation_file)
-        text = self._correct_annotation_text(text)
-        annotation_file.write_text(text)
+        try:
+            text = self._save_previous_content(annotation_file)
+            text = self._correct_annotation_text(text)
+            annotation_file.write_text(text)
+        except Exception as e:
+            print(f"Error processing annotation {annotation_file}")
+            raise e
 
     def _correct_annotation_text(self, text: str) -> str:
         text = self._correct_mistakes(text)
@@ -80,12 +82,3 @@ class AnnotationFileCorrector:
         text = text.replace("\\</name>", "</name>")
         text = text.replace("<name>care</name>", "<name>car</name>")
         return text
-
-
-if __name__ == "__main__":
-
-    corrector = AnnotationFileCorrector()
-
-    annotation_dir = TWITCH_DSET_DIR / "robots-views-annotations" / "chunk_005"
-
-    corrector.correct_annotations_in_directory(annotation_dir)
