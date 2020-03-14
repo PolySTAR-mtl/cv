@@ -9,7 +9,7 @@ from research_common.scripts.correct_annotations import AnnotationFileCorrector
 
 def _construct_mixed_twitch_dset():
     construct_dataset_from_manual_annotations(
-        TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_DIR / "robots-views-annotations", TWITCH_DSET_ROBOTS_VIEWS_DIR,
+        TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_DIR / "reviewed-robots-views-annotations", TWITCH_DSET_ROBOTS_VIEWS_DIR,
     )
 
 
