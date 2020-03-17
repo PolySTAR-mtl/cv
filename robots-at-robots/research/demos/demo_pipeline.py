@@ -14,6 +14,7 @@ from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.demos.utils import load_tf_model
+from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset
 from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
@@ -30,17 +31,19 @@ if __name__ == "__main__":
     )
 
     with PltResultViewer("Demo of tf model") as viewer:
-        for i, image_path in enumerate(SplitDataset(TwitchROCODataset.TWITCH_470150052, Split.Test).image_paths):
-            try:
-                image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
-                target = pipeline.predict_target(image)
+        for dset in (TwitchROCODataset.TWITCH_470150052, DJIROCODataset.CentralChina):
+            for i, image_path in enumerate(SplitDataset(dset, Split.Test).image_paths):
+                try:
+                    image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
+                    target = pipeline.predict_target(image)
 
-                viewer.new(image)
-                viewer.add_objects(pipeline.debug_info_.validated_objects, forced_color=(0.3, 0.3, 0.3))
-                viewer.add_object(pipeline.debug_info_.selected_object)
-                viewer.display()
-            except NoTargetFound:
-                pass
+                    viewer.new(image)
+                    viewer.add_objects(pipeline.debug_info_.detected_objects, forced_color=(0.3, 0.3, 0.3))
+                    viewer.add_objects(pipeline.debug_info_.validated_objects, forced_color=(0.6, 0.6, 0.6))
+                    viewer.add_object(pipeline.debug_info_.selected_object)
+                    viewer.display()
+                except NoTargetFound:
+                    pass
 
-            if i == 5:
-                break
+                if i == 5:
+                    break
