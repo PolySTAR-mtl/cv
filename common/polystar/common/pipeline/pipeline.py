@@ -35,7 +35,7 @@ class Pipeline:
         return selected_object
 
     def _get_objects_of_interest(self, image: np.ndarray) -> List[Object]:
-        objects = self.objects_detector.detect(image)
+        objects = self._detect_all_objects(image)
         for objects_validator in self.objects_validators:
             objects = objects_validator.filter(objects, image)
 
@@ -43,3 +43,6 @@ class Pipeline:
             raise NoTargetFound()
 
         return objects
+
+    def _detect_all_objects(self, image) -> List[Object]:
+        return self.objects_detector.detect(image)

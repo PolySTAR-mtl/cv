@@ -11,6 +11,7 @@ from polystar.common.pipeline.pipeline import Pipeline
 
 @dataclass
 class DebugInfo:
+    detected_objects: List[Object] = field(init=False)
     validated_objects: List[Object] = field(init=False)
     selected_object: Object = field(init=False)
     target: TargetABC = field(init=False)
@@ -35,4 +36,9 @@ class DebugPipeline(Pipeline):
     def _get_objects_of_interest(self, image: np.ndarray) -> List[Object]:
         objects = super()._get_objects_of_interest(image)
         self.debug_info_.validated_objects = objects
+        return objects
+
+    def _detect_all_objects(self, image) -> List[Object]:
+        objects = super()._detect_all_objects(image)
+        self.debug_info_.detected_objects = objects
         return objects
