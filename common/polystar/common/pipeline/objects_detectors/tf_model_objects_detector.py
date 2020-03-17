@@ -46,6 +46,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
             for box, class_id, score in zip(
                 output_dict["detection_boxes"], output_dict["detection_classes"], output_dict["detection_scores"]
             )
+            if score >= 0.1
         ]
         return objects
 
