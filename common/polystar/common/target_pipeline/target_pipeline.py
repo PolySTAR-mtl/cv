@@ -7,10 +7,10 @@ from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.models.image import Image
 from polystar.common.models.object import Object
 from polystar.common.models.target_abc import TargetABC
-from polystar.common.pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
-from polystar.common.pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
-from polystar.common.pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
-from polystar.common.pipeline.target_factories.target_factory_abc import TargetFactoryABC
+from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
+from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
+from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
+from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
 
 class NoTargetFound(Exception):
@@ -18,7 +18,7 @@ class NoTargetFound(Exception):
 
 
 @dataclass
-class Pipeline:
+class TargetPipeline:
 
     objects_detector: ObjectsDetectorABC
     objects_validators: List[ObjectsValidatorABC]

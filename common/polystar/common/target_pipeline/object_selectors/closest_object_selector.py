@@ -1,7 +1,7 @@
 import numpy as np
 
 from polystar.common.models.object import Object
-from polystar.common.pipeline.object_selectors.scored_object_selector_abc import ScoredObjectSelectorABC
+from polystar.common.target_pipeline.object_selectors.scored_object_selector_abc import ScoredObjectSelectorABC
 
 
 class ClosestObjectSelector(ScoredObjectSelectorABC):

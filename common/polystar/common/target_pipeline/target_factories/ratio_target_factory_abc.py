@@ -6,7 +6,7 @@ import numpy as np
 
 from polystar.common.models.camera import Camera
 from polystar.common.models.object import Object
-from polystar.common.pipeline.target_factories.target_factory_abc import TargetFactoryABC
+from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
 
 class RatioTargetFactoryABC(TargetFactoryABC, ABC):

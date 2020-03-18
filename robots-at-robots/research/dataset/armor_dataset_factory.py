@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.object import ObjectType, Armor, ArmorColor, ArmorNumber
-from polystar.common.pipeline.objects_validators.type_object_validator import TypeObjectValidator
+from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.roco_dataset import ROCODataset
 

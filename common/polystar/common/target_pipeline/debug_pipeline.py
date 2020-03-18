@@ -6,7 +6,7 @@ import numpy as np
 from polystar.common.models.image import Image
 from polystar.common.models.object import Object
 from polystar.common.models.target_abc import TargetABC
-from polystar.common.pipeline.pipeline import Pipeline
+from polystar.common.target_pipeline.target_pipeline import TargetPipeline
 
 
 @dataclass
@@ -18,7 +18,7 @@ class DebugInfo:
 
 
 @dataclass
-class DebugPipeline(Pipeline):
+class DebugTargetPipeline(TargetPipeline):
     """Wrap a pipeline with debug, to store debug infos"""
 
     debug_info_: DebugInfo = field(init=False, default_factory=DebugInfo)

@@ -6,7 +6,7 @@ import numpy as np
 from polystar.common.models.image import Image
 from polystar.common.models.object import Object, ObjectType
 from polystar.common.models.trt_model import TRTModel
-from polystar.common.pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
+from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.common.models.label_map import LabelMap
 
 

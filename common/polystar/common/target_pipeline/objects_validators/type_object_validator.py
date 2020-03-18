@@ -1,7 +1,9 @@
 import numpy as np
 
 from polystar.common.models.object import ObjectType, Object
-from polystar.common.pipeline.objects_validators.sequential_objects_validators_abc import SequentialObjectsValidatorABC
+from polystar.common.target_pipeline.objects_validators.sequential_objects_validators_abc import (
+    SequentialObjectsValidatorABC,
+)
 
 
 class TypeObjectValidator(SequentialObjectsValidatorABC):

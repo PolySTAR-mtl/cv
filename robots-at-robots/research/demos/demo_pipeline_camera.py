@@ -10,12 +10,12 @@ from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.object import ObjectType
 from polystar.common.models.trt_model import TRTModel
-from polystar.common.pipeline.debug_pipeline import DebugPipeline
-from polystar.common.pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
-from polystar.common.pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
-from polystar.common.pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
-from polystar.common.pipeline.objects_validators.type_object_validator import TypeObjectValidator
-from polystar.common.pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
+from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
+from polystar.common.target_pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
+from polystar.common.target_pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
+from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
+from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.cv2_results_viewer import CV2ResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     objects_detector = TRTModelObjectsDetector(
         TRTModel(MODELS_DIR / settings.MODEL_NAME, (300, 300)), injector.get(LabelMap)
     )
-    pipeline = DebugPipeline(
+    pipeline = DebugTargetPipeline(
         objects_detector=objects_detector,
         objects_validators=[ConfidenceObjectValidator(0.6), TypeObjectValidator(ObjectType.Armor)],
         object_selector=ClosestObjectSelector(),
