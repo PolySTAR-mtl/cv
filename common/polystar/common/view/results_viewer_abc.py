@@ -34,14 +34,14 @@ class ResultViewerABC(ABC):
     def display(self):
         pass
 
-    def add_object(self, obj: Object):
-        color = self.colors[obj.type.value]
+    def add_object(self, obj: Object, forced_color: ColorView = None):
+        color = forced_color or self.colors[obj.type.value]
         self.add_rectangle(obj.x, obj.y, obj.w, obj.h, color)
         self.add_text(f"{obj.type.name} ({obj.confidence:.1%})", obj.x, obj.y, color)
 
-    def add_objects(self, objects: Iterable[Object]):
+    def add_objects(self, objects: Iterable[Object], forced_color: ColorView = None):
         for obj in objects:
-            self.add_object(obj)
+            self.add_object(obj, forced_color=forced_color)
 
     def display_image_with_objects(self, image: Image, objects: Iterable[Object]):
         self.new(image)
