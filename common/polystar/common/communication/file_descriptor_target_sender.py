@@ -8,4 +8,4 @@ class FileDescriptorTargetSender(TargetSenderABC):
         self.output_fds = fdopen(int(output_fd), "w", buffering=1)
 
     def _send_text(self, text: str):
-        self.output_fds.write(text)
+        self.output_fds.write(text + "\n")
