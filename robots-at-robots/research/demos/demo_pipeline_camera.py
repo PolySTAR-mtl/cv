@@ -1,7 +1,9 @@
+import sys
 from time import time
 
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
+from polystar.common.communication.file_descriptor_target_sender import FileDescriptorTargetSender
 from polystar.common.constants import MODELS_DIR
 from polystar.common.frame_generators.camera_frame_generator import CameraFrameGenerator
 from polystar.common.models.camera import Camera
@@ -34,6 +36,7 @@ if __name__ == "__main__":
         objects_validators=[ConfidenceObjectValidator(0.6), TypeObjectValidator(ObjectType.Armor)],
         object_selector=ClosestObjectSelector(),
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),
+        target_sender=FileDescriptorTargetSender(int(sys.argv[1])),
     )
 
     fps = 0
