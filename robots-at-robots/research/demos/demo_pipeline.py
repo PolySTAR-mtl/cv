@@ -1,5 +1,6 @@
 import cv2
 
+from polystar.common.communication.print_target_sender import PrintTargetSender
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.object import ObjectType
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         objects_validators=[ConfidenceObjectValidator(0.6), TypeObjectValidator(ObjectType.Armor)],
         object_selector=ClosestObjectSelector(),
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),
+        target_sender=PrintTargetSender(),
     )
 
     with PltResultViewer("Demo of tf model") as viewer:
