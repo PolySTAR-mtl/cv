@@ -1,7 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 
-from polystar.common.models.target_abc import TargetABC
+from polystar.common.target_pipeline.target_abc import TargetABC
 
 
 class TargetSenderABC(ABC):

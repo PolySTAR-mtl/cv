@@ -4,7 +4,7 @@ from typing import List
 import numpy as np
 
 from polystar.common.models.object import Object
-from polystar.common.pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
+from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 
 
 class SequentialObjectsValidatorABC(ObjectsValidatorABC, ABC):
