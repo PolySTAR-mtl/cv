@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TextIO, List
+from typing import TextIO, Iterable, Any
 
 from pandas import DataFrame
 from tabulate import tabulate
@@ -10,21 +10,22 @@ class MarkdownFile:
         self.markdown_path = markdown_path
 
     def __enter__(self):
+        self.markdown_path.parent.mkdir(exist_ok=True, parents=True)
         self.file: TextIO = self.markdown_path.open("w")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.file.close()
 
-    def title(self, text: str, level: int = 1) -> "MarkdownFile":
+    def title(self, text: Any, level: int = 1) -> "MarkdownFile":
         self.file.write(f'{"#"*level} {text}\n\n')
         return self
 
-    def paragraph(self, text: str) -> "MarkdownFile":
+    def paragraph(self, text: Any) -> "MarkdownFile":
         self.file.write(f"{text}\n\n")
         return self
 
-    def list(self, texts: List[str]) -> "MarkdownFile":
+    def list(self, texts: Iterable[Any]) -> "MarkdownFile":
         for text in texts:
             self.file.write(f" - {text}\n")
         self.file.write("\n")

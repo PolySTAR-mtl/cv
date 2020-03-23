@@ -1,6 +1,8 @@
 from pathlib import Path
 
-DSET_DIR = Path(__file__).parent.parent.parent / "dataset"
+from polystar.common.constants import PROJECT_DIR
+
+DSET_DIR: Path = PROJECT_DIR / "dataset"
 
 TWITCH_DSET_DIR: Path = DSET_DIR / "twitch"
 ROCO_DSET_DIR: Path = DSET_DIR / "dji_roco"
@@ -13,3 +15,6 @@ ROCO_DSET_DIR.mkdir(parents=True, exist_ok=True)
 TENSORFLOW_RECORDS_DIR.mkdir(parents=True, exist_ok=True)
 TWITCH_ROBOTS_VIEWS_DIR.mkdir(parents=True, exist_ok=True)
 TWITCH_DSET_ROBOTS_VIEWS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+EVALUATION_DIR: Path = PROJECT_DIR / "experiments"
