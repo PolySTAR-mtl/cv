@@ -44,7 +44,20 @@ It will enable the relative imports.
 
 #### ROCO
 
-Telechargez le dossier [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB)  du drive, contenant tous les datasets fournis par DJI, et unzippez le dans le dossier [dataset/dji_roco](../dataset/dji_roco).
+Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB) in Drive, with the 4 datasets given by DJI, and unzip in folder [dataset/dji_roco](../dataset/dji_roco).
+
+The dji_roco directory should look like:
+
+![DJI ROCO Dataset directory organization](./doc/dataset_dji_repo.png)
+
+#### TWITCH
+
+Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/datasets/twitch/v1](https://drive.google.com/drive/folders/1TaxdzB57U9wII9K2VDOEP8vUMm94_cR7) in Drive, with the 8 labelized videos from twitch, and unzip in folder [dataset/twitch/v1](../dataset/twitch/v1).
+
+The twitch/v1 directory should look like:
+
+![Twitch Dataset directory organization](./doc/dataset_twitch_repo.png)
+
 
 ## Dataset creation
 
