@@ -3,14 +3,25 @@ from pathlib import Path
 
 
 class AnnotationFileCorrector:
-    FINAL_ARMOR_NAME_PATTERN = re.compile(r"<name>(armor|amor)-(?P<color>\w{2,4})-(?P<num>\d)</name>", re.IGNORECASE)
-    ABV_ARMOR_NAME_PATTERN = re.compile(r"<name>a(?P<color>\w)(?P<num>\d)</name>", re.IGNORECASE)
+    FINAL_ARMOR_NAME_PATTERN = re.compile(
+        r"<name>(armor|amor|amror)-(?P<color>\w{2,4})-(?P<num>\d)</name>", re.IGNORECASE
+    )
+    ABV_ARMOR_NAME_PATTERN = re.compile(r"<name>a{1,2}(?P<color>\w)(?P<num>\d)</name>", re.IGNORECASE)
     ABV_RUNES_PATTERN = re.compile(r"<name>r(?P<color>\w)</name>", re.IGNORECASE)
     ABV_BASE_PATTERN = re.compile(r"<name>b</name>", re.IGNORECASE)
     ABV_WATCHER_PATTERN = re.compile(r"<name>w</name>", re.IGNORECASE)
-    ABV_CAR_PATTERN = re.compile(r"<name>[cx]</name>", re.IGNORECASE)
+    ABV_CAR_PATTERN = re.compile(r"<name>(c|x|robot)</name>", re.IGNORECASE)
 
-    COLORS_MAP = {"r": "red", "red": "red", "b": "blue", "blue": "blue", "g": "grey", "grey": "grey", "gray": "grey"}
+    COLORS_MAP = {
+        "r": "red",
+        "red": "red",
+        "b": "blue",
+        "bleu": "blue",
+        "blue": "blue",
+        "g": "grey",
+        "grey": "grey",
+        "gray": "grey",
+    }
 
     def __init__(self, save_before: bool):
         self.save_before = save_before

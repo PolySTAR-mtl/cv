@@ -3,8 +3,6 @@ from pathlib import Path
 from shutil import move, rmtree
 from zipfile import ZipFile
 
-from research_common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_ROBOTS_VIEWS_DIR
-
 
 def construct_dataset_from_manual_annotations(
     source_images_directory: Path, source_annotations_directory: Path, destination_directory: Path
@@ -29,9 +27,3 @@ def _unzip_all_in_directory(source_directory: Path, destination_directory: Path,
     for directory in destination_directory.glob("*"):
         if directory.is_dir():
             rmtree(str(directory))
-
-
-if __name__ == "__main__":
-    construct_dataset_from_manual_annotations(
-        TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_DIR / "robots-views-annotations", TWITCH_DSET_ROBOTS_VIEWS_DIR,
-    )
