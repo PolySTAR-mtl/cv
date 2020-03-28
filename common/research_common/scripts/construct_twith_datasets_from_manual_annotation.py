@@ -1,4 +1,5 @@
-from shutil import copy, move, rmtree
+from os import remove
+from shutil import copy, move, rmtree, make_archive
 
 from research_common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_ROBOTS_VIEWS_DIR
 from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
@@ -38,8 +39,9 @@ def _separate_twitch_videos():
         move(str(annotation.xml_path), str(annotations_path / annotation.xml_path.name))
     if list((TWITCH_DSET_ROBOTS_VIEWS_DIR / "image").glob("*")):
         raise Exception(f"Some images remains unmoved")
-    if list((TWITCH_DSET_ROBOTS_VIEWS_DIR / "image_annotation").glob("*")):
-        raise Exception(f"Some annotations remains unmoved")
+    for remaining_file in (TWITCH_DSET_ROBOTS_VIEWS_DIR / "image_annotation").glob("*"):
+        if remaining_file.name != ".DS_Store":
+            raise Exception(f"Some annotations remains unmoved")
     rmtree(str(TWITCH_DSET_ROBOTS_VIEWS_DIR / "image"))
     rmtree(str(TWITCH_DSET_ROBOTS_VIEWS_DIR / "image_annotation"))
 
@@ -61,6 +63,12 @@ def _make_separate_reports():
 
 
 if __name__ == "__main__":
+
+    for zip_file in (TWITCH_DSET_DIR / "reviewed-robots-views-annotations").glob("*.zip"):
+        remove(str(zip_file))
+    for chunk_dir in (TWITCH_DSET_DIR / "reviewed-robots-views-annotations").glob("chunk_*"):
+        make_archive(chunk_dir, "zip", chunk_dir)
+
     _construct_mixed_twitch_dset()
     _correct_manual_annotations()
     _extract_runes_images()
