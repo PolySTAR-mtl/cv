@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from imutils import rotate_bound
 
+EXAMPLES_DIR = Path(__file__).parent / "examples"
+
 # Facteur de redimensionnement. La taille de l'image sera divisée ou multipliée par ce chiffre au maximum
 FACT_RESIZE = 1
 
@@ -105,19 +107,19 @@ def rotate_percentage(img_base, percent):
     return rotate_bound(img_base, angle)
 
 
-path_background = "images_sup/back1.jpg"
-path_sticker = "images_sup/logo.png"
+path_background = EXAMPLES_DIR / "back1.jpg"
+path_sticker = EXAMPLES_DIR / "logo.png"
 
-background = preprocess_background(path_background)
-sticker = preprocess_sticker(path_sticker)
+background = preprocess_background(str(path_background))
+sticker = preprocess_sticker(str(path_sticker))
 
 labels = []
 filenames = []
 for i in range(10):
-    folder = "dataset/"
+    folder = EXAMPLES_DIR
     filename = "image_" + str(i) + ".jpg"
     filenames.append(filename)
-    _, label = generate_one(background, sticker, to_print=False, save_name=folder + filename)
+    _, label = generate_one(background, sticker, to_print=False, save_name=str(folder / filename))
     labels.append(label)
 
 
@@ -138,7 +140,7 @@ for i, [xmin, ymin, xmax, ymax] in enumerate(labels):
 
 dom = parseString(ET.tostring(data).decode("utf-8"))
 pretty_xml = dom.toprettyxml()
-myfile = Path("dataset/labels.xml")
+myfile = EXAMPLES_DIR / "labels.xml"
 myfile.write_text(pretty_xml)
 
 # with open('dataset/labels.txt', 'w') as f:
