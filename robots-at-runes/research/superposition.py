@@ -1,14 +1,19 @@
-from pathlib import Path
-
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import cv2
-import random as rd
-from imutils import rotate_bound
-import constants as cst
+import random
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from xml.dom.minidom import parseString
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from imutils import rotate_bound
+
+# Facteur de redimensionnement. La taille de l'image sera divisée ou multipliée par ce chiffre au maximum
+FACT_RESIZE = 1
+
+# Max angle in degrees for random rotation
+MAX_ANGLE = 20
+
 
 def preprocess_background(path_back):
     background = cv2.imread(path_back)
@@ -20,17 +25,18 @@ def preprocess_sticker(path_item):
     return cv2.cvtColor(item, cv2.COLOR_BGRA2RGBA)
 
 
-def generate_one(background, item, rotate=True, scale=True, custom_rotate=None, custom_scale=None, to_print=False,
-                 save_name=None):
+def generate_one(
+    background, item, rotate=True, scale=True, custom_rotate=None, custom_scale=None, to_print=False, save_name=None
+):
     if rotate:
         if custom_rotate is None:
-            percent_rotate = np.round((2 * rd.random()) - 1, 3)  # entre -1 et 1
+            percent_rotate = np.round((2 * random.random()) - 1, 3)  # entre -1 et 1
         else:
             percent_rotate = custom_rotate
         item = rotate_percentage(item, percent_rotate)
     if scale:
         if custom_scale is None:
-            percent_scale = np.round((2 * rd.random()) - 1, 3)  # entre -1 et 1
+            percent_scale = np.round((2 * random.random()) - 1, 3)  # entre -1 et 1
         else:
             percent_scale = custom_scale
         item = reshape_percentage(item, percent_scale)
@@ -42,9 +48,9 @@ def generate_one(background, item, rotate=True, scale=True, custom_rotate=None, 
     composition_subset = superimpose(background_subset, item, mask_alpha)
 
     composition = background.copy()
-    composition[h_start:h_start + hs, w_start:w_start + ws, :] = composition_subset
+    composition[h_start : h_start + hs, w_start : w_start + ws, :] = composition_subset
 
-    labels = [h_start, w_start, h_start+hs, w_start+ws]
+    labels = [h_start, w_start, h_start + hs, w_start + ws]
 
     if not (save_name is None):
         cv2.imwrite(save_name, cv2.cvtColor(composition, cv2.COLOR_RGB2BGR))
@@ -78,13 +84,13 @@ def get_subset_shapes(img_extract, hs, ws):
     he, we, _ = img_extract.shape
     delta_h = he - hs
     delta_w = we - ws
-    h_start = int(rd.random() * delta_h)
-    w_start = int(rd.random() * delta_w)
-    return img_extract[h_start:h_start + hs, w_start:w_start + ws, :], h_start, w_start
+    h_start = int(random.random() * delta_h)
+    w_start = int(random.random() * delta_w)
+    return img_extract[h_start : h_start + hs, w_start : w_start + ws, :], h_start, w_start
 
 
 def reshape_percentage(img_base, percent):
-    intensity = 1 + abs(percent) * cst.FACT_RESIZE
+    intensity = 1 + abs(percent) * FACT_RESIZE
     h, w, _ = img_base.shape
     if percent < 0:
         h_dest, w_dest = int(h / intensity), int(w / intensity)
@@ -95,7 +101,7 @@ def reshape_percentage(img_base, percent):
 
 
 def rotate_percentage(img_base, percent):
-    angle = cst.MAX_ANGLE * percent
+    angle = MAX_ANGLE * percent
     return rotate_bound(img_base, angle)
 
 
@@ -108,22 +114,22 @@ sticker = preprocess_sticker(path_sticker)
 labels = []
 filenames = []
 for i in range(10):
-    folder = 'dataset/'
-    filename = 'image_'+str(i)+'.jpg'
+    folder = "dataset/"
+    filename = "image_" + str(i) + ".jpg"
     filenames.append(filename)
-    _, label = generate_one(background, sticker, to_print=False, save_name=folder+filename)
+    _, label = generate_one(background, sticker, to_print=False, save_name=folder + filename)
     labels.append(label)
 
 
-data = ET.Element('annotations')
+data = ET.Element("annotations")
 
 for i, [xmin, ymin, xmax, ymax] in enumerate(labels):
-    object = ET.SubElement(data, 'object')
-    sub_name = ET.SubElement(object, 'filename')
-    sub_xmin = ET.SubElement(object, 'xmin')
-    sub_ymin = ET.SubElement(object, 'ymin')
-    sub_xmax = ET.SubElement(object, 'xmax')
-    sub_ymax = ET.SubElement(object, 'ymax')
+    object = ET.SubElement(data, "object")
+    sub_name = ET.SubElement(object, "filename")
+    sub_xmin = ET.SubElement(object, "xmin")
+    sub_ymin = ET.SubElement(object, "ymin")
+    sub_xmax = ET.SubElement(object, "xmax")
+    sub_ymax = ET.SubElement(object, "ymax")
     sub_name.text = filenames[i]
     sub_xmin.text = str(xmin)
     sub_ymin.text = str(ymin)

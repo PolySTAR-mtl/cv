@@ -269,6 +269,14 @@ testing = ["packaging", "importlib-resources"]
 
 [[package]]
 category = "main"
+description = "A series of convenience functions to make basic image processing functions such as translation, rotation, resizing, skeletonization, displaying Matplotlib images, sorting contours, detecting edges, and much more easier with OpenCV and both Python 2.7 and Python 3."
+name = "imutils"
+optional = false
+python-versions = "*"
+version = "0.5.3"
+
+[[package]]
+category = "main"
 description = "Injector - Python dependency injection framework, inspired by Guice"
 name = "injector"
 optional = false
@@ -987,7 +995,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "1cfc55452ad0be8fe206aa06255606134ba5253e877798d7970ff7eac62093b3"
+content-hash = "382d914e88284ef136bc79b0a5288aeab263f65cb627f822e0e60b104b18efe1"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1151,6 +1159,9 @@ imageio = [
 importlib-metadata = [
     {file = "importlib_metadata-1.6.0-py2.py3-none-any.whl", hash = "sha256:2a688cbaa90e0cc587f1df48bdc97a6eadccdcd9c35fb3f976a09e3b5016d90f"},
     {file = "importlib_metadata-1.6.0.tar.gz", hash = "sha256:34513a8a0c4962bc66d35b359558fd8a5e10cd472d37aec5f66858addef32c1e"},
+]
+imutils = [
+    {file = "imutils-0.5.3.tar.gz", hash = "sha256:857af6169d90e4a0a814130b9b107f5d611150ce440107e1c1233521c6fb1e2b"},
 ]
 injector = [
     {file = "injector-0.18.3-py2.py3-none-any.whl", hash = "sha256:04c15a965504c4628873a56886950bd254102552a1d41ee983bfb1a7f7c7e7d6"},
