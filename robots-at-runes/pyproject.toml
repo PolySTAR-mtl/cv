@@ -8,6 +8,7 @@ packages = [{ include = "polystar" }]
 [tool.poetry.dependencies]
 python = "^3.7"
 "polystar.common" = {path = "../common"}
+imutils = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.5"
