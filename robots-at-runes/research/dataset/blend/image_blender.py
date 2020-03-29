@@ -12,10 +12,12 @@ from research.dataset.labeled_image import LabeledImage, PointOfInterest
 
 @dataclass
 class ImageBlender:
-    modifiers: List[LabeledImageModifierABC]
+    background_size: Tuple[int, int]
+    object_modifiers: List[LabeledImageModifierABC]
 
     def blend(self, background: Image, obj: LabeledImage) -> LabeledImage:
         obj = self._modify_object(obj)
+        background = self._crop_background(background)
         x, y = self._generate_position_of_object(background.shape, obj.image.shape)
         return LabeledImage(
             image=self._blend_obj_on_background(background, obj.image, x, y),
@@ -23,7 +25,7 @@ class ImageBlender:
         )
 
     def _modify_object(self, obj: LabeledImage) -> LabeledImage:
-        for modifier in self.modifiers:
+        for modifier in self.object_modifiers:
             obj = modifier.randomly_modify(obj)
         return obj
 
@@ -56,6 +58,11 @@ class ImageBlender:
     def _translate_poi(poi: PointOfInterest, x: int, y: int) -> PointOfInterest:
         return PointOfInterest(poi.x + x, poi.y + y)
 
+    def _crop_background(self, background: Image) -> Image:
+        h, w, _ = background.shape
+        x, y = int(random() * (h - self.background_size[1])), int(random() * (w - self.background_size[0]))
+        return background[y : y + self.background_size[1], x : x + self.background_size[0], :]
+
 
 if __name__ == "__main__":
     from pathlib import Path
@@ -73,7 +80,9 @@ if __name__ == "__main__":
     )
     _bg = cv2.cvtColor(cv2.imread(str(EXAMPLES_DIR / "back1.jpg")), cv2.COLOR_BGR2RGB)
 
-    _blender = ImageBlender([LabeledImageScaler(1.5), LabeledImageRotator(180)])
+    _blender = ImageBlender(
+        background_size=(1_280, 720), object_modifiers=[LabeledImageScaler(1.5), LabeledImageRotator(180)]
+    )
     for i in range(10):
         res = _blender.blend(_bg, _obj)
 
