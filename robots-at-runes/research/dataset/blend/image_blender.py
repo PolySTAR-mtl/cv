@@ -62,6 +62,9 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
 
+    from research.dataset.blend.labeled_image_modifiers.labeled_image_rotator import LabeledImageRotator
+    from research.dataset.blend.labeled_image_modifiers.labeled_image_scaler import LabeledImageScaler
+
     EXAMPLES_DIR = Path(__file__).parent / "examples"
 
     _obj = LabeledImage(
@@ -70,7 +73,7 @@ if __name__ == "__main__":
     )
     _bg = cv2.cvtColor(cv2.imread(str(EXAMPLES_DIR / "back1.jpg")), cv2.COLOR_BGR2RGB)
 
-    _blender = ImageBlender([])
+    _blender = ImageBlender([LabeledImageScaler(1.5), LabeledImageRotator(180)])
     for i in range(10):
         res = _blender.blend(_bg, _obj)
 
