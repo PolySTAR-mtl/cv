@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     _obj = LabeledImage(
         cv2.cvtColor(cv2.imread(str(EXAMPLES_DIR / "logo.png"), cv2.IMREAD_UNCHANGED), cv2.COLOR_BGRA2RGBA),
-        [PointOfInterest(432, 76), PointOfInterest(432, 13)],
+        PointOfInterest.from_annotation_file(EXAMPLES_DIR / "logo.xml"),
     )
     _bg = cv2.cvtColor(cv2.imread(str(EXAMPLES_DIR / "back1.jpg")), cv2.COLOR_BGR2RGB)
 
@@ -86,9 +86,10 @@ if __name__ == "__main__":
     for i in range(10):
         res = _blender.blend(_bg, _obj)
 
+        res.save(EXAMPLES_DIR, f"test_{i}")
+
         plt.imshow(res.image)
         plt.plot([poi.x for poi in res.point_of_interests], [poi.y for poi in res.point_of_interests], "r.")
         plt.axis("off")
         plt.tight_layout()
-        plt.savefig(str(EXAMPLES_DIR / f"image_{i}.jpg"))
         plt.show()
