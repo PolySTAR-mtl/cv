@@ -19,7 +19,7 @@ class LabeledImageScaler(LabeledImageModifierABC):
     def _generate_modified_poi(
         self, poi: PointOfInterest, original_image: Image, new_image: Image, scale: float
     ) -> PointOfInterest:
-        return PointOfInterest(int(poi.x * scale), int(poi.y * scale))
+        return PointOfInterest(int(poi.x * scale), int(poi.y * scale), poi.label)
 
     def _get_value_from_factor(self, factor: float) -> float:
         intensity = (self.max_scale - 1) * abs(factor) + 1
