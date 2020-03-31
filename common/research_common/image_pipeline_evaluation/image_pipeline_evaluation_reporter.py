@@ -2,6 +2,7 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Iterable, List, Any, Dict, Tuple
 
+import numpy as np
 from pandas import DataFrame
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
@@ -41,18 +42,30 @@ class ImagePipelineEvaluationReporter:
         mf.title("Datasets", level=2)
 
         mf.title("Training", level=3)
-        self._report_dataset(mf, self.evaluator.train_roco_datasets, self.evaluator.train_labels)
+        self._report_dataset(
+            mf, self.evaluator.train_roco_datasets, self.evaluator.train_dataset_sizes, self.evaluator.train_labels
+        )
 
         mf.title("Testing", level=3)
-        self._report_dataset(mf, self.evaluator.test_roco_datasets, self.evaluator.test_labels)
+        self._report_dataset(
+            mf, self.evaluator.test_roco_datasets, self.evaluator.test_dataset_sizes, self.evaluator.test_labels
+        )
 
     @staticmethod
-    def _report_dataset(mf: MarkdownFile, roco_datasets: List[ROCODataset], labels: List[Any]):
-        mf.list([dataset.dataset_name for dataset in roco_datasets])
-        label2count = Counter(labels)
+    def _report_dataset(
+        mf: MarkdownFile, roco_datasets: List[ROCODataset], dataset_sizes: List[int], labels: List[Any]
+    ):
         total = len(labels)
         mf.paragraph(f"{total} images")
-        mf.list(f"{label}: {count} ({count / total:.1%})" for label, count in sorted(label2count.items()))
+        df = DataFrame(
+            {
+                dataset.dataset_name: Counter(labels[start:end])
+                for dataset, start, end in zip(roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes))
+            }
+        )
+        df["Total"] = sum([df[d.dataset_name] for d in roco_datasets])
+        df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
+        mf.table(df)
 
     def _report_aggregated_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults]):
         aggregated_results = self._aggregate_results(pipeline2results)
