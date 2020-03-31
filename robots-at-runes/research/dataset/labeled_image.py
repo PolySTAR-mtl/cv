@@ -13,13 +13,14 @@ from polystar.common.models.image import Image
 class PointOfInterest:
     x: int
     y: int
+    label: str
 
     def to_dict(self) -> Dict[str, int]:
         return self.__dict__
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]):
-        return cls(x=int(d["x"]), y=int(d["y"]))
+        return cls(x=int(d["x"]), y=int(d["y"]), label=d["label"])
 
     @classmethod
     def from_annotation_file(cls, annotation_path: Path) -> List["PointOfInterest"]:

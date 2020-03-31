@@ -56,7 +56,7 @@ class ImageBlender:
 
     @staticmethod
     def _translate_poi(poi: PointOfInterest, x: int, y: int) -> PointOfInterest:
-        return PointOfInterest(poi.x + x, poi.y + y)
+        return PointOfInterest(poi.x + x, poi.y + y, poi.label)
 
     def _crop_background(self, background: Image) -> Image:
         h, w, _ = background.shape
@@ -89,7 +89,8 @@ if __name__ == "__main__":
         res.save(EXAMPLES_DIR, f"test_{i}")
 
         plt.imshow(res.image)
-        plt.plot([poi.x for poi in res.point_of_interests], [poi.y for poi in res.point_of_interests], "r.")
+        for poi in res.point_of_interests:
+            plt.plot([poi.x], [poi.y], f"{poi.label[0]}.")
         plt.axis("off")
         plt.tight_layout()
         plt.show()

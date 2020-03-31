@@ -25,7 +25,9 @@ class LabeledImageRotator(LabeledImageModifierABC):
         prev_vector_to_center = np.array((poi.x - original_image.shape[1] / 2, poi.y - original_image.shape[0] / 2))
         new_vector_to_center = np.dot(rotation_matrix, prev_vector_to_center)
         return PointOfInterest(
-            int(new_vector_to_center[0] + new_image.shape[1] / 2), int(new_vector_to_center[1] + new_image.shape[0] / 2)
+            int(new_vector_to_center[0] + new_image.shape[1] / 2),
+            int(new_vector_to_center[1] + new_image.shape[0] / 2),
+            poi.label,
         )
 
     def _get_value_from_factor(self, factor: float) -> float:
