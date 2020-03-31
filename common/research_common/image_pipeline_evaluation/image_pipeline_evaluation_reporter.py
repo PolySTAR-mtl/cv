@@ -14,6 +14,7 @@ from research_common.dataset.roco_dataset import ROCODataset
 from research_common.image_pipeline_evaluation.image_pipeline_evaluator import (
     ImagePipelineEvaluator,
     ClassificationResults,
+    SetClassificationResults,
 )
 
 
@@ -84,27 +85,20 @@ class ImagePipelineEvaluationReporter:
         mf.paragraph(results.full_pipeline_name)
 
         mf.title("Train results", level=3)
-
-        mf.paragraph(f"Inference time: {results.train_mean_inference_time: .2e} s/img")
-        ImagePipelineEvaluationReporter._report_pipeline_set_report(
-            mf, results.train_report, results.train_confusion_matrix
-        )
+        ImagePipelineEvaluationReporter._report_pipeline_set_results(mf, results.train_results)
 
         mf.title("Test results", level=3)
-
-        mf.paragraph(f"Inference time: {results.test_mean_inference_time: .2e} s/img")
-        ImagePipelineEvaluationReporter._report_pipeline_set_report(
-            mf, results.test_report, results.test_confusion_matrix
-        )
+        ImagePipelineEvaluationReporter._report_pipeline_set_results(mf, results.test_results)
 
     @staticmethod
-    def _report_pipeline_set_report(mf: MarkdownFile, set_report: Dict, confusion_matrix: Dict):
-        df = DataFrame(set_report)
+    def _report_pipeline_set_results(mf: MarkdownFile, results: SetClassificationResults):
+        mf.paragraph(f"Inference time: {results.mean_inference_time: .2e} s/img")
+        df = DataFrame(results.report)
         format_df_rows(df, ["precision", "recall", "f1-score"], "{:.1%}")
         format_df_row(df, "support", int)
         mf.table(df)
         mf.paragraph("Confusion Matrix:")
-        mf.table(DataFrame(confusion_matrix))
+        mf.table(DataFrame(results.confusion_matrix))
 
     def _aggregate_results(self, pipeline2results: Dict[str, ClassificationResults]) -> DataFrame:
         main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"
@@ -112,8 +106,8 @@ class ImagePipelineEvaluationReporter:
 
         for pipeline_name, results in pipeline2results.items():
             df.loc[pipeline_name] = [
-                results.test_report[self.main_metric[1]][self.main_metric[0]],
-                results.test_mean_inference_time,
+                results.test_results.report[self.main_metric[1]][self.main_metric[0]],
+                results.test_results.mean_inference_time,
             ]
 
         df = df.sort_values(main_metric_name, ascending=False)
