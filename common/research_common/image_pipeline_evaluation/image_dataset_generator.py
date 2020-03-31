@@ -8,14 +8,16 @@ T = TypeVar("T")
 
 
 class ImageDatasetGenerator(Generic[T]):
-    @abstractmethod
-    def from_roco_dataset(self, dataset: DirectoryROCODataset) -> Tuple[List[Image], List[T]]:
-        pass
-
-    def from_roco_datasets(self, datasets: Iterable[DirectoryROCODataset]) -> Tuple[List[Image], List[T]]:
-        images, labels = [], []
+    def from_roco_datasets(self, datasets: Iterable[DirectoryROCODataset]) -> Tuple[List[Image], List[T], List[int]]:
+        images, labels, dataset_sizes = [], [], []
         for dataset in datasets:
-            imgs, lbls = self.from_roco_dataset(dataset)
-            images.extend(imgs)
-            labels.extend(lbls)
-        return images, labels
+            prev_total_size = len(images)
+            for img, label in self.from_roco_dataset(dataset):
+                images.append(img)
+                labels.append(label)
+            dataset_sizes.append(len(images) - prev_total_size)
+        return images, labels, dataset_sizes
+
+    @abstractmethod
+    def from_roco_dataset(self, dataset: DirectoryROCODataset) -> Iterable[Tuple[Image, T]]:
+        pass
