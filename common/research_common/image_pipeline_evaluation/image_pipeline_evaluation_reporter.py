@@ -41,14 +41,14 @@ class ImagePipelineEvaluationReporter:
         mf.title("Datasets", level=2)
 
         mf.title("Training", level=3)
-        self._report_dataset(mf, self.evaluator.train_roco_dataset, self.evaluator.train_labels)
+        self._report_dataset(mf, self.evaluator.train_roco_datasets, self.evaluator.train_labels)
 
         mf.title("Testing", level=3)
-        self._report_dataset(mf, self.evaluator.test_roco_dataset, self.evaluator.test_labels)
+        self._report_dataset(mf, self.evaluator.test_roco_datasets, self.evaluator.test_labels)
 
     @staticmethod
-    def _report_dataset(mf: MarkdownFile, roco_dataset: ROCODataset, labels: List[Any]):
-        mf.paragraph(roco_dataset.dataset_name)
+    def _report_dataset(mf: MarkdownFile, roco_datasets: List[ROCODataset], labels: List[Any]):
+        mf.list([dataset.dataset_name for dataset in roco_datasets])
         label2count = Counter(labels)
         total = len(labels)
         mf.paragraph(f"{total} images")

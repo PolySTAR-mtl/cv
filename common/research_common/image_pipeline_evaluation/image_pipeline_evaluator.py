@@ -7,6 +7,7 @@ from sklearn.metrics import classification_report
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image
+from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
 from research_common.dataset.roco_dataset import ROCODataset
 from research_common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
 
@@ -23,15 +24,15 @@ class ClassificationResults:
 class ImagePipelineEvaluator:
     def __init__(
         self,
-        train_roco_dataset: ROCODataset,
-        test_roco_dataset: ROCODataset,
+        train_roco_datasets: List[DirectoryROCODataset],
+        test_roco_datasets: List[DirectoryROCODataset],
         image_dataset_generator: ImageDatasetGenerator,
     ):
         logging.info("Loading data")
-        self.train_roco_dataset = train_roco_dataset
-        self.test_roco_dataset = test_roco_dataset
-        self.train_images, self.train_labels = image_dataset_generator.from_roco_dataset(train_roco_dataset)
-        self.test_images, self.test_labels = image_dataset_generator.from_roco_dataset(test_roco_dataset)
+        self.train_roco_datasets = train_roco_datasets
+        self.test_roco_datasets = test_roco_datasets
+        self.train_images, self.train_labels = image_dataset_generator.from_roco_datasets(train_roco_datasets)
+        self.test_images, self.test_labels = image_dataset_generator.from_roco_datasets(test_roco_datasets)
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
         return {str(pipeline): self.evaluate(pipeline) for pipeline in pipelines}

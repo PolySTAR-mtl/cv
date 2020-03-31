@@ -1,11 +1,9 @@
-from typing import Tuple, Sequence
+from pathlib import Path
 
-from polystar.common.models.image import Image
-from research.dataset.armor_dataset_factory import ArmorDatasetFactory
-from research_common.dataset.roco_dataset import ROCODataset
-from research_common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
+from polystar.common.models.object import ArmorColor
+from research.dataset.armor_image_dataset_factory import ArmorImageDatasetGenerator
 
 
-class ArmorColorDatasetGenerator(ImageDatasetGenerator[str]):
-    def from_roco_dataset(self, dataset: ROCODataset) -> Tuple[Sequence[Image], Sequence[str]]:
-        return zip(*[(armor_img, c.name) for (armor_img, c, n, k, p) in ArmorDatasetFactory.from_dataset(dataset)])
+class ArmorColorDatasetGenerator(ArmorImageDatasetGenerator[str]):
+    def _label(self, color: ArmorColor, digit: int, k: int, path: Path) -> str:
+        return color.name
