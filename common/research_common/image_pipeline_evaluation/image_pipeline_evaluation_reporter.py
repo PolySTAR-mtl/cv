@@ -86,19 +86,25 @@ class ImagePipelineEvaluationReporter:
         mf.title("Train results", level=3)
 
         mf.paragraph(f"Inference time: {results.train_mean_inference_time: .2e} s/img")
-        ImagePipelineEvaluationReporter._report_pipeline_set_report(mf, results.train_report)
+        ImagePipelineEvaluationReporter._report_pipeline_set_report(
+            mf, results.train_report, results.train_confusion_matrix
+        )
 
         mf.title("Test results", level=3)
 
         mf.paragraph(f"Inference time: {results.test_mean_inference_time: .2e} s/img")
-        ImagePipelineEvaluationReporter._report_pipeline_set_report(mf, results.test_report)
+        ImagePipelineEvaluationReporter._report_pipeline_set_report(
+            mf, results.test_report, results.test_confusion_matrix
+        )
 
     @staticmethod
-    def _report_pipeline_set_report(mf: MarkdownFile, set_report: Dict):
+    def _report_pipeline_set_report(mf: MarkdownFile, set_report: Dict, confusion_matrix: Dict):
         df = DataFrame(set_report)
         format_df_rows(df, ["precision", "recall", "f1-score"], "{:.1%}")
         format_df_row(df, "support", int)
         mf.table(df)
+        mf.paragraph("Confusion Matrix:")
+        mf.table(DataFrame(confusion_matrix))
 
     def _aggregate_results(self, pipeline2results: Dict[str, ClassificationResults]) -> DataFrame:
         main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from time import time
 from typing import List, Tuple, Dict, Any, Iterable
 
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image
@@ -14,8 +14,10 @@ from research_common.image_pipeline_evaluation.image_dataset_generator import Im
 @dataclass
 class ClassificationResults:
     train_report: Dict
+    train_confusion_matrix: Dict
     train_mean_inference_time: float
     test_report: Dict
+    test_confusion_matrix: Dict
     test_mean_inference_time: float
     full_pipeline_name: str
 
@@ -45,20 +47,26 @@ class ImagePipelineEvaluator:
         pipeline.fit(self.train_images, self.train_labels)
 
         logging.info(f"Infering")
-        train_report, train_time = self._evaluate_on_set(pipeline, self.train_images, self.train_labels)
-        test_report, test_time = self._evaluate_on_set(pipeline, self.test_images, self.test_labels)
+        train_report, train_confusion_matrix, train_time = self._evaluate_on_set(
+            pipeline, self.train_images, self.train_labels
+        )
+        test_report, test_confusion_matrix, test_time = self._evaluate_on_set(
+            pipeline, self.test_images, self.test_labels
+        )
 
         return ClassificationResults(
             train_report=train_report,
             test_report=test_report,
             train_mean_inference_time=train_time,
             test_mean_inference_time=test_time,
+            train_confusion_matrix=train_confusion_matrix,
+            test_confusion_matrix=test_confusion_matrix,
             full_pipeline_name=repr(pipeline),
         )
 
     @staticmethod
-    def _evaluate_on_set(pipeline: ImagePipeline, images: List[Image], labels: List[Any]) -> Tuple[Dict, float]:
+    def _evaluate_on_set(pipeline: ImagePipeline, images: List[Image], labels: List[Any]) -> Tuple[Dict, Dict, float]:
         t = time()
         preds = pipeline.predict(images)
         mean_time = (time() - t) / len(images)
-        return classification_report(labels, preds, output_dict=True), mean_time
+        return classification_report(labels, preds, output_dict=True), confusion_matrix(labels, preds), mean_time
