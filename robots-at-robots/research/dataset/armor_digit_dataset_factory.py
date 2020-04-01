@@ -6,10 +6,15 @@ from research.dataset.armor_image_dataset_factory import ArmorImageDatasetGenera
 
 
 class ArmorDigitDatasetGenerator(ArmorImageDatasetGenerator[int]):
+    task_name: str = "digits"
+
     def __init__(self, acceptable_digits: Set[int]):
         self.acceptable_digits = acceptable_digits
 
-    def _label(self, color: ArmorColor, number: int, k: int, path: Path) -> int:
+    def _label_from_str(self, label: str) -> int:
+        return int(label)
+
+    def _label_from_armor_info(self, color: ArmorColor, number: int, k: int, path: Path) -> int:
         return number
 
     def _valid_label(self, label: int) -> bool:

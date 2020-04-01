@@ -5,5 +5,7 @@ from research.dataset.armor_image_dataset_factory import ArmorImageDatasetGenera
 
 
 class ArmorColorDatasetGenerator(ArmorImageDatasetGenerator[str]):
-    def _label(self, color: ArmorColor, digit: int, k: int, path: Path) -> str:
+    task_name: str = "colors"
+
+    def _label_from_armor_info(self, color: ArmorColor, digit: int, k: int, path: Path) -> str:
         return color.name
