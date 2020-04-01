@@ -54,8 +54,10 @@ class ObjectFactory:
             int(float(json["bndbox"]["ymax"])) - int(float(json["bndbox"]["ymin"])),
         )
 
+        x, y = max(0, x), max(0, y)
+
         if t is not ObjectType.Armor:
-            return Object(type=t, x=x, y=y, w=w, h=h)
+            return Object(type=t, x=0, y=0, w=w, h=h)
 
         armor_number = int(json["armor_class"]) if json["armor_class"] != "none" else 0
 
