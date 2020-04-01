@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
-from polystar.common.models.object import ObjectType, Armor, ArmorColor, ArmorNumber
+from polystar.common.models.object import ObjectType, Armor
 from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.roco_dataset import ROCODataset
@@ -21,7 +21,7 @@ class ArmorDatasetFactory:
             yield croped_img, obj, i, image_annotation.image_path
 
     @staticmethod
-    def from_dataset(dataset: ROCODataset) -> Iterable[Tuple[Image, ArmorColor, ArmorNumber, int, Path]]:
+    def from_dataset(dataset: ROCODataset) -> Iterable[Tuple[Image, Armor, int, Path]]:
         for image_annotation in dataset.image_annotations:
             for rv in ArmorDatasetFactory.from_image_annotation(image_annotation):
                 yield rv
