@@ -13,14 +13,12 @@ from research_common.dataset.roco_dataset import ROCODataset
 
 class ArmorDatasetFactory:
     @staticmethod
-    def from_image_annotation(
-        image_annotation: ImageAnnotation,
-    ) -> Iterable[Tuple[Image, ArmorColor, ArmorNumber, int, Path]]:
+    def from_image_annotation(image_annotation: ImageAnnotation) -> Iterable[Tuple[Image, Armor, int, Path]]:
         img = image_annotation.image
         armors: List[Armor] = TypeObjectValidator(ObjectType.Armor).filter(image_annotation.objects, img)
         for i, obj in enumerate(armors):
             croped_img = img[obj.y : obj.y + obj.h, obj.x : obj.x + obj.w]
-            yield croped_img, obj.color, obj.numero, i, image_annotation.image_path
+            yield croped_img, obj, i, image_annotation.image_path
 
     @staticmethod
     def from_dataset(dataset: ROCODataset) -> Iterable[Tuple[Image, ArmorColor, ArmorNumber, int, Path]]:
@@ -30,8 +28,8 @@ class ArmorDatasetFactory:
 
 
 if __name__ == "__main__":
-    for i, (armor_img, c, n, k, p) in enumerate(ArmorDatasetFactory.from_dataset(DJIROCODataset.CentralChina)):
-        print(c, n, k, "in", p)
+    for i, (armor_img, armor, k, p) in enumerate(ArmorDatasetFactory.from_dataset(DJIROCODataset.CentralChina)):
+        print(armor, k, "in", p)
         plt.imshow(armor_img)
         plt.show()
         plt.clf()

@@ -6,7 +6,7 @@ from typing import TypeVar, Tuple, Iterable
 import cv2
 
 from polystar.common.models.image import Image
-from polystar.common.models.object import ArmorColor
+from polystar.common.models.object import Armor
 from polystar.common.utils.time import create_time_id
 from research.dataset.armor_dataset_factory import ArmorDatasetFactory
 from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
@@ -26,8 +26,8 @@ class ArmorImageDatasetGenerator(ImageDatasetGenerator[T]):
     def _create_labelized_armor_images_from_roco(self, dataset):
         dset_path = dataset.dataset_path / self.task_name
         dset_path.mkdir(exist_ok=True)
-        for (armor_img, color, digit, k, path) in ArmorDatasetFactory.from_dataset(dataset):
-            label = self._label_from_armor_info(color, digit, k, path)
+        for (armor_img, armor, k, path) in ArmorDatasetFactory.from_dataset(dataset):
+            label = self._label_from_armor_info(armor, k, path)
             cv2.imwrite(str(dset_path / f"{path.stem}-{k}-{label}.jpg"), cv2.cvtColor(armor_img, cv2.COLOR_RGB2BGR))
         (dataset.dataset_path / self.task_name / ".lock").write_text(
             json.dumps({"version": "0.0", "date": create_time_id()})
@@ -44,7 +44,7 @@ class ArmorImageDatasetGenerator(ImageDatasetGenerator[T]):
         return self._label_from_str(image_path.stem.split("-")[-1])
 
     @abstractmethod
-    def _label_from_armor_info(self, color: ArmorColor, digit: int, k: int, path: Path) -> T:
+    def _label_from_armor_info(self, armor: Armor, k: int, path: Path) -> T:
         pass
 
     def _valid_label(self, label: T) -> bool:

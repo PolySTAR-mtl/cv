@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Set
 
-from polystar.common.models.object import ArmorColor
+from polystar.common.models.object import Armor
 from research.dataset.armor_image_dataset_factory import ArmorImageDatasetGenerator
 
 
@@ -14,8 +14,8 @@ class ArmorDigitDatasetGenerator(ArmorImageDatasetGenerator[int]):
     def _label_from_str(self, label: str) -> int:
         return int(label)
 
-    def _label_from_armor_info(self, color: ArmorColor, number: int, k: int, path: Path) -> int:
-        return number
+    def _label_from_armor_info(self, armor: Armor, k: int, path: Path) -> int:
+        return armor.numero
 
     def _valid_label(self, label: int) -> bool:
         return label in self.acceptable_digits
