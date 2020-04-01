@@ -63,7 +63,7 @@ class ImagePipelineEvaluationReporter:
                 dataset.dataset_name: Counter(labels[start:end])
                 for dataset, start, end in zip(roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes))
             }
-        )
+        ).fillna(0)
         df["Total"] = sum([df[d.dataset_name] for d in roco_datasets])
         df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
         mf.table(df)
