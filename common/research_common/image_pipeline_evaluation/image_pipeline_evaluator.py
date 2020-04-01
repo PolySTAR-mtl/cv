@@ -1,37 +1,65 @@
 import logging
 from dataclasses import dataclass
 from time import time
-from typing import List, Tuple, Dict, Any, Iterable
+from typing import List, Dict, Any, Iterable, Sequence
 
-from sklearn.metrics import classification_report
+import numpy as np
+from sklearn.metrics import classification_report, confusion_matrix
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image
-from research_common.dataset.roco_dataset import ROCODataset
+from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
 from research_common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
 
 
 @dataclass
+class SetClassificationResults:
+    labels: np.ndarray
+    predictions: np.ndarray
+    mean_inference_time: float
+
+    @property
+    def report(self) -> Dict:
+        return classification_report(self.labels, self.predictions, output_dict=True)
+
+    @property
+    def confusion_matrix(self) -> Dict:
+        return confusion_matrix(self.labels, self.predictions)
+
+    @property
+    def mistakes(self) -> Sequence[int]:
+        return np.where(self.labels != self.predictions)[0]
+
+
+@dataclass
 class ClassificationResults:
-    train_report: Dict
-    train_mean_inference_time: float
-    test_report: Dict
-    test_mean_inference_time: float
+    train_results: SetClassificationResults
+    test_results: SetClassificationResults
     full_pipeline_name: str
 
 
 class ImagePipelineEvaluator:
     def __init__(
         self,
-        train_roco_dataset: ROCODataset,
-        test_roco_dataset: ROCODataset,
+        train_roco_datasets: List[DirectoryROCODataset],
+        test_roco_datasets: List[DirectoryROCODataset],
         image_dataset_generator: ImageDatasetGenerator,
     ):
         logging.info("Loading data")
-        self.train_roco_dataset = train_roco_dataset
-        self.test_roco_dataset = test_roco_dataset
-        self.train_images, self.train_labels = image_dataset_generator.from_roco_dataset(train_roco_dataset)
-        self.test_images, self.test_labels = image_dataset_generator.from_roco_dataset(test_roco_dataset)
+        self.train_roco_datasets = train_roco_datasets
+        self.test_roco_datasets = test_roco_datasets
+        (
+            self.train_images_paths,
+            self.train_images,
+            self.train_labels,
+            self.train_dataset_sizes,
+        ) = image_dataset_generator.from_roco_datasets(train_roco_datasets)
+        (
+            self.test_images_paths,
+            self.test_images,
+            self.test_labels,
+            self.test_dataset_sizes,
+        ) = image_dataset_generator.from_roco_datasets(test_roco_datasets)
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
         return {str(pipeline): self.evaluate(pipeline) for pipeline in pipelines}
@@ -41,20 +69,16 @@ class ImagePipelineEvaluator:
         pipeline.fit(self.train_images, self.train_labels)
 
         logging.info(f"Infering")
-        train_report, train_time = self._evaluate_on_set(pipeline, self.train_images, self.train_labels)
-        test_report, test_time = self._evaluate_on_set(pipeline, self.test_images, self.test_labels)
+        train_results = self._evaluate_on_set(pipeline, self.train_images, self.train_labels)
+        test_results = self._evaluate_on_set(pipeline, self.test_images, self.test_labels)
 
         return ClassificationResults(
-            train_report=train_report,
-            test_report=test_report,
-            train_mean_inference_time=train_time,
-            test_mean_inference_time=test_time,
-            full_pipeline_name=repr(pipeline),
+            train_results=train_results, test_results=test_results, full_pipeline_name=repr(pipeline),
         )
 
     @staticmethod
-    def _evaluate_on_set(pipeline: ImagePipeline, images: List[Image], labels: List[Any]) -> Tuple[Dict, float]:
+    def _evaluate_on_set(pipeline: ImagePipeline, images: List[Image], labels: List[Any]) -> SetClassificationResults:
         t = time()
         preds = pipeline.predict(images)
         mean_time = (time() - t) / len(images)
-        return classification_report(labels, preds, output_dict=True), mean_time
+        return SetClassificationResults(np.asarray(labels), np.asarray(preds), mean_time)
