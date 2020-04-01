@@ -21,7 +21,7 @@ class ArmorImageDatasetGenerator(ImageDatasetGenerator[T]):
     def from_roco_dataset(self, dataset: DirectoryROCODataset) -> Iterable[Tuple[Image, T]]:
         if not (dataset.dataset_path / self.task_name / ".lock").exists():
             self._create_labelized_armor_images_from_roco(dataset)
-        return self._get_saved_images_and_labels(dataset)
+        return self._get_images_paths_and_labels(dataset)
 
     def _create_labelized_armor_images_from_roco(self, dataset):
         dset_path = dataset.dataset_path / self.task_name
@@ -33,9 +33,9 @@ class ArmorImageDatasetGenerator(ImageDatasetGenerator[T]):
             json.dumps({"version": "0.0", "date": create_time_id()})
         )
 
-    def _get_saved_images_and_labels(self, dataset: DirectoryROCODataset) -> Iterable[Tuple[Image, T]]:
+    def _get_images_paths_and_labels(self, dataset: DirectoryROCODataset) -> Iterable[Tuple[Image, T]]:
         return (
-            (Image.from_path(image_path), self._label_from_filepath(image_path))
+            (image_path, self._label_from_filepath(image_path))
             for image_path in (dataset.dataset_path / self.task_name).glob("*.jpg")
             if self._valid_label(self._label_from_filepath(image_path))
         )

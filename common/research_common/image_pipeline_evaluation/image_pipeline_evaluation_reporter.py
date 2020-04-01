@@ -1,5 +1,7 @@
 from collections import Counter
 from dataclasses import dataclass
+from os.path import relpath
+from pathlib import Path
 from typing import Iterable, List, Any, Dict, Tuple
 
 import numpy as np
@@ -9,7 +11,7 @@ from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.utils.dataframe import format_df_rows, format_df_row, format_df_column
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
-from research_common.constants import EVALUATION_DIR
+from research_common.constants import EVALUATION_DIR, DSET_DIR
 from research_common.dataset.roco_dataset import ROCODataset
 from research_common.image_pipeline_evaluation.image_pipeline_evaluator import (
     ImagePipelineEvaluator,
@@ -78,27 +80,47 @@ class ImagePipelineEvaluationReporter:
         for pipeline_name, results in pipeline2results.items():
             self._report_pipeline_results(mf, pipeline_name, results)
 
-    @staticmethod
-    def _report_pipeline_results(mf: MarkdownFile, pipeline_name: str, results: ClassificationResults):
+    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults):
         mf.title(pipeline_name, level=2)
 
         mf.paragraph(results.full_pipeline_name)
 
         mf.title("Train results", level=3)
-        ImagePipelineEvaluationReporter._report_pipeline_set_results(mf, results.train_results)
+        ImagePipelineEvaluationReporter._report_pipeline_set_results(
+            mf, results.train_results, self.evaluator.train_images_paths
+        )
 
         mf.title("Test results", level=3)
-        ImagePipelineEvaluationReporter._report_pipeline_set_results(mf, results.test_results)
+        ImagePipelineEvaluationReporter._report_pipeline_set_results(
+            mf, results.test_results, self.evaluator.test_images_paths
+        )
 
     @staticmethod
-    def _report_pipeline_set_results(mf: MarkdownFile, results: SetClassificationResults):
+    def _report_pipeline_set_results(mf: MarkdownFile, results: SetClassificationResults, image_paths: List[Path]):
+        mf.title("Metrics", level=4)
         mf.paragraph(f"Inference time: {results.mean_inference_time: .2e} s/img")
         df = DataFrame(results.report)
         format_df_rows(df, ["precision", "recall", "f1-score"], "{:.1%}")
         format_df_row(df, "support", int)
         mf.table(df)
-        mf.paragraph("Confusion Matrix:")
+        mf.title("Confusion Matrix:", level=4)
         mf.table(DataFrame(results.confusion_matrix))
+        mf.title("10 Mistakes examples", level=4)
+        mistakes_idx = np.random.choice(results.mistakes, min(len(results.mistakes), 10), replace=False)
+        relative_paths = [
+            f"![img]({relpath(str(image_paths[idx]), str(mf.markdown_path.parent))})" for idx in mistakes_idx
+        ]
+        images_names = [image_paths[idx].relative_to(DSET_DIR) for idx in mistakes_idx]
+        mf.table(
+            DataFrame(
+                {
+                    "images": relative_paths,
+                    "labels": results.labels[mistakes_idx],
+                    "predictions": results.predictions[mistakes_idx],
+                    "image names": images_names,
+                }
+            ).set_index("images")
+        )
 
     def _aggregate_results(self, pipeline2results: Dict[str, ClassificationResults]) -> DataFrame:
         main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"
