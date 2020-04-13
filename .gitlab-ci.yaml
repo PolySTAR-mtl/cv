@@ -1,15 +1,5 @@
 image: python:3.6
 
-before_script:
-  - python --version
-  - pip install "poetry==1.0.5"
-
-stages:
-  - Test common
-
-common_unittest:
-  - stage: Test common
-  - script:
-    - cd common
-    - poetry install
-    - poetry run python -m unittest discover common/tests/unittests
+build:
+  script:
+    - echo "Hello World"
