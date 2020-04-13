@@ -24,7 +24,7 @@ class ImageAnnotation:
 
     has_rune: bool
 
-    _image: Image = field(init=False, repr=False, default=None)
+    _image: Image = field(repr=False, default=None)
 
     @property
     def image(self) -> Image:
