@@ -6,13 +6,13 @@ authors = ["Polystar"]
 packages = [{ include = "polystar" }]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 "polystar.common" = {path = "../common"}
 
 [tool.poetry.dev-dependencies]
-pytest = "^4.5"
 tensorflow = "2.1.x"
+tensorflow-estimator = "2.1.x"
 
 [tool.black]
 line-length = 120
-target_version = ['py37']
+target_version = ['py36']
