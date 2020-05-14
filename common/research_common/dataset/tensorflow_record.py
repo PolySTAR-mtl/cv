@@ -41,10 +41,10 @@ class TensorflowRecordFactory:
         xmin, ymin, xmax, ymax, classes, classes_text = [], [], [], [], [], []
 
         for obj in image_annotation.objects:
-            xmin.append(float(obj.x) / width)
-            ymin.append(float(obj.y) / height)
-            xmax.append(float(obj.x + obj.w) / width)
-            ymax.append(float(obj.y + obj.h) / height)
+            xmin.append(float(obj.box.x1) / width)
+            ymin.append(float(obj.box.y1) / height)
+            xmax.append(float(obj.box.x2) / width)
+            ymax.append(float(obj.box.y2) / height)
             classes_text.append(obj.type.name.lower().encode("utf8"))
             classes.append(self.label_map.id_of(obj.type.name.lower()))
 

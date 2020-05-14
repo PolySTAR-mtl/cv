@@ -33,8 +33,8 @@ if __name__ == "__main__":
     )
 
     with PltResultViewer("Demo of tf model") as viewer:
-        for dset in (TwitchROCODataset.TWITCH_470150052, DJIROCODataset.CentralChina):
-            for i, image_path in enumerate(SplitDataset(dset, Split.Test).image_paths):
+        for dset in (TwitchROCODataset.TWITCH_470150052, SplitDataset(DJIROCODataset.CentralChina, Split.Test)):
+            for i, image_path in enumerate(dset.image_paths):
                 try:
                     image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
                     target = pipeline.predict_target(image)

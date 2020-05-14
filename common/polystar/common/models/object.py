@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import auto
 from typing import Any, Dict, NewType
 
+from polystar.common.models.box import Box
 from polystar.common.utils.no_case_enum import NoCaseEnum
 
 Json = NewType("Json", Dict[str, Any])
@@ -20,12 +21,7 @@ class ObjectType(NoCaseEnum):
 @dataclass
 class Object:
     type: ObjectType
-
-    x: int
-    y: int
-    w: int
-    h: int
-
+    box: Box
     confidence: float = 1
 
 
@@ -57,18 +53,22 @@ class ObjectFactory:
         x, y = max(0, x), max(0, y)
 
         if t is not ObjectType.Armor:
-            return Object(type=t, x=x, y=y, w=w, h=h)
+            return Object(type=t, box=Box.from_size(x, y, w, h=h))
 
-        armor_number = int(json["armor_class"]) if json["armor_class"] != "none" else 0
+        armor_number = ArmorNumber(json["armor_class"]) if json["armor_class"] != "none" else 0
 
-        return Armor(type=t, x=x, y=y, w=w, h=h, numero=armor_number, color=ArmorColor(json["armor_color"]))
+        return Armor(
+            type=t, box=Box.from_size(x, y, w, h=h), numero=armor_number, color=ArmorColor(json["armor_color"])
+        )
 
     @staticmethod
     def to_json(obj: Object) -> Json:
-        rv = {
-            "name": obj.type.value.lower(),
-            "bndbox": {"xmin": obj.x, "xmax": obj.x + obj.w, "ymin": obj.y, "ymax": obj.y + obj.h},
-        }
+        rv = Json(
+            {
+                "name": obj.type.value.lower(),
+                "bndbox": {"xmin": obj.box.x1, "xmax": obj.box.x2, "ymin": obj.box.y1, "ymax": obj.box.y2},
+            }
+        )
         if isinstance(obj, Armor):
             rv.update({"armor_class": obj.numero, "armor_color": obj.color.value.lower()})
         return rv

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from time import time
 from typing import Iterable, List, Tuple
 
-from polystar.common.models.box import Box, get_all_object_boxes
+from polystar.common.models.box import Box
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
 from polystar.common.view.plt_results_viewer import PltResultViewer
@@ -14,14 +14,16 @@ def crop_image_annotation(image_annotation: ImageAnnotation, box: Box, min_cover
     objects = InBoxValidator(box, min_coverage).filter(image_annotation.objects, image_annotation.image)
     objects = [copy(o) for o in objects]
     for obj in objects:
-        obj.x -= box.x1
-        obj.y -= box.y1
-        if obj.x < 0:
-            obj.w += obj.x
-            obj.x = 0
-        if obj.y < 0:
-            obj.h += obj.y
-            obj.y = 0
+        x, y, w, h = obj.box.x, obj.box.y, obj.box.w, obj.box.h
+        x -= box.x1
+        y -= box.y1
+        if x < 0:
+            w += x
+            x = 0
+        if y < 0:
+            h += y
+            y = 0
+        obj.box = Box.from_size(x, y, w, h)
     return ImageAnnotation(
         image_path=None,
         xml_path=None,
@@ -41,7 +43,7 @@ class Zoomer:
     min_coverage: float
 
     def zoom(self, image_annotation: ImageAnnotation) -> Iterable[ImageAnnotation]:
-        boxes = get_all_object_boxes(image_annotation.objects)
+        boxes = [obj.box for obj in image_annotation.objects]
         boxes = self._create_views_covering(boxes, image_annotation)
         boxes = self._remove_overlapping_boxes(boxes)
         return (crop_image_annotation(image_annotation, box, self.min_coverage) for box in boxes)

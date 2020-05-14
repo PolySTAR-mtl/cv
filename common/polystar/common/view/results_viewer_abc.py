@@ -36,8 +36,8 @@ class ResultViewerABC(ABC):
 
     def add_object(self, obj: Object, forced_color: ColorView = None):
         color = forced_color or self.colors[obj.type.value]
-        self.add_rectangle(obj.x, obj.y, obj.w, obj.h, color)
-        self.add_text(f"{obj.type.name} ({obj.confidence:.1%})", obj.x, obj.y, color)
+        self.add_rectangle(obj.box.x, obj.box.y, obj.box.w, obj.box.h, color)
+        self.add_text(f"{obj.type.name} ({obj.confidence:.1%})", obj.box.x, obj.box.y, color)
 
     def add_objects(self, objects: Iterable[Object], forced_color: ColorView = None):
         for obj in objects:

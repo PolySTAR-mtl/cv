@@ -17,7 +17,7 @@ class ArmorDatasetFactory:
         img = image_annotation.image
         armors: List[Armor] = TypeObjectValidator(ObjectType.Armor).filter(image_annotation.objects, img)
         for i, obj in enumerate(armors):
-            croped_img = img[obj.y : obj.y + obj.h, obj.x : obj.x + obj.w]
+            croped_img = img[obj.box.y1 : obj.box.y2, obj.box.x1 : obj.box.x2]
             yield croped_img, obj, i, image_annotation.image_path
 
     @staticmethod
