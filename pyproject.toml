@@ -1,9 +1,8 @@
 [tool.poetry]
-name = "polystar.common"
-version = "0.1.0"
-description = "Common code for Polystar"
+name = "polystar.cv"
+version = "0.2.0"
+description = "CV code for Polystar's RoboMaster team"
 authors = ["Polystar"]
-packages = [{ include = "polystar" }]
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -22,6 +21,7 @@ tabulate = "^0.8.6"
 scikit-learn = "^0.22.2"
 memoized-property = "^1.0.3"
 dataclasses = "^0.6.0"
+imutils = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
 tensorflow = "2.1.x"
