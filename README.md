@@ -2,9 +2,37 @@
 
 ## Setup
 
-python37
 
-(poetry #TODO)
+### Requirements
+
+We use [poetry](https://python-poetry.org/) to manage our dependencies.
+
+1. Install poetry
+    ```bash
+    # LINUX / OSX
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+    # Windows
+    (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
+    ```
+2. In the root folder of this repo, use `poetry install`. It will create a virtualenv, and install all the dependencies in it.
+3. Tell Pycharm to use this venv:
+    a. Go to `Pycharm > Preferences..`, then `Project > Project Interpreter > Add...`:
+        ![Add pypoetry venv to PyCharm](./doc/add_venv_1.png)
+    b. Add the venv created by poetry. You'll find it somewhere in `~/Library/Caches/pypoetry/virtualenvs/` (Mac), `C:\Users\<username>\AppData\Local\pypoetry\Cache` (Windows) or `~/.cache/pypoetry` (Unix). You need to link the python3 executable in `bin`:
+        ![Add pypoetry venv to PyCharm](./doc/add_venv_2.png)
+     c. Hit `Ok`, then `Apply`. PyCharm should update its indexes. **Restart the terminal for the changes to apply in it if you use PyCharm's terminal**
+
+
+
+
+### Relative imports
+
+If you are using pycharm, then add [common](./) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`). The project you are woking on should be added the same way.
+
+![Add common to Sources Root](./doc/add_common_to_source_root.png)
+
+It will enable the relative imports.
 
 
 ## Repo Organisation

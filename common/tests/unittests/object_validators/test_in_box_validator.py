@@ -43,4 +43,6 @@ class TestInBoxValidator(unittest.TestCase):
         self._test_obj(3, 0, 3, 3, False)
 
     def _test_obj(self, x: int, y: int, w: int, h: int, is_inside: bool):
-        self.assertEqual(is_inside, self.in_box_validator.validate_single(Object(None, x, y, w, h), None))
+        self.assertEqual(
+            is_inside, self.in_box_validator.validate_single(Object(None, Box.from_size(x, y, w, h)), None)
+        )

@@ -4,6 +4,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 import tensorflow as tf
 
+from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.object import Object, ObjectType
@@ -58,8 +59,10 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
         return Object(
             type=object_type,
             confidence=score,
-            x=int(xmin * image_width),
-            y=int(ymin * image_height),
-            w=int((xmax - xmin) * image_width),
-            h=int((ymax - ymin) * image_height),
+            box=Box.from_positions(
+                x1=int(xmin * image_width),
+                y1=int(ymin * image_height),
+                x2=int(xmax * image_width),
+                y2=int(ymax * image_height),
+            ),
         )

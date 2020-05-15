@@ -1,13 +1,8 @@
 from dataclasses import dataclass, field
-from math import sqrt
-from typing import List
-
 from memoized_property import memoized_property
 
-from polystar.common.models.object import Object
 
-
-@dataclass
+@dataclass(frozen=True)
 class Box:
     x: int
     y: int
@@ -37,6 +32,10 @@ class Box:
             return 0
         return (x2 - x1) * (y2 - y1)
 
+    def iou(self, box: "Box") -> float:
+        area_inter = self.area_intersection(box)
+        return area_inter / (self.area + box.area - area_inter)
+
     def distance_among_axis(self, box: "Box", axis: int) -> float:
         if axis == 0:
             p11, p12, p21, p22 = self.x1, self.x2, box.x1, box.x2
@@ -52,7 +51,3 @@ class Box:
     @staticmethod
     def from_size(x: int, y: int, w: int, h: int) -> "Box":
         return Box(x=x, y=y, w=w, h=h, x1=x, y1=y, x2=x + w, y2=y + h)
-
-
-def get_all_object_boxes(objects: List[Object]) -> List[Box]:
-    return [Box.from_size(o.x, o.y, o.w, o.h) for o in objects]

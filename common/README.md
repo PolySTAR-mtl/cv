@@ -4,42 +4,6 @@
 This code is designed to be shared across projects
 
 
-## Setup
-
-
-### Requirements
-
-We use [poetry](https://python-poetry.org/) to manage our dependencies.
-
-1. Install poetry
-    ```bash
-    # LINUX / OSX
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-
-    # Windows
-    (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
-    ```
-2. In the sub-project you want to install (eg [common](./), [robots-at-robots](../robots-at-robots), use the command `poetry install`. It will create a virtualenv, and install all the dependencies in it.
-3. Tell Pycharm to use this venv:
-    a. Go to `Pycharm > Preferences..`, then `Project > Project Interpreter > Add...`:
-        ![Add pypoetry venv to PyCharm](./doc/add_venv_1.png)
-    b. Add the existing venv created by poetry. You'll find it somewhere in `~/Library/Caches/pypoetry/virtualenvs/`. You need to link the python3 executable in `bin` (eg. for common):
-        ![Add pypoetry venv to PyCharm](./doc/add_venv_2.png)
-     c. Hit `Ok`, then `Apply`. PyCharm should update its indexes. **Restart the terminal for the changes to apply in it if you use PyCharm's terminal**
-4. To change venv, you can do it from:
-   ![Change venv in PyCharm](./doc/change_venv.png)
-
-
-
-### Relative imports
-
-If you are using pycharm, then add [common](./) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`).
-
-![Add common to Sources Root](./doc/add_common_to_source_root.png)
-
-It will enable the relative imports.
-
-
 ### Dataset
 
 #### ROCO
