@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 from typing import Any, Iterable
 
 import cv2
+from dataclasses import dataclass
 
 from polystar.common.frame_generators.cv2_frame_generator_abc import CV2FrameGeneratorABC
 

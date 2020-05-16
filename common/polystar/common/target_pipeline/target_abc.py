@@ -1,6 +1,7 @@
 from abc import ABC
-from dataclasses import dataclass
 from typing import Any, Dict
+
+from dataclasses import dataclass
 
 
 class TargetABC(ABC):

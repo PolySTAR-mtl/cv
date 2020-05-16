@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 from typing import List, Tuple
+
+from dataclasses import dataclass
 
 from polystar.common.image_pipeline.models.model_abc import ModelABC
 

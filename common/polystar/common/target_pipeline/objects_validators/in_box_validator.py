@@ -1,16 +1,13 @@
-from dataclasses import dataclass
-
 import numpy as np
+from dataclasses import dataclass
 
 from polystar.common.models.box import Box
 from polystar.common.models.object import Object
-from polystar.common.target_pipeline.objects_validators.sequential_objects_validators_abc import (
-    SequentialObjectsValidatorABC,
-)
+from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 
 
 @dataclass
-class InBoxValidator(SequentialObjectsValidatorABC):
+class InBoxValidator(ObjectsValidatorABC[Object]):
     box: Box
     min_percentage_intersection: float
 

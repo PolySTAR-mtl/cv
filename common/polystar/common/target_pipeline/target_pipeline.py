@@ -1,15 +1,15 @@
-from dataclasses import dataclass
 from typing import List
 
 import numpy as np
+from dataclasses import dataclass
 
 from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.models.image import Image
-from polystar.common.models.object import Object
-from polystar.common.target_pipeline.target_abc import TargetABC
+from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
 from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
+from polystar.common.target_pipeline.target_abc import TargetABC
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
 
@@ -21,7 +21,7 @@ class NoTargetFound(Exception):
 class TargetPipeline:
 
     objects_detector: ObjectsDetectorABC
-    objects_validators: List[ObjectsValidatorABC]
+    objects_validators: List[ObjectsValidatorABC[DetectedObject]]
     object_selector: ObjectSelectorABC
     target_factory: TargetFactoryABC
     target_sender: TargetSenderABC
@@ -32,12 +32,12 @@ class TargetPipeline:
         self.target_sender.send(target)
         return target
 
-    def predict_best_object(self, image: Image) -> Object:
+    def predict_best_object(self, image: Image) -> DetectedObject:
         objects = self._get_objects_of_interest(image)
         selected_object = self.object_selector.select(objects, image)
         return selected_object
 
-    def _get_objects_of_interest(self, image: np.ndarray) -> List[Object]:
+    def _get_objects_of_interest(self, image: np.ndarray) -> List[DetectedObject]:
         objects = self._detect_all_objects(image)
         for objects_validator in self.objects_validators:
             objects = objects_validator.filter(objects, image)
@@ -47,5 +47,5 @@ class TargetPipeline:
 
         return objects
 
-    def _detect_all_objects(self, image) -> List[Object]:
+    def _detect_all_objects(self, image) -> List[DetectedObject]:
         return self.objects_detector.detect(image)

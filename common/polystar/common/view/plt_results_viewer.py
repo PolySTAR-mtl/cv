@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from polystar.common.models.image import Image
 from polystar.common.view.results_viewer_abc import ResultViewerABC, ColorView
 
-
 COLORS = [
     (0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
     (1.0, 0.4980392156862745, 0.054901960784313725),

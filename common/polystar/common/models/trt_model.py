@@ -5,7 +5,6 @@ from typing import Tuple
 import cv2
 import numpy as np
 import pycuda.driver as cuda
-
 import tensorrt as trt
 
 from polystar.common.constants import RESOURCES_DIR

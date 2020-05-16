@@ -1,6 +1,7 @@
-from dataclasses import dataclass, field
 from itertools import chain
 from typing import List, Any, Sequence
+
+from dataclasses import dataclass, field
 
 from polystar.common.image_pipeline.image_featurizer.identity_image_featurizer_abc import IdentityImageFeaturizer
 from polystar.common.image_pipeline.image_featurizer.image_featurizer_abc import ImageFeaturizerABC

@@ -15,7 +15,7 @@ class ArmorDigitDatasetGenerator(ArmorImageDatasetGenerator[int]):
         return int(label)
 
     def _label_from_armor_info(self, armor: Armor, k: int, path: Path) -> int:
-        return armor.numero
+        return armor.number
 
     def _valid_label(self, label: int) -> bool:
         return label in self.acceptable_digits

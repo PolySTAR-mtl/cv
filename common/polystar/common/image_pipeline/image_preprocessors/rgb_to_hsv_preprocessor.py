@@ -1,6 +1,5 @@
-from dataclasses import dataclass
-
 import cv2
+from dataclasses import dataclass
 
 from polystar.common.image_pipeline.image_preprocessors.image_preprocessor_abc import ImagePreprocessorABC
 from polystar.common.models.image import Image
