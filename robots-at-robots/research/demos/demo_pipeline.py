@@ -9,7 +9,7 @@ from polystar.common.target_pipeline.object_selectors.closest_object_selector im
 from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 from polystar.common.target_pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
 from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
-from polystar.common.target_pipeline.target_pipeline import NoTargetFound
+from polystar.common.target_pipeline.target_pipeline import NoTargetFoundException
 from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                     viewer.add_objects(pipeline.debug_info_.validated_objects, forced_color=(0.6, 0.6, 0.6))
                     viewer.add_object(pipeline.debug_info_.selected_object)
                     viewer.display()
-                except NoTargetFound:
+                except NoTargetFoundException:
                     pass
 
                 if i == 5:

@@ -13,7 +13,7 @@ from polystar.common.target_pipeline.target_abc import TargetABC
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
 
-class NoTargetFound(Exception):
+class NoTargetFoundException(Exception):
     pass
 
 
@@ -43,7 +43,7 @@ class TargetPipeline:
             objects = objects_validator.filter(objects, image)
 
         if not objects:
-            raise NoTargetFound()
+            raise NoTargetFoundException()
 
         return objects
 
