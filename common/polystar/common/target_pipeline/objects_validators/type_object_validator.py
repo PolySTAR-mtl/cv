@@ -1,12 +1,10 @@
 import numpy as np
 
 from polystar.common.models.object import ObjectType, Object
-from polystar.common.target_pipeline.objects_validators.sequential_objects_validators_abc import (
-    SequentialObjectsValidatorABC,
-)
+from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 
 
-class TypeObjectValidator(SequentialObjectsValidatorABC):
+class TypeObjectValidator(ObjectsValidatorABC[Object]):
     """Keep only the objects of a desired type"""
 
     def __init__(self, *desired_types: ObjectType):

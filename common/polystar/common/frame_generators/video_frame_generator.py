@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Any
+
+from dataclasses import dataclass
 
 from polystar.common.frame_generators.cv2_frame_generator_abc import CV2FrameGeneratorABC
 

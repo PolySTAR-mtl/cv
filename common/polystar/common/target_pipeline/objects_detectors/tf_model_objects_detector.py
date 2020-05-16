@@ -1,14 +1,14 @@
-from dataclasses import dataclass
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 import numpy as np
 import tensorflow as tf
+from dataclasses import dataclass
 
-from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.models.label_map import LabelMap
-from polystar.common.models.object import Object, ObjectType
 from polystar.common.models.tf_model import TFModel
+from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
+from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 
 
@@ -18,7 +18,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
     model: TFModel
     label_map: LabelMap
 
-    def detect(self, image: Image) -> List[Object]:
+    def detect(self, image: Image) -> List[DetectedObject]:
         input_tensor = self._convert_image_to_input_tensor(image)
         output_dict = self._make_single_prediction(input_tensor)
         return self._construct_objects_from_tf_results(image, output_dict)
@@ -40,29 +40,17 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
         output_dict["detection_classes"] = output_dict["detection_classes"].astype(np.int64)
         return output_dict
 
-    def _construct_objects_from_tf_results(self, image: Image, output_dict: Dict[str, np.ndarray]):
-        image_height, image_width, *_ = image.shape
-        objects: List[Object] = [
-            self._construct_object_from_tf_result(box, class_id, image_height, image_width, score)
-            for box, class_id, score in zip(
+    def _construct_objects_from_tf_results(
+        self, image: Image, output_dict: Dict[str, np.ndarray]
+    ) -> List[DetectedObject]:
+        objects_factory = DetectedObjectFactory(image, self.label_map)
+        objects = [
+            objects_factory.from_relative_positions(
+                ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id
+            )
+            for (ymin, xmin, ymax, xmax), object_class_id, score in zip(
                 output_dict["detection_boxes"], output_dict["detection_classes"], output_dict["detection_scores"]
             )
             if score >= 0.1
         ]
         return objects
-
-    def _construct_object_from_tf_result(
-        self, box: Tuple[float, float, float, float], class_id: int, image_height: int, image_width: int, score: float
-    ):
-        ymin, xmin, ymax, xmax = box
-        object_type = ObjectType(self.label_map.name_of(class_id))
-        return Object(
-            type=object_type,
-            confidence=score,
-            box=Box.from_positions(
-                x1=int(xmin * image_width),
-                y1=int(ymin * image_height),
-                x2=int(xmax * image_width),
-                y2=int(ymax * image_height),
-            ),
-        )

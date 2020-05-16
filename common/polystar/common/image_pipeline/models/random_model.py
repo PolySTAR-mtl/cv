@@ -1,8 +1,8 @@
 from collections import Counter
-from dataclasses import dataclass, field
 from typing import Any, Sequence, List
 
 import numpy as np
+from dataclasses import dataclass, field
 
 from polystar.common.image_pipeline.models.model_abc import ModelABC
 

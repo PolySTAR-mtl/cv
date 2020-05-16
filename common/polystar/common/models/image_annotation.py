@@ -1,11 +1,11 @@
 import logging
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List
-from xml.dom.minidom import parseString
 
 import xmltodict
+from dataclasses import dataclass, field
 from dicttoxml import dicttoxml
+from xml.dom.minidom import parseString
 
 from polystar.common.models.image import Image
 from polystar.common.models.object import Object, ObjectFactory

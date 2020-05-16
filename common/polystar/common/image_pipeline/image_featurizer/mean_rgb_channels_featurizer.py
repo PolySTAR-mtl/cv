@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 from typing import Tuple
+
+from dataclasses import dataclass
 
 from polystar.common.image_pipeline.image_featurizer.image_featurizer_abc import ImageFeaturizerABC
 from polystar.common.models.image import Image

@@ -29,7 +29,7 @@ class ArmorDatasetFactory:
 
 if __name__ == "__main__":
     for i, (armor_img, armor, k, p) in enumerate(ArmorDatasetFactory.from_dataset(DJIROCODataset.CentralChina)):
-        print(armor, k, "in", p)
+        print(armor, armor.color, armor.number, "-", k, "in", p)
         plt.imshow(armor_img)
         plt.show()
         plt.clf()

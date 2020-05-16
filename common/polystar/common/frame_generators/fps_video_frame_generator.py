@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 from typing import Iterable
 
 import ffmpeg
+from dataclasses import dataclass
 
 from polystar.common.frame_generators.video_frame_generator import VideoFrameGenerator
 from polystar.common.models.image import Image

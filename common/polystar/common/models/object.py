@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 from enum import auto
 from typing import Any, Dict, NewType
+
+from dataclasses import dataclass
 
 from polystar.common.models.box import Box
 from polystar.common.utils.no_case_enum import NoCaseEnum
@@ -8,6 +9,13 @@ from polystar.common.utils.no_case_enum import NoCaseEnum
 Json = NewType("Json", Dict[str, Any])
 
 ArmorNumber = NewType("ArmorNumber", int)
+
+
+class ArmorColor(NoCaseEnum):
+    Grey = auto()
+    Blue = auto()
+    Red = auto()
+    Unknown = auto()
 
 
 class ObjectType(NoCaseEnum):
@@ -22,20 +30,15 @@ class ObjectType(NoCaseEnum):
 class Object:
     type: ObjectType
     box: Box
-    confidence: float = 1
 
-
-class ArmorColor(NoCaseEnum):
-    Grey = auto()
-    Blue = auto()
-    Red = auto()
-    Unknown = auto()
+    def __str__(self) -> str:
+        return self.type.name
 
 
 @dataclass
 class Armor(Object):
-    numero: ArmorNumber = -1
-    color: ArmorColor = ArmorColor.Unknown
+    number: ArmorNumber
+    color: ArmorColor
 
 
 class ObjectFactory:
@@ -58,7 +61,7 @@ class ObjectFactory:
         armor_number = ArmorNumber(json["armor_class"]) if json["armor_class"] != "none" else 0
 
         return Armor(
-            type=t, box=Box.from_size(x, y, w, h=h), numero=armor_number, color=ArmorColor(json["armor_color"])
+            type=t, box=Box.from_size(x, y, w, h=h), number=armor_number, color=ArmorColor(json["armor_color"])
         )
 
     @staticmethod
@@ -70,5 +73,5 @@ class ObjectFactory:
             }
         )
         if isinstance(obj, Armor):
-            rv.update({"armor_class": obj.numero, "armor_color": obj.color.value.lower()})
+            rv.update({"armor_class": obj.number, "armor_color": obj.color.value.lower()})
         return rv

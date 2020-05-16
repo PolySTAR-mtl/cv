@@ -4,7 +4,7 @@ from typing import Dict
 
 from pandas import DataFrame
 
-from polystar.common.models.object import ObjectType
+from polystar.common.models.object import ObjectType, Armor
 from polystar.common.utils.markdown import MarkdownFile
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.roco_dataset import ROCODataset
@@ -41,10 +41,10 @@ class ROCODatasetStats:
                     rv.n_bases += 1
                 elif obj.type == ObjectType.Watcher:
                     rv.n_watchers += 1
-                elif obj.type == ObjectType.Armor:
-                    rv.armors_color2num2count[obj.color.name.lower()][obj.numero] += 1
+                elif isinstance(obj, Armor):
+                    rv.armors_color2num2count[obj.color.name.lower()][obj.number] += 1
                     rv.armors_color2num2count[obj.color.name.lower()]["total"] += 1
-                    rv.armors_color2num2count["total"][obj.numero] += 1
+                    rv.armors_color2num2count["total"][obj.number] += 1
         return rv
 
 

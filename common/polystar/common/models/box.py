@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from memoized_property import memoized_property
 
 
 @dataclass(frozen=True)
@@ -14,7 +13,7 @@ class Box:
     x2: int = field(repr=False)
     y2: int = field(repr=False)
 
-    @memoized_property
+    @property
     def area(self) -> int:
         return self.w * self.h
 

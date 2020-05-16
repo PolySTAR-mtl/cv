@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 import cv2
+from dataclasses import dataclass, field
 
 from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.common.models.image import Image
