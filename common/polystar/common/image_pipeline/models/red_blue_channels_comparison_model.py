@@ -1,12 +1,11 @@
+from dataclasses import dataclass
 from typing import List, Tuple
 
-from dataclasses import dataclass
-
-from polystar.common.image_pipeline.models.model_abc import ModelABC
+from polystar.common.image_pipeline.models.absolute_classifier_model_abc import AbsoluteClassifierModelABC
 
 
 @dataclass
-class RedBlueComparisonModel(ModelABC):
+class RedBlueComparisonModel(AbsoluteClassifierModelABC):
     """A very simple model that compares the blue and red values obtained by the MeanChannelsFeaturizer"""
 
     red_channel_id: int = 0

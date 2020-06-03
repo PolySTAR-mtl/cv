@@ -1,21 +1,20 @@
 from collections import Counter
-from typing import Any, Sequence, List
+from dataclasses import dataclass, field
+from typing import Any, List, Sequence
 
 import numpy as np
-from dataclasses import dataclass, field
 
-from polystar.common.image_pipeline.models.model_abc import ModelABC
+from polystar.common.image_pipeline.models.absolute_classifier_model_abc import AbsoluteClassifierModelABC
 
 
 @dataclass
-class RandomModel(ModelABC):
+class RandomModel(AbsoluteClassifierModelABC):
     labels_: np.ndarray = field(init=False, default=None)
     weights_: np.ndarray = field(init=False, default=None)
 
-    def fit(self, features: List[Any], labels: List[Any]) -> "RandomModel":
-        counter = Counter(labels)
-        self.labels_ = np.asarray(list(counter.keys()))
-        occurrences = np.asarray(list(counter.values()))
+    def _fit_classifier(self, features: List[Any], label_indices: List[int], labels: List[Any]) -> "RandomModel":
+        label2count = Counter(labels)
+        occurrences = np.asarray([label2count[label] for label in self.labels_])
         self.weights_ = occurrences / occurrences.sum()
         return self
 
