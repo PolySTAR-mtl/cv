@@ -35,6 +35,11 @@ class Box:
         area_inter = self.area_intersection(box)
         return area_inter / (self.area + box.area - area_inter)
 
+    def contains(self, box: "Box", min_percentage_intersection: float) -> bool:
+        aera = self.area_intersection(box)
+        threshold_aera_intersection = box.area * min_percentage_intersection
+        return aera >= threshold_aera_intersection
+
     def distance_among_axis(self, box: "Box", axis: int) -> float:
         if axis == 0:
             p11, p12, p21, p22 = self.x1, self.x2, box.x1, box.x2

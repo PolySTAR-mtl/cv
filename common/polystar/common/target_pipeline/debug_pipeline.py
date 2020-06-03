@@ -1,19 +1,19 @@
+from dataclasses import dataclass, field
 from typing import List
 
-import numpy as np
-from dataclasses import dataclass, field
-
 from polystar.common.models.image import Image
+from polystar.common.target_pipeline.detected_objects.detected_armor import DetectedArmor
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
+from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.target_abc import TargetABC
 from polystar.common.target_pipeline.target_pipeline import TargetPipeline
 
 
 @dataclass
 class DebugInfo:
-    detected_objects: List[DetectedObject] = field(init=False)
-    validated_objects: List[DetectedObject] = field(init=False)
-    selected_object: DetectedObject = field(init=False)
+    detected_robots: List[DetectedRobot] = field(init=False)
+    validated_robots: List[DetectedRobot] = field(init=False)
+    selected_armor: DetectedArmor = field(init=False)
     target: TargetABC = field(init=False)
 
 
@@ -31,15 +31,15 @@ class DebugTargetPipeline(TargetPipeline):
 
     def predict_best_object(self, image: Image) -> DetectedObject:
         best_object = super().predict_best_object(image)
-        self.debug_info_.selected_object = best_object
+        self.debug_info_.selected_armor = best_object
         return best_object
 
-    def _get_objects_of_interest(self, image: np.ndarray) -> List[DetectedObject]:
-        objects = super()._get_objects_of_interest(image)
-        self.debug_info_.validated_objects = objects
+    def _get_robots_of_interest(self, image: Image) -> List[DetectedRobot]:
+        objects = super()._get_robots_of_interest(image)
+        self.debug_info_.validated_robots = objects
         return objects
 
-    def _detect_all_objects(self, image) -> List[DetectedObject]:
-        objects = super()._detect_all_objects(image)
-        self.debug_info_.detected_objects = objects
+    def _detect_robots(self, image) -> List[DetectedRobot]:
+        objects = super()._detect_robots(image)
+        self.debug_info_.detected_robots = objects
         return objects

@@ -1,9 +1,9 @@
+from dataclasses import dataclass, field
 from typing import List
 
-from dataclasses import dataclass, field
 from numpy import argmax
 
-from polystar.common.models.object import ObjectType, ArmorColor
+from polystar.common.models.object import ArmorColor, ObjectType
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
 
 

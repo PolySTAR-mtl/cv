@@ -1,19 +1,19 @@
-from typing import List
-
-import numpy as np
 from dataclasses import dataclass
+from typing import List
 
 from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.models.image import Image
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
+from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
+from polystar.common.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 from polystar.common.target_pipeline.target_abc import TargetABC
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
 
-class NoTargetFound(Exception):
+class NoTargetFoundException(Exception):
     pass
 
 
@@ -21,7 +21,8 @@ class NoTargetFound(Exception):
 class TargetPipeline:
 
     objects_detector: ObjectsDetectorABC
-    objects_validators: List[ObjectsValidatorABC[DetectedObject]]
+    objects_linker: ObjectsLinkerABC
+    objects_validators: List[ObjectsValidatorABC[DetectedRobot]]
     object_selector: ObjectSelectorABC
     target_factory: TargetFactoryABC
     target_sender: TargetSenderABC
@@ -33,19 +34,24 @@ class TargetPipeline:
         return target
 
     def predict_best_object(self, image: Image) -> DetectedObject:
-        objects = self._get_objects_of_interest(image)
+        objects = self._get_robots_of_interest(image)
         selected_object = self.object_selector.select(objects, image)
         return selected_object
 
-    def _get_objects_of_interest(self, image: np.ndarray) -> List[DetectedObject]:
-        objects = self._detect_all_objects(image)
-        for objects_validator in self.objects_validators:
-            objects = objects_validator.filter(objects, image)
+    def _get_robots_of_interest(self, image: Image) -> List[DetectedRobot]:
+        robots = self._detect_robots(image)
+        robots = self._filter_robots(image, robots)
 
-        if not objects:
-            raise NoTargetFound()
+        if not any(robot.armors for robot in robots):
+            raise NoTargetFoundException()
 
-        return objects
+        return robots
 
-    def _detect_all_objects(self, image) -> List[DetectedObject]:
-        return self.objects_detector.detect(image)
+    def _filter_robots(self, image: Image, robots: List[DetectedRobot]) -> List[DetectedRobot]:
+        for robots_validator in self.objects_validators:
+            robots = robots_validator.filter(robots, image)
+        return robots
+
+    def _detect_robots(self, image: Image) -> List[DetectedRobot]:
+        robots, armors = self.objects_detector.detect(image)
+        return list(self.objects_linker.link_armors_to_robots(robots, armors, image))
