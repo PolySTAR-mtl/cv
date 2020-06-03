@@ -8,6 +8,7 @@ from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
 from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
 from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 from polystar.common.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
@@ -28,12 +29,19 @@ if __name__ == "__main__":
     injector = make_injector()
 
     pipeline = DebugTargetPipeline(
-        objects_detector=TFModelObjectsDetector(load_tf_model(), injector.get(LabelMap)),
-        armors_descriptors=[
-            ArmorsColorDescriptor(
-                ClassifierImagePipeline(image_featurizer=MeanChannelsFeaturizer(), model=RedBlueComparisonModel())
-            )
-        ],
+        objects_detector=TFModelObjectsDetector(
+            DetectedObjectFactory(
+                injector.get(LabelMap),
+                [
+                    ArmorsColorDescriptor(
+                        ClassifierImagePipeline(
+                            image_featurizer=MeanChannelsFeaturizer(), model=RedBlueComparisonModel()
+                        )
+                    )
+                ],
+            ),
+            load_tf_model(),
+        ),
         objects_validators=[ConfidenceObjectValidator(0.6)],
         object_selector=ClosestObjectSelector(),
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),

@@ -5,7 +5,6 @@ import numpy as np
 import tensorflow as tf
 
 from polystar.common.models.image import Image
-from polystar.common.models.label_map import LabelMap
 from polystar.common.models.tf_model import TFModel
 from polystar.common.target_pipeline.detected_objects.detected_armor import DetectedArmor
 from polystar.common.target_pipeline.detected_objects.detected_objects_factory import (DetectedObjectFactory,
@@ -18,7 +17,6 @@ from polystar.common.target_pipeline.objects_detectors.objects_detector_abc impo
 class TFModelObjectsDetector(ObjectsDetectorABC):
 
     model: TFModel
-    label_map: LabelMap
 
     def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
         input_tensor = self._convert_image_to_input_tensor(image)
@@ -45,13 +43,13 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
     def _construct_objects_from_tf_results(
         self, image: Image, output_dict: Dict[str, np.ndarray]
     ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
-        objects_factory = DetectedObjectFactory(image, self.label_map)
-        return objects_factory.make_lists(
+        return self.objects_factory.make_lists(
             [
                 ObjectParams(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id)
                 for (ymin, xmin, ymax, xmax), object_class_id, score in zip(
                     output_dict["detection_boxes"], output_dict["detection_classes"], output_dict["detection_scores"]
                 )
                 if score >= 0.1
-            ]
+            ],
+            image,
         )

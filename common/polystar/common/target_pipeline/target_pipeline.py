@@ -3,7 +3,6 @@ from typing import List
 
 from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.models.image import Image
-from polystar.common.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
@@ -22,7 +21,6 @@ class NoTargetFoundException(Exception):
 class TargetPipeline:
 
     objects_detector: ObjectsDetectorABC
-    armors_descriptors: List[ArmorsDescriptorABC]
     objects_linker: ObjectsLinkerABC
     objects_validators: List[ObjectsValidatorABC[DetectedRobot]]
     object_selector: ObjectSelectorABC
@@ -56,6 +54,4 @@ class TargetPipeline:
 
     def _detect_robots(self, image: Image) -> List[DetectedRobot]:
         robots, armors = self.objects_detector.detect(image)
-        for armors_descriptor in self.armors_descriptors:
-            armors_descriptor.describe_armors(image, armors)
         return list(self.objects_linker.link_armors_to_robots(robots, armors, image))
