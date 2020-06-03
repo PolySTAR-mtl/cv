@@ -57,5 +57,5 @@ class TargetPipeline:
     def _detect_robots(self, image: Image) -> List[DetectedRobot]:
         robots, armors = self.objects_detector.detect(image)
         for armors_descriptor in self.armors_descriptors:
-            armors_descriptor.describe_armors(armors)
+            armors_descriptor.describe_armors(image, armors)
         return list(self.objects_linker.link_armors_to_robots(robots, armors, image))
