@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, Iterable, List
 from xml.dom.minidom import parseString
+
+import cv2
 
 import xmltodict
 from dicttoxml import dicttoxml
-
 from polystar.common.models.image import Image
 
 
@@ -52,10 +53,17 @@ class LabeledImage:
         annotation_path.write_text(xml)
 
     @staticmethod
-    def from_directory(directory_path: Path, name: str) -> "LabeledImage":
+    def from_directory(
+        directory: Path, name: str, conversion: int = cv2.COLOR_BGR2RGB, ext: str = "jpg"
+    ) -> "LabeledImage":
         return LabeledImage(
-            image=Image.from_path(directory_path / "image" / f"{name}.jpg"),
-            point_of_interests=PointOfInterest.from_annotation_file(
-                directory_path / "image_annotation" / f"{name}.xml"
-            ),
+            image=Image.from_path(directory / "image" / f"{name}.{ext}", conversion),
+            point_of_interests=PointOfInterest.from_annotation_file(directory / "image_annotation" / f"{name}.xml"),
         )
+
+
+def load_labeled_images_in_directory(
+    directory: Path, conversion: int = cv2.COLOR_BGR2RGB, ext: str = "jpg"
+) -> Iterable[LabeledImage]:
+    for xml_path in directory.glob("image_annotation/*.xml"):
+        yield LabeledImage.from_directory(directory, xml_path.stem, conversion, ext)
