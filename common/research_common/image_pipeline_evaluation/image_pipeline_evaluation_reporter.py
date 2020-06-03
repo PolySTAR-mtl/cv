@@ -2,20 +2,20 @@ from collections import Counter
 from dataclasses import dataclass
 from os.path import relpath
 from pathlib import Path
-from typing import Iterable, List, Any, Dict, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
 import numpy as np
 from pandas import DataFrame
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
-from polystar.common.utils.dataframe import format_df_rows, format_df_row, format_df_column
+from polystar.common.utils.dataframe import format_df_column, format_df_row, format_df_rows
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
-from research_common.constants import EVALUATION_DIR, DSET_DIR
+from research_common.constants import DSET_DIR, EVALUATION_DIR
 from research_common.dataset.roco_dataset import ROCODataset
 from research_common.image_pipeline_evaluation.image_pipeline_evaluator import (
-    ImagePipelineEvaluator,
     ClassificationResults,
+    ImagePipelineEvaluator,
     SetClassificationResults,
 )
 
@@ -104,7 +104,7 @@ class ImagePipelineEvaluationReporter:
         format_df_row(df, "support", int)
         mf.table(df)
         mf.title("Confusion Matrix:", level=4)
-        mf.table(DataFrame(results.confusion_matrix))
+        mf.table(DataFrame(results.confusion_matrix, index=results.unique_labels, columns=results.unique_labels))
         mf.title("10 Mistakes examples", level=4)
         mistakes_idx = np.random.choice(results.mistakes, min(len(results.mistakes), 10), replace=False)
         relative_paths = [
