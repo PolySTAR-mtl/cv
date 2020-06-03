@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 from enum import auto
 from typing import Any, Dict, NewType
-
-from dataclasses import dataclass
 
 from polystar.common.models.box import Box
 from polystar.common.utils.no_case_enum import NoCaseEnum
@@ -16,6 +15,9 @@ class ArmorColor(NoCaseEnum):
     Blue = auto()
     Red = auto()
     Unknown = auto()
+
+
+ORDERED_ARMOR_COLORS = [ArmorColor.Blue, ArmorColor.Grey, ArmorColor.Red]
 
 
 class ObjectType(NoCaseEnum):
