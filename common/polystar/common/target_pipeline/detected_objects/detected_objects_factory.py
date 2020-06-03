@@ -5,6 +5,7 @@ from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.models.label_map import LabelMap
 from polystar.common.models.object import ObjectType
+from polystar.common.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
 from polystar.common.target_pipeline.detected_objects.detected_armor import DetectedArmor
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 
@@ -20,11 +21,15 @@ class ObjectParams:
 
 
 class DetectedObjectFactory:
-    def __init__(self, image: Image, label_map: LabelMap):
+    def __init__(self, label_map: LabelMap, armors_descriptors: List[ArmorsDescriptorABC]):
+        self.armors_descriptors = armors_descriptors
         self.label_map = label_map
-        self.image_height, self.image_width, *_ = image.shape
+        self.image_height, self.image_width = None, None
 
-    def make_lists(self, objects_params: List[ObjectParams]) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+    def make_lists(
+        self, objects_params: List[ObjectParams], image: Image
+    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+        self.image_height, self.image_width, *_ = image.shape
         robots, armors = [], []
         for object_params in objects_params:
             obj = self.from_object_params(object_params)
@@ -32,6 +37,8 @@ class DetectedObjectFactory:
                 armors.append(obj)
             else:
                 robots.append(obj)
+        for armors_descriptor in self.armors_descriptors:
+            armors_descriptor.describe_armors(image, armors)
         return robots, armors
 
     def from_object_params(self, object_params) -> Union[DetectedRobot, DetectedArmor]:

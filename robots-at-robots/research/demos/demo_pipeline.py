@@ -1,9 +1,14 @@
 import cv2
 
 from polystar.common.communication.print_target_sender import PrintTargetSender
+from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
+from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
+from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
+from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
 from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 from polystar.common.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
@@ -24,7 +29,19 @@ if __name__ == "__main__":
     injector = make_injector()
 
     pipeline = DebugTargetPipeline(
-        objects_detector=TFModelObjectsDetector(load_tf_model(), injector.get(LabelMap)),
+        objects_detector=TFModelObjectsDetector(
+            DetectedObjectFactory(
+                injector.get(LabelMap),
+                [
+                    ArmorsColorDescriptor(
+                        ClassifierImagePipeline(
+                            image_featurizer=MeanChannelsFeaturizer(), model=RedBlueComparisonModel()
+                        )
+                    )
+                ],
+            ),
+            load_tf_model(),
+        ),
         objects_validators=[ConfidenceObjectValidator(0.6)],
         object_selector=ClosestObjectSelector(),
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),

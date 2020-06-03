@@ -1,11 +1,12 @@
 import logging
 from dataclasses import dataclass
 from time import time
-from typing import List, Dict, Any, Iterable, Sequence
+from typing import Any, Dict, Iterable, List, Sequence
 
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 
+from memoized_property import memoized_property
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image
 from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
@@ -29,6 +30,10 @@ class SetClassificationResults:
     @property
     def mistakes(self) -> Sequence[int]:
         return np.where(self.labels != self.predictions)[0]
+
+    @memoized_property
+    def unique_labels(self) -> List[Any]:
+        return sorted(set(self.labels) | set(self.predictions))
 
 
 @dataclass

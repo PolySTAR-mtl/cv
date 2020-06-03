@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Sequence
+from typing import Any, List
+
+import numpy as np
 
 
 class ModelABC(ABC):
@@ -7,7 +9,7 @@ class ModelABC(ABC):
         return self
 
     @abstractmethod
-    def predict(self, features: List[Any]) -> Sequence[Any]:
+    def predict(self, features: List[Any]) -> np.ndarray:
         pass
 
     @abstractmethod
