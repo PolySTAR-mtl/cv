@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     pipeline = DebugTargetPipeline(
         objects_detector=TFModelObjectsDetector(load_tf_model(), injector.get(LabelMap)),
+        armors_descriptors=[],
         objects_validators=[ConfidenceObjectValidator(0.6)],
         object_selector=ClosestObjectSelector(),
         target_factory=RatioSimpleTargetFactory(injector.get(Camera), 300, 100),
