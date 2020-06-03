@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from pathlib import Path
 from random import shuffle
-from typing import List, Callable
+from typing import Callable, List
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
 from polystar.common.models.image import Image
-from research.dataset.perturbations.contrast import contrast
-from research.dataset.perturbations.gaussian_blur import gaussian_blur
-from research.dataset.perturbations.gaussian_noise import gaussian_noise
-from research.dataset.perturbations.horizontal_blur import horizontal_blur
+from research.dataset.perturbations.perturbator_functions.contrast import contrast
+from research.dataset.perturbations.perturbator_functions.gaussian_blur import gaussian_blur
+from research.dataset.perturbations.perturbator_functions.gaussian_noise import gaussian_noise
+from research.dataset.perturbations.perturbator_functions.horizontal_blur import horizontal_blur
 
 
 @dataclass
