@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Tuple, NewType, Sequence
+from itertools import cycle
+from typing import Iterable, NewType, Sequence, Tuple
 
 from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.object import Object
+from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot, FakeDetectedRobot
 
 ColorView = NewType("ColorView", Tuple[float, float, float])
 
@@ -50,3 +52,14 @@ class ResultViewerABC(ABC):
 
     def display_image_annotation(self, annotation: ImageAnnotation):
         self.display_image_with_objects(annotation.image, annotation.objects)
+
+    def add_robot(self, robot: DetectedRobot, forced_color: ColorView = None):
+        objects = robot.armors
+        if not isinstance(robot, FakeDetectedRobot):
+            objects = objects + [robot]
+
+        self.add_objects(objects, forced_color)
+
+    def add_robots(self, robots: Iterable[DetectedRobot], forced_color: ColorView = None):
+        for color, robot in zip(cycle(self.colors), robots):
+            self.add_robot(robot, forced_color=forced_color or color)
