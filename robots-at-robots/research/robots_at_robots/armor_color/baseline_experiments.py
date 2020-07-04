@@ -4,7 +4,8 @@ from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierI
 from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
 from polystar.common.image_pipeline.models.random_model import RandomModel
 from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
-from research.armor_color.armor_color_pipeline_reporter_factory import ArmorColorPipelineReporterFactory
+from research.robots_at_robots.armor_color.armor_color_pipeline_reporter_factory import \
+    ArmorColorPipelineReporterFactory
 from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from polystar.common.target_pipeline.objects_validators.confidence_object_valida
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
-from research.demos.utils import load_tf_model
+from research.robots_at_robots.demos.utils import load_tf_model
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 from research_common.dataset.split import Split
 from research_common.dataset.split_dataset import SplitDataset

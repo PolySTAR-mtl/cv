@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Set
 
 from polystar.common.models.object import Armor
-from research.dataset.armor_image_dataset_factory import ArmorImageDatasetGenerator
+from research.robots_at_robots.dataset import ArmorImageDatasetGenerator
 
 
 class ArmorDigitDatasetGenerator(ArmorImageDatasetGenerator[int]):
