@@ -10,11 +10,11 @@ from research.robots_at_runes.dataset.blend.image_blender import ImageBlender
 from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_rotator import LabeledImageRotator
 from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_scaler import LabeledImageScaler
 from research.robots_at_runes.dataset.labeled_image import load_labeled_images_in_directory
+from research.robots_at_runes.dataset.perturbations.image_modifiers.contrast import ContrastModifier
+from research.robots_at_runes.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer
+from research.robots_at_runes.dataset.perturbations.image_modifiers.gaussian_noise import GaussianNoiser
+from research.robots_at_runes.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
 from research.robots_at_runes.dataset.perturbations.perturbator import ImagePerturbator
-from research.robots_at_runes.dataset.perturbations.perturbator_functions.contrast import contrast
-from research.robots_at_runes.dataset.perturbations.perturbator_functions.gaussian_blur import gaussian_blur
-from research.robots_at_runes.dataset.perturbations.perturbator_functions.gaussian_noise import gaussian_noise
-from research.robots_at_runes.dataset.perturbations.perturbator_functions.horizontal_blur import horizontal_blur
 
 
 class DatasetGenerator:
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         ImageBlender(
             background_size=(1_280, 720), object_modifiers=[LabeledImageScaler(1.5), LabeledImageRotator(180)]
         ),
-        ImagePerturbator([contrast, gaussian_blur, gaussian_noise, horizontal_blur]),
+        ImagePerturbator([ContrastModifier(), GaussianBlurrer(), GaussianNoiser(), HorizontalBlurrer()]),
         RUNES_DATASET_DIR / "resources" / "objects",
         RUNES_DATASET_DIR / "resources" / "backgrounds",
     )
