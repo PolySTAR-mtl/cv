@@ -5,16 +5,18 @@ import cv2
 from tqdm import trange
 
 from polystar.common.models.image import load_images_in_directory
+from research.common.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
+from research.common.dataset.perturbations.image_modifiers.contrast import ContrastModifier
+from research.common.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer
+from research.common.dataset.perturbations.image_modifiers.gaussian_noise import GaussianNoiser
+from research.common.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
+from research.common.dataset.perturbations.image_modifiers.saturation import SaturationModifier
+from research.common.dataset.perturbations.perturbator import ImagePerturbator
 from research.robots_at_runes.constants import RUNES_DATASET_DIR
 from research.robots_at_runes.dataset.blend.image_blender import ImageBlender
 from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_rotator import LabeledImageRotator
 from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_scaler import LabeledImageScaler
 from research.robots_at_runes.dataset.labeled_image import load_labeled_images_in_directory
-from research.robots_at_runes.dataset.perturbations.image_modifiers.contrast import ContrastModifier
-from research.robots_at_runes.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer
-from research.robots_at_runes.dataset.perturbations.image_modifiers.gaussian_noise import GaussianNoiser
-from research.robots_at_runes.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
-from research.robots_at_runes.dataset.perturbations.perturbator import ImagePerturbator
 
 
 class DatasetGenerator:
@@ -50,7 +52,16 @@ if __name__ == "__main__":
         ImageBlender(
             background_size=(1_280, 720), object_modifiers=[LabeledImageScaler(1.5), LabeledImageRotator(180)]
         ),
-        ImagePerturbator([ContrastModifier(), GaussianBlurrer(), GaussianNoiser(), HorizontalBlurrer()]),
+        ImagePerturbator(
+            [
+                ContrastModifier(alpha_factor=0.7, min_alpha=0.8),
+                GaussianBlurrer(max_factor=0.015),
+                GaussianNoiser(max_variance=300.0),
+                HorizontalBlurrer(max_kernel_size=11),
+                SaturationModifier(max_saturation=0.6),
+                BrightnessModifier(max_beta=10.0),
+            ]
+        ),
         RUNES_DATASET_DIR / "resources" / "objects",
         RUNES_DATASET_DIR / "resources" / "backgrounds",
     )
