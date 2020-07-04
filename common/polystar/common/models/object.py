@@ -60,7 +60,7 @@ class ObjectFactory:
         if t is not ObjectType.Armor:
             return Object(type=t, box=Box.from_size(x, y, w, h=h))
 
-        armor_number = ArmorNumber(json["armor_class"]) if json["armor_class"] != "none" else 0
+        armor_number = ArmorNumber(int(json["armor_class"])) if json["armor_class"] != "none" else 0
 
         return Armor(
             type=t, box=Box.from_size(x, y, w, h=h), number=armor_number, color=ArmorColor(json["armor_color"])
@@ -70,10 +70,10 @@ class ObjectFactory:
     def to_json(obj: Object) -> Json:
         rv = Json(
             {
-                "name": obj.type.value.lower(),
+                "name": obj.type.name.lower(),
                 "bndbox": {"xmin": obj.box.x1, "xmax": obj.box.x2, "ymin": obj.box.y1, "ymax": obj.box.y2},
             }
         )
         if isinstance(obj, Armor):
-            rv.update({"armor_class": obj.number, "armor_color": obj.color.value.lower()})
+            rv.update({"armor_class": obj.number, "armor_color": obj.color.name.lower()})
         return rv

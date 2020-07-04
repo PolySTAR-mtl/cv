@@ -10,7 +10,7 @@ from polystar.common.view.plt_results_viewer import PltResultViewer
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
 
 
-def crop_image_annotation(image_annotation: ImageAnnotation, box: Box, min_coverage: float):
+def crop_image_annotation(image_annotation: ImageAnnotation, box: Box, min_coverage: float) -> ImageAnnotation:
     objects = InBoxValidator(box, min_coverage).filter(image_annotation.objects, image_annotation.image)
     objects = [copy(o) for o in objects]
     for obj in objects:

@@ -1,29 +1,44 @@
-from injector import inject
+from itertools import chain
 
-from polystar.common.dependency_injection import make_common_injector
-from polystar.common.models.label_map import LabelMap
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
-from research_common.dataset.split import Split
-from research_common.dataset.split_dataset import SplitDataset
+from research_common.dataset.dji.dji_roco_zoomed_datasets import DJIROCOZoomedDataset
 from research_common.dataset.tensorflow_record import TensorflowRecordFactory
+from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
+from research_common.dataset.union_dataset import UnionDataset
 
 
-@inject
-def create_one_record_per_roco_dset(label_map: LabelMap):
-    for roco_set in DJIROCODataset:
-        for split in Split:
-            TensorflowRecordFactory(label_map).from_dataset(SplitDataset(roco_set, split))
-
-
-@inject
-def create_one_roco_record(label_map: LabelMap):
-    for split in Split:
-        TensorflowRecordFactory(label_map).from_datasets(
-            [SplitDataset(roco_dset, split) for roco_dset in DJIROCODataset], f"DJI_ROCO_{split.name}"
-        )
+def create_one_record_per_roco_dset():
+    for roco_set in chain(DJIROCODataset, DJIROCOZoomedDataset, TwitchROCODataset):
+        TensorflowRecordFactory.from_dataset(roco_set)
 
 
 if __name__ == "__main__":
-    injector = make_common_injector()
-    injector.call_with_injection(create_one_record_per_roco_dset)
-    injector.call_with_injection(create_one_roco_record)
+    # create_one_record_per_roco_dset()
+
+    TensorflowRecordFactory.from_dataset(
+        UnionDataset(
+            TwitchROCODataset.TWITCH_470149568,
+            TwitchROCODataset.TWITCH_470150052,
+            TwitchROCODataset.TWITCH_470151286,
+            TwitchROCODataset.TWITCH_470152289,
+            TwitchROCODataset.TWITCH_470152730,
+        )
+    )
+
+    TensorflowRecordFactory.from_dataset(
+        UnionDataset(
+            TwitchROCODataset.TWITCH_470152838, TwitchROCODataset.TWITCH_470153081, TwitchROCODataset.TWITCH_470158483,
+        )
+    )
+
+    TensorflowRecordFactory.from_dataset(
+        UnionDataset(DJIROCODataset.CentralChina, DJIROCODataset.NorthChina, DJIROCODataset.SouthChina)
+    )
+    TensorflowRecordFactory.from_dataset(DJIROCODataset.Final)
+
+    TensorflowRecordFactory.from_dataset(
+        UnionDataset(
+            DJIROCOZoomedDataset.CentralChina, DJIROCOZoomedDataset.NorthChina, DJIROCOZoomedDataset.SouthChina
+        )
+    )
+    TensorflowRecordFactory.from_dataset(DJIROCOZoomedDataset.Final)
