@@ -6,7 +6,8 @@ import cv2
 import numpy as np
 
 from polystar.common.models.image import Image
-from research.robots_at_runes.dataset.blend import LabeledImageModifierABC
+from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_modifier_abc import \
+    LabeledImageModifierABC
 from research.robots_at_runes.dataset.labeled_image import LabeledImage, PointOfInterest
 
 
@@ -69,8 +70,8 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
 
-    from research.robots_at_runes.dataset.blend import LabeledImageRotator
-    from research.robots_at_runes.dataset.blend import LabeledImageScaler
+    from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_rotator import LabeledImageRotator
+    from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_scaler import LabeledImageScaler
 
     EXAMPLES_DIR = Path(__file__).parent / "examples"
 

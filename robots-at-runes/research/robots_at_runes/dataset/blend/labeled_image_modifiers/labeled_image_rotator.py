@@ -4,7 +4,8 @@ import numpy as np
 
 from imutils import rotate_bound
 from polystar.common.models.image import Image
-from research.robots_at_runes.dataset.blend import LabeledImageModifierABC
+from research.robots_at_runes.dataset.blend.labeled_image_modifiers.labeled_image_modifier_abc import \
+    LabeledImageModifierABC
 from research.robots_at_runes.dataset.labeled_image import PointOfInterest
 
 

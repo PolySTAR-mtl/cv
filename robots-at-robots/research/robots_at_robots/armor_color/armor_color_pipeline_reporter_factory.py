@@ -3,7 +3,7 @@ from typing import List
 from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
 from research.common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import ImagePipelineEvaluationReporter
 from research.common.image_pipeline_evaluation.image_pipeline_evaluator import ImagePipelineEvaluator
-from research.robots_at_robots.dataset import ArmorColorDatasetGenerator
+from research.robots_at_robots.dataset.armor_color_dataset_factory import ArmorColorDatasetGenerator
 
 
 class ArmorColorPipelineReporterFactory:

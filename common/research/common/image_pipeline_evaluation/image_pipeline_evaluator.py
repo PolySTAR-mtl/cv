@@ -10,7 +10,7 @@ from memoized_property import memoized_property
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image
 from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research.common.image_pipeline_evaluation import ImageDatasetGenerator
+from research.common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
 
 
 @dataclass
