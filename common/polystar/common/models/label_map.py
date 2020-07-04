@@ -1,8 +1,9 @@
 import re
-from pathlib import Path
-from typing import Dict, Any, List
-
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List
+
+from polystar.common.constants import LABEL_MAP_PATH
 
 
 @dataclass
@@ -30,3 +31,6 @@ class LabelMap:
         name2id = {n: int(i) for i, n in d.items()}
         id2name = d
         return LabelMap(id2name=id2name, name2id=name2id)
+
+
+label_map = LabelMap.from_file(LABEL_MAP_PATH)
