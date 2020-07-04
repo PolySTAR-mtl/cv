@@ -8,9 +8,9 @@ import cv2
 from polystar.common.models.image import Image
 from polystar.common.models.object import Armor
 from polystar.common.utils.time import create_time_id
+from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
+from research.common.image_pipeline_evaluation import ImageDatasetGenerator
 from research.robots_at_robots.dataset.armor_dataset_factory import ArmorDatasetFactory
-from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research_common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
 
 T = TypeVar("T")
 

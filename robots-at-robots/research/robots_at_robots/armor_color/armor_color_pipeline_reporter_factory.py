@@ -1,9 +1,9 @@
 from typing import List
 
+from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
+from research.common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import ImagePipelineEvaluationReporter
+from research.common.image_pipeline_evaluation.image_pipeline_evaluator import ImagePipelineEvaluator
 from research.robots_at_robots.dataset import ArmorColorDatasetGenerator
-from research_common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research_common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import ImagePipelineEvaluationReporter
-from research_common.image_pipeline_evaluation.image_pipeline_evaluator import ImagePipelineEvaluator
 
 
 class ArmorColorPipelineReporterFactory:

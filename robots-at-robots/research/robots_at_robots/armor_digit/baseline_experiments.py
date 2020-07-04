@@ -2,9 +2,9 @@ import logging
 
 from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
 from polystar.common.image_pipeline.models.random_model import RandomModel
+from research.common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 from research.robots_at_robots.armor_digit.armor_digit_pipeline_reporter_factory import \
     ArmorDigitPipelineReporterFactory
-from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")

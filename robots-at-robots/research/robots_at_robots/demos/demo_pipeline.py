@@ -18,11 +18,11 @@ from polystar.common.target_pipeline.target_pipeline import NoTargetFoundExcepti
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
+from research.common.dataset.dji.dji_roco_datasets import DJIROCODataset
+from research.common.dataset.split import Split
+from research.common.dataset.split_dataset import SplitDataset
+from research.common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 from research.robots_at_robots.demos.utils import load_tf_model
-from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
-from research_common.dataset.split import Split
-from research_common.dataset.split_dataset import SplitDataset
-from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 
 if __name__ == "__main__":
     patch_tf_v2()
