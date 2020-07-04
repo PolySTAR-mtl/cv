@@ -6,7 +6,7 @@ DSET_DIR: Path = PROJECT_DIR / "dataset"
 
 TWITCH_DSET_DIR: Path = DSET_DIR / "twitch"
 DJI_ROCO_DSET_DIR: Path = DSET_DIR / "dji_roco"
-DJI_ROCO_ZOOMED_DSET_DIR: Path = DSET_DIR / "dji_roco_zoomed_v1"
+DJI_ROCO_ZOOMED_DSET_DIR: Path = DSET_DIR / "dji_roco_zoomed_v2"
 TENSORFLOW_RECORDS_DIR: Path = DSET_DIR / "tf_records"
 TWITCH_ROBOTS_VIEWS_DIR: Path = TWITCH_DSET_DIR / "robots-views"
 TWITCH_DSET_ROBOTS_VIEWS_DIR: Path = TWITCH_DSET_DIR / "final-robots-views"

@@ -8,11 +8,11 @@ from research.common.dataset.perturbations.image_modifiers.image_modifier_abc im
 
 @dataclass
 class BrightnessModifier(ImageModifierABC):
-    max_beta: float = 10.0
+    max_offset: float = 10.0
 
     def modify(self, image: Image, intensity: float) -> Image:
-        beta = self.max_beta * intensity
-        perturbed_image = np.clip((image.astype(np.uint16) + beta), 0, 255).astype(np.uint8)
+        offset = self.max_offset * intensity
+        perturbed_image = np.clip((image.astype(np.uint16) + offset), 0, 255).astype(np.uint8)
         return perturbed_image
 
 

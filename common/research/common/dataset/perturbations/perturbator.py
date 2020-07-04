@@ -21,7 +21,6 @@ from research.common.dataset.perturbations.image_modifiers.saturation import Sat
 class ImagePerturbator:
     modifiers: List[ImageModifierABC]
     min_intensity: float = 1.0
-    max_intensity: float = 1.0
 
     def perturbate(self, image: Image) -> Image:
         shuffle(self.modifiers)
@@ -31,7 +30,7 @@ class ImagePerturbator:
         return image
 
     def _generate_intensities(self) -> List[float]:
-        total_intensity = np.random.random() * (self.max_intensity - self.min_intensity) + self.min_intensity
+        total_intensity = np.random.random() * (1.0 - self.min_intensity) + self.min_intensity
         intensities = np.random.random(len(self.modifiers))
         return intensities / intensities.sum() * total_intensity
 

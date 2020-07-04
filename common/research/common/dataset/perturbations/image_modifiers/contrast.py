@@ -8,12 +8,12 @@ from research.common.dataset.perturbations.image_modifiers.image_modifier_abc im
 
 @dataclass
 class ContrastModifier(ImageModifierABC):
-    alpha_factor: float = 0.7
-    min_alpha: float = 0.8
+    min_coef: float = 0.8
+    max_coef: float = 1.5
 
     def modify(self, image: Image, intensity: float) -> Image:
-        alpha = self.min_alpha + self.alpha_factor * intensity
-        perturbed_image = np.clip((image.astype(np.uint16) * alpha), 0, 255).astype(np.uint8)
+        coef = self.min_coef + (self.max_coef - self.min_coef) * intensity
+        perturbed_image = np.clip((image.astype(np.uint16) * coef), 0, 255).astype(np.uint8)
         return perturbed_image
 
 

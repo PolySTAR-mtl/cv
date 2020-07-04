@@ -7,7 +7,7 @@ from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
 
 class DJIROCOZoomedDataset(DirectoryROCODataset, Enum):
     def __init__(self, _):
-        super().__init__(DJI_ROCO_ZOOMED_DSET_DIR / camel2snake(self.name), f"{self.name}ZoomedV1")
+        super().__init__(DJI_ROCO_ZOOMED_DSET_DIR / camel2snake(self.name), f"{self.name}ZoomedV2")
 
     CentralChina = auto()
     NorthChina = auto()

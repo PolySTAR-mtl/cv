@@ -54,12 +54,12 @@ if __name__ == "__main__":
         ),
         ImagePerturbator(
             [
-                ContrastModifier(alpha_factor=0.7, min_alpha=0.8),
+                ContrastModifier(min_coef=0.7, max_coef=1.5),
                 GaussianBlurrer(max_factor=0.015),
                 GaussianNoiser(max_variance=300.0),
                 HorizontalBlurrer(max_kernel_size=11),
                 SaturationModifier(max_saturation=0.6),
-                BrightnessModifier(max_beta=10.0),
+                BrightnessModifier(max_offset=10.0),
             ]
         ),
         RUNES_DATASET_DIR / "resources" / "objects",
