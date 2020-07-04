@@ -55,14 +55,10 @@ if __name__ == "__main__":
                 try:
                     image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
                     target = pipeline.predict_target(image)
-
-                    viewer.new(image)
-                    viewer.add_robots(pipeline.debug_info_.detected_robots, forced_color=(0.3, 0.3, 0.3))
-                    viewer.add_robots(pipeline.debug_info_.validated_robots)
-                    viewer.add_object(pipeline.debug_info_.selected_armor)
-                    viewer.display()
                 except NoTargetFoundException:
                     pass
+                finally:
+                    viewer.display_debug_info(pipeline.debug_info_)
 
                 if i == 5:
                     break

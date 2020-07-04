@@ -5,6 +5,7 @@ from typing import Iterable, NewType, Sequence, Tuple
 from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.object import Object
+from polystar.common.target_pipeline.debug_pipeline import DebugInfo
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot, FakeDetectedRobot
 
 ColorView = NewType("ColorView", Tuple[float, float, float])
@@ -52,6 +53,14 @@ class ResultViewerABC(ABC):
 
     def display_image_annotation(self, annotation: ImageAnnotation):
         self.display_image_with_objects(annotation.image, annotation.objects)
+
+    def display_debug_info(self, debug_info: DebugInfo):
+        self.new(debug_info.image)
+        self.add_robots(debug_info.detected_robots, forced_color=(0.3, 0.3, 0.3))
+        self.add_robots(debug_info.validated_robots)
+        if debug_info.selected_armor is not None:
+            self.add_object(debug_info.selected_armor)
+        self.display()
 
     def add_robot(self, robot: DetectedRobot, forced_color: ColorView = None):
         objects = robot.armors
