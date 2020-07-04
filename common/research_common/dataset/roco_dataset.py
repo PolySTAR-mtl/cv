@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+from more_itertools import ilen
+
 from polystar.common.models.image import Image
 from polystar.common.models.image_annotation import ImageAnnotation
 
@@ -21,3 +23,6 @@ class ROCODataset:
     def image_annotations(self) -> Iterable[ImageAnnotation]:
         for annotation_path in self.annotation_paths:
             yield ImageAnnotation.from_xml_file(annotation_path)
+
+    def __len__(self) -> int:
+        return ilen(self.image_annotations)

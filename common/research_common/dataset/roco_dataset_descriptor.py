@@ -1,15 +1,15 @@
 from dataclasses import dataclass, field
+from itertools import chain
 from pathlib import Path
 from typing import Dict
 
 from pandas import DataFrame
 
-from polystar.common.models.object import ObjectType, Armor
+from polystar.common.models.object import Armor, ObjectType
 from polystar.common.utils.markdown import MarkdownFile
 from research_common.dataset.dji.dji_roco_datasets import DJIROCODataset
+from research_common.dataset.dji.dji_roco_zoomed_datasets import DJIROCOZoomedDataset
 from research_common.dataset.roco_dataset import ROCODataset
-from research_common.dataset.split import Split
-from research_common.dataset.split_dataset import SplitDataset
 from research_common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
 
 
@@ -69,14 +69,5 @@ def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
 
 
 if __name__ == "__main__":
-    for dset in TwitchROCODataset:
+    for dset in chain(TwitchROCODataset, DJIROCOZoomedDataset, DJIROCODataset):
         make_markdown_dataset_report(dset, dset.dataset_path)
-        # for split in Split:
-        #     split_dset = SplitDataset(dset, split)
-        #     make_markdown_dataset_report(split_dset, split_dset.dataset_path)
-
-    for dset in DJIROCODataset:
-        make_markdown_dataset_report(dset, dset.dataset_path)
-        for split in Split:
-            split_dset = SplitDataset(dset, split)
-            make_markdown_dataset_report(split_dset, split_dset.dataset_path)

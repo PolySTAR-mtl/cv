@@ -11,10 +11,11 @@ from polystar.common.target_pipeline.target_pipeline import TargetPipeline
 
 @dataclass
 class DebugInfo:
-    detected_robots: List[DetectedRobot] = field(init=False)
-    validated_robots: List[DetectedRobot] = field(init=False)
-    selected_armor: DetectedArmor = field(init=False)
-    target: TargetABC = field(init=False)
+    image: Image = None
+    detected_robots: List[DetectedRobot] = field(init=False, default_factory=list)
+    validated_robots: List[DetectedRobot] = field(init=False, default_factory=list)
+    selected_armor: DetectedArmor = field(init=False, default=None)
+    target: TargetABC = field(init=False, default=None)
 
 
 @dataclass
@@ -24,7 +25,7 @@ class DebugTargetPipeline(TargetPipeline):
     debug_info_: DebugInfo = field(init=False, default_factory=DebugInfo)
 
     def predict_target(self, image: Image) -> TargetABC:
-        self.debug_info_ = DebugInfo()
+        self.debug_info_ = DebugInfo(image)
         target = super().predict_target(image)
         self.debug_info_.target = target
         return target
