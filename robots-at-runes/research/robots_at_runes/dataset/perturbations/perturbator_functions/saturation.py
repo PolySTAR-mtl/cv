@@ -1,5 +1,5 @@
-import numpy as np
 import cv2
+import numpy as np
 
 from polystar.common.models.image import Image
 
@@ -16,6 +16,6 @@ def saturation(image: Image, intensity: float) -> Image:
 
 
 if __name__ == "__main__":
-    from research.dataset.perturbations.utils import simple_perturbator_test
+    from research.robots_at_runes.dataset.perturbations.utils import simple_perturbator_test
 
     simple_perturbator_test(saturation)

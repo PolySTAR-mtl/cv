@@ -6,15 +6,12 @@ from tqdm import trange
 
 from polystar.common.models.image import load_images_in_directory
 from research.constants import RUNES_DATASET_DIR
-from research.dataset.blend.image_blender import ImageBlender
-from research.dataset.blend.labeled_image_modifiers.labeled_image_rotator import LabeledImageRotator
-from research.dataset.blend.labeled_image_modifiers.labeled_image_scaler import LabeledImageScaler
-from research.dataset.labeled_image import load_labeled_images_in_directory
-from research.dataset.perturbations.perturbator import ImagePerturbator
-from research.dataset.perturbations.perturbator_functions.contrast import contrast
-from research.dataset.perturbations.perturbator_functions.gaussian_blur import gaussian_blur
-from research.dataset.perturbations.perturbator_functions.gaussian_noise import gaussian_noise
-from research.dataset.perturbations.perturbator_functions.horizontal_blur import horizontal_blur
+from research.robots_at_runes.dataset import gaussian_noise, horizontal_blur
+from research.robots_at_runes.dataset.blend import ImageBlender, LabeledImageRotator, LabeledImageScaler
+from research.robots_at_runes.dataset.labeled_image import load_labeled_images_in_directory
+from research.robots_at_runes.dataset.perturbations.perturbator import ImagePerturbator
+from research.robots_at_runes.dataset.perturbations.perturbator_functions.contrast import contrast
+from research.robots_at_runes.dataset.perturbations.perturbator_functions.gaussian_blur import gaussian_blur
 
 
 class DatasetGenerator:

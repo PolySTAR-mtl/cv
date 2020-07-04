@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from random import random
 
 from polystar.common.models.image import Image
-from research.dataset.labeled_image import LabeledImage, PointOfInterest
+from research.robots_at_runes.dataset.labeled_image import LabeledImage, PointOfInterest
 
 
 class LabeledImageModifierABC(ABC):
