@@ -14,16 +14,12 @@ def crop_image_annotation(image_annotation: ImageAnnotation, box: Box, min_cover
     objects = InBoxValidator(box, min_coverage).filter(image_annotation.objects, image_annotation.image)
     objects = [copy(o) for o in objects]
     for obj in objects:
-        x, y, w, h = obj.box.x, obj.box.y, obj.box.w, obj.box.h
-        x -= box.x1
-        y -= box.y1
-        if x < 0:
-            w += x
-            x = 0
-        if y < 0:
-            h += y
-            y = 0
-        obj.box = Box.from_size(x, y, w, h)
+        obj.box = Box.from_positions(
+            x1=max(0, obj.box.x1 - box.x1),
+            y1=max(0, obj.box.y1 - box.y1),
+            x2=min(box.x2, obj.box.x2 - box.x1),
+            y2=min(box.y2, obj.box.y2 - box.y1),
+        )
     return ImageAnnotation(
         image_path=None,
         xml_path=None,
