@@ -7,3 +7,6 @@ class ROCODatasetsZoo:
     DJI_ZOOMED = DJIROCOZoomedDatasets()
     DJI = DJIROCODatasets()
     TWITCH = TwitchROCODatasets()
+
+    def __iter__(self):
+        return (self.DJI, self.DJI_ZOOMED, self.TWITCH).__iter__()

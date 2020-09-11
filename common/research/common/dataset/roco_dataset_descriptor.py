@@ -4,13 +4,10 @@ from pathlib import Path
 from typing import Dict
 
 from pandas import DataFrame
-
 from polystar.common.models.object import Armor, ObjectType
 from polystar.common.utils.markdown import MarkdownFile
-from research.common.dataset.dji.dji_roco_datasets import DJIROCODataset
-from research.common.dataset.dji.dji_roco_zoomed_datasets import DJIROCOZoomedDataset
-from research.common.dataset.roco_dataset import ROCODataset
-from research.common.dataset.twitch.twitch_roco_datasets import TwitchROCODataset
+from research.common.datasets.roco.roco_dataset import ROCODataset
+from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 
 
 @dataclass
@@ -31,7 +28,7 @@ class ROCODatasetStats:
         rv.armors_color2num2count = {c: {n: 0 for n in range(10)} for c in colors}
         for c in colors:
             rv.armors_color2num2count[c]["total"] = 0
-        for annotation in dataset.image_annotations:
+        for annotation in dataset.targets:
             rv.n_images += 1
             rv.n_runes += annotation.has_rune
             for obj in annotation.objects:
@@ -49,12 +46,12 @@ class ROCODatasetStats:
 
 
 def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
-    report_path = report_dir / f"dset_{dataset.dataset_name}_report.md"
+    report_path = report_dir / f"dset_{dataset.name}_report.md"
 
     stats = ROCODatasetStats.from_dataset(dataset)
 
     with MarkdownFile(report_path) as mf:
-        mf.title(f"Dataset {dataset.dataset_name}")
+        mf.title(f"Dataset {dataset.name}")
 
         mf.paragraph(f"{stats.n_images} images, with:")
         mf.list(
@@ -69,5 +66,5 @@ def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
 
 
 if __name__ == "__main__":
-    for dset in chain(TwitchROCODataset, DJIROCOZoomedDataset, DJIROCODataset):
+    for dset in chain(*ROCODatasetsZoo()):
         make_markdown_dataset_report(dset, dset.dataset_path)

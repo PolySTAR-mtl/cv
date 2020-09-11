@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterable, Tuple
+from typing import Iterable, List, Tuple
 
 from more_itertools import ilen
 from polystar.common.models.image import Image
@@ -11,6 +11,12 @@ class DirectoryROCODataset(ROCODataset):
     def __init__(self, dataset_path: Path, name: str):
         super().__init__(name)
         self.dataset_path = dataset_path
+
+    @property
+    def targets(self) -> List[ROCOAnnotation]:
+        if self._is_loaded:
+            return super().targets
+        return list(map(ROCOAnnotation.from_xml_file, self.annotation_paths))
 
     @property
     def images_dir_path(self) -> Path:
