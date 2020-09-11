@@ -1,10 +1,15 @@
 from os import remove
 from shutil import copy, make_archive, move, rmtree
 
-from research.common.constants import TWITCH_DSET_DIR, TWITCH_DSET_ROBOTS_VIEWS_DIR, TWITCH_ROBOTS_VIEWS_DIR
-from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research.common.dataset.roco_dataset_descriptor import make_markdown_dataset_report
-from research.common.scripts.construct_dataset_from_manual_annotation import construct_dataset_from_manual_annotations
+from research.common.constants import (TWITCH_DSET_DIR,
+                                       TWITCH_DSET_ROBOTS_VIEWS_DIR,
+                                       TWITCH_ROBOTS_VIEWS_DIR)
+from research.common.dataset.roco_dataset_descriptor import \
+    make_markdown_dataset_report
+from research.common.datasets.roco.directory_roco_dataset import \
+    DirectoryROCODataset
+from research.common.scripts.construct_dataset_from_manual_annotation import \
+    construct_dataset_from_manual_annotations
 from research.common.scripts.correct_annotations import AnnotationFileCorrector
 
 
@@ -51,7 +56,7 @@ def _make_global_report():
     make_markdown_dataset_report(all_twitch_dataset, all_twitch_dataset.dataset_path)
 
 
-def _get_mixed_dataset():
+def _get_mixed_dataset() -> DirectoryROCODataset:
     return DirectoryROCODataset(TWITCH_DSET_ROBOTS_VIEWS_DIR, "Twitch")
 
 
