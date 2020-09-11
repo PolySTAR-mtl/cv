@@ -5,11 +5,13 @@ from research.common.datasets.roco.roco_datasets import ROCODatasets
 
 
 class DJIROCODatasets(ROCODatasets):
+    directory = DJI_ROCO_DSET_DIR
+
     CentralChina = "robomaster_Central China Regional Competition"
     NorthChina = "robomaster_North China Regional Competition"
     SouthChina = "robomaster_South China Regional Competition"
     Final = "robomaster_Final Tournament"
 
-    @staticmethod
-    def make_dataset(dataset_name: str, competition_name: str) -> DirectoryROCODataset:
-        return DirectoryROCODataset(DJI_ROCO_DSET_DIR / competition_name, dataset_name)
+    @classmethod
+    def make_dataset(cls, dataset_name: str, competition_name: str) -> DirectoryROCODataset:
+        return DirectoryROCODataset(cls.directory / competition_name, dataset_name)

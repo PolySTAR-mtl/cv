@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from itertools import chain
 from pathlib import Path
 from typing import Dict
 
@@ -8,6 +7,7 @@ from polystar.common.models.object import Armor, ObjectType
 from polystar.common.utils.markdown import MarkdownFile
 from research.common.datasets.roco.roco_dataset import ROCODataset
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
+from research.common.datasets.union_dataset import UnionDataset
 
 
 @dataclass
@@ -66,5 +66,7 @@ def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
 
 
 if __name__ == "__main__":
-    for dset in chain(*ROCODatasetsZoo()):
-        make_markdown_dataset_report(dset, dset.dataset_path)
+    for datasets in ROCODatasetsZoo():
+        make_markdown_dataset_report(UnionDataset(datasets, datasets.name), datasets.directory)
+        for dset in datasets:
+            make_markdown_dataset_report(dset, dset.dataset_path)

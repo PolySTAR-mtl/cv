@@ -1,11 +1,11 @@
-from typing import Generic, Iterator, List, Tuple, TypeVar
+from typing import Generic, Iterable, Iterator, List, Tuple, TypeVar
 
 from polystar.common.models.image import Image
 
 TargetT = TypeVar("TargetT")
 
 
-class ImageDataset(Generic[TargetT]):
+class ImageDataset(Generic[TargetT], Iterable[Tuple[Image, TargetT]]):
     def __init__(self, name: str, images: List[Image] = None, targets: List[TargetT] = None):
         self.name = name
         self._targets = targets
