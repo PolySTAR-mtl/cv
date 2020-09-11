@@ -12,5 +12,5 @@ class DJIROCOZoomedDatasets(ROCODatasets):
     Final = ()
 
     @staticmethod
-    def _make_dataset(dataset_name: str) -> DirectoryROCODataset:
+    def make_dataset(dataset_name: str) -> DirectoryROCODataset:
         return DirectoryROCODataset(DJI_ROCO_ZOOMED_DSET_DIR / camel2snake(dataset_name), f"{dataset_name}ZoomedV2")

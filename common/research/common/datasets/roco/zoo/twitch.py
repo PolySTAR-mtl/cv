@@ -15,6 +15,6 @@ class TwitchROCODatasets(ROCODatasets):
     TWITCH_470158483 = ()
 
     @staticmethod
-    def _make_dataset(dataset_name: str) -> DirectoryROCODataset:
+    def make_dataset(dataset_name: str) -> DirectoryROCODataset:
         twitch_id = dataset_name[len("TWITCH_") :]
         return DirectoryROCODataset(TWITCH_DSET_DIR / "v1" / twitch_id, f"T{twitch_id}")

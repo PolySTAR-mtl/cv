@@ -11,5 +11,5 @@ class DJIROCODatasets(ROCODatasets):
     Final = "robomaster_Final Tournament"
 
     @staticmethod
-    def _make_dataset(dataset_name: str, competition_name: str) -> DirectoryROCODataset:
+    def make_dataset(dataset_name: str, competition_name: str) -> DirectoryROCODataset:
         return DirectoryROCODataset(DJI_ROCO_DSET_DIR / competition_name, dataset_name)

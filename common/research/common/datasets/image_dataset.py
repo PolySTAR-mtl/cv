@@ -6,13 +6,19 @@ TargetT = TypeVar("TargetT")
 
 
 class ImageDataset(Generic[TargetT]):
-    def __init__(self, images: List[Image] = None, targets: List[TargetT] = None):
+    def __init__(self, name: str, images: List[Image] = None, targets: List[TargetT] = None):
+        self.name = name
         self._targets = targets
         self._images = images
         self._check_consistency()
 
     def __iter__(self) -> Iterator[Tuple[Image, TargetT]]:
         return zip(self.images, self.targets)
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} {self.name}>"
+
+    __repr__ = __str__
 
     @property
     def images(self) -> List[Image]:
@@ -27,8 +33,7 @@ class ImageDataset(Generic[TargetT]):
     def _load_data(self):
         if self._is_loaded:
             return
-        images, targets = zip(*self)
-        self._images, self._targets = list(images), list(targets)
+        self._images, self._targets = map(list, zip(*self))
         self._check_consistency()
 
     def _check_consistency(self):
