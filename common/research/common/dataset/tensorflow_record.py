@@ -1,44 +1,48 @@
 import hashlib
+from pathlib import Path
 from shutil import move
-from typing import Iterable
+from typing import List
 
 import tensorflow as tf
-from tensorflow_core.python.lib.io import python_io
-from tqdm import tqdm
-
-from polystar.common.models.image_annotation import ImageAnnotation
 from polystar.common.models.label_map import label_map
 from research.common.constants import TENSORFLOW_RECORDS_DIR
-from research.common.dataset.roco_dataset import ROCODataset
+from research.common.datasets.roco.directory_roco_dataset import \
+    DirectoryROCODataset
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from tensorflow_core.python.lib.io import python_io
+from tqdm import tqdm
 
 
 class TensorflowRecordFactory:
     @staticmethod
-    def from_datasets(datasets: Iterable[ROCODataset], name: str):
+    def from_datasets(datasets: List[DirectoryROCODataset], prefix: str = ""):
+        name = prefix + "_".join(d.name for d in datasets)
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
         c = 0
-        for dataset in datasets:
-            for image_annotation in tqdm(dataset.image_annotations, desc=dataset.dataset_name, total=len(dataset)):
-                writer.write(_example_from_image_annotation(image_annotation).SerializeToString())
+        for dataset in tqdm(datasets, desc=name, total=len(datasets)):
+            for image_path, annotation in tqdm(
+                dataset.unloaded_items(), desc=dataset.name, total=len(dataset), unit="img", leave=False
+            ):
+                writer.write(_example_from_image_annotation(image_path, annotation).SerializeToString())
                 c += 1
         writer.close()
         move(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"), str(TENSORFLOW_RECORDS_DIR / f"{name}_{c}_imgs.record"))
 
     @staticmethod
-    def from_dataset(dataset: ROCODataset):
-        TensorflowRecordFactory.from_datasets([dataset], name=dataset.dataset_name)
+    def from_dataset(dataset: DirectoryROCODataset, prefix: str = ""):
+        TensorflowRecordFactory.from_datasets([dataset], prefix)
 
 
-def _example_from_image_annotation(image_annotation: ImageAnnotation) -> tf.train.Example:
-    image_name = image_annotation.image_path.name
-    encoded_jpg = image_annotation.image_path.read_bytes()
+def _example_from_image_annotation(image_path: Path, annotation: ROCOAnnotation) -> tf.train.Example:
+    image_name = image_path.name
+    encoded_jpg = image_path.read_bytes()
     key = hashlib.sha256(encoded_jpg).hexdigest()
 
-    width, height = image_annotation.width, image_annotation.height
+    width, height = annotation.w, annotation.h
 
     xmin, ymin, xmax, ymax, classes, classes_text = [], [], [], [], [], []
 
-    for obj in image_annotation.objects:
+    for obj in annotation.objects:
         xmin.append(float(obj.box.x1) / width)
         ymin.append(float(obj.box.y1) / height)
         xmax.append(float(obj.box.x2) / width)

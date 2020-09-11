@@ -15,6 +15,11 @@ class ImageDataset(Generic[TargetT], Iterable[Tuple[Image, TargetT]]):
     def __iter__(self) -> Iterator[Tuple[Image, TargetT]]:
         return zip(self.images, self.targets)
 
+    def __len__(self):
+        if not self._is_loaded:
+            self._load_data()
+        return len(self.images)
+
     def __str__(self):
         return f"<{self.__class__.__name__} {self.name}>"
 
@@ -33,7 +38,10 @@ class ImageDataset(Generic[TargetT], Iterable[Tuple[Image, TargetT]]):
     def _load_data(self):
         if self._is_loaded:
             return
-        self._images, self._targets = map(list, zip(*self))
+        self._images, self._targets = [], []
+        for image, target in self:
+            self._images.append(image)
+            self._targets.append(target)
         self._check_consistency()
 
     def _check_consistency(self):

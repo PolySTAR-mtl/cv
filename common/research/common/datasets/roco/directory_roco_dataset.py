@@ -33,15 +33,13 @@ class DirectoryROCODataset(ROCODataset):
     def __len__(self):
         return ilen(self.annotation_paths)
 
-    def __iter__(self) -> Iterable[Tuple[Image, ROCOAnnotation]]:
+    def unloaded_items(self) -> Iterable[Tuple[Path, ROCOAnnotation]]:
         for annotation_file in self.annotation_paths:
-            yield self._load_from_annotation_file(annotation_file)
+            yield self.images_dir_path / f"{annotation_file.stem}.jpg", ROCOAnnotation.from_xml_file(annotation_file)
 
-    def _load_from_annotation_file(self, annotation_file: Path) -> Tuple[Image, ROCOAnnotation]:
-        return (
-            Image.from_path(self.images_dir_path / f"{annotation_file.stem}.jpg"),
-            ROCOAnnotation.from_xml_file(annotation_file),
-        )
+    def __iter__(self) -> Iterable[Tuple[Image, ROCOAnnotation]]:
+        for image_path, roco_annotation in self.unloaded_items():
+            yield Image.from_path(image_path), roco_annotation
 
     def save_one(self, image: Image, annotation: ROCOAnnotation):
         Image.save(image, self.images_dir_path / f"{annotation.name}.jpg")
