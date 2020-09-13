@@ -16,15 +16,20 @@ from tqdm import tqdm
 class TensorflowRecordFactory:
     @staticmethod
     def from_datasets(datasets: List[DirectoryROCODataset], prefix: str = ""):
-        name = prefix + "_".join(d.name for d in datasets)
-        writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
+        record_name = prefix + "_".join(d.name for d in datasets)
+        writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{record_name}.record"))
         c = 0
-        for dataset in tqdm(datasets, desc=name, total=len(datasets), unit="dataset"):
-            for image_path, annotation in tqdm(dataset, desc=dataset.name, total=len(dataset), unit="img", leave=False):
+        for dataset in tqdm(datasets, desc=record_name, total=len(datasets), unit="dataset"):
+            for image_path, annotation, _ in tqdm(
+                dataset, desc=dataset.name, total=len(dataset), unit="img", leave=False
+            ):
                 writer.write(_example_from_image_annotation(image_path, annotation).SerializeToString())
                 c += 1
         writer.close()
-        move(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"), str(TENSORFLOW_RECORDS_DIR / f"{name}_{c}_imgs.record"))
+        move(
+            str(TENSORFLOW_RECORDS_DIR / f"{record_name}.record"),
+            str(TENSORFLOW_RECORDS_DIR / f"{record_name}_{c}_imgs.record"),
+        )
 
     @staticmethod
     def from_dataset(dataset: DirectoryROCODataset, prefix: str = ""):

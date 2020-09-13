@@ -1,16 +1,18 @@
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from time import time
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 import numpy as np
-from sklearn.metrics import classification_report, confusion_matrix
-
 from memoized_property import memoized_property
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
-from polystar.common.models.image import Image
-from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research.common.image_pipeline_evaluation.image_dataset_generator import ImageDatasetGenerator
+from polystar.common.models.image import Image, load_image
+from research.common.datasets.roco.directory_roco_dataset import \
+    DirectoryROCODataset
+from research.robots_at_robots.dataset.armor_value_dataset import \
+    ArmorValueDatasetGenerator
+from sklearn.metrics import classification_report, confusion_matrix
 
 
 @dataclass
@@ -48,23 +50,17 @@ class ImagePipelineEvaluator:
         self,
         train_roco_datasets: List[DirectoryROCODataset],
         test_roco_datasets: List[DirectoryROCODataset],
-        image_dataset_generator: ImageDatasetGenerator,
+        image_dataset_generator: ArmorValueDatasetGenerator,
     ):
         logging.info("Loading data")
         self.train_roco_datasets = train_roco_datasets
         self.test_roco_datasets = test_roco_datasets
-        (
-            self.train_images_paths,
-            self.train_images,
-            self.train_labels,
-            self.train_dataset_sizes,
-        ) = image_dataset_generator.from_roco_datasets(train_roco_datasets)
-        (
-            self.test_images_paths,
-            self.test_images,
-            self.test_labels,
-            self.test_dataset_sizes,
-        ) = image_dataset_generator.from_roco_datasets(test_roco_datasets)
+        (self.train_images_paths, self.train_images, self.train_labels, self.train_dataset_sizes) = load_datasets(
+            train_roco_datasets, image_dataset_generator
+        )
+        (self.test_images_paths, self.test_images, self.test_labels, self.test_dataset_sizes) = load_datasets(
+            test_roco_datasets, image_dataset_generator
+        )
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
         return {str(pipeline): self.evaluate(pipeline) for pipeline in pipelines}
@@ -87,3 +83,13 @@ class ImagePipelineEvaluator:
         preds = pipeline.predict(images)
         mean_time = (time() - t) / len(images)
         return SetClassificationResults(np.asarray(labels), np.asarray(preds), mean_time)
+
+
+def load_datasets(
+    datasets: List[DirectoryROCODataset], image_dataset_generator: ArmorValueDatasetGenerator
+) -> Tuple[List[Path], List[Image], List[Any], List[int]]:
+    dataset_sizes = [len(d) for d in datasets]
+    dataset = image_dataset_generator.from_roco_datasets(datasets)
+    paths, targets = list(dataset.examples), list(dataset.targets)
+    images = list(map(load_image, paths))
+    return paths, images, targets, dataset_sizes

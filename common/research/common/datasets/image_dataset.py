@@ -4,16 +4,16 @@ from typing import Iterator, List, Tuple
 
 from memoized_property import memoized_property
 from more_itertools import ilen
-from polystar.common.models.image import Image
+from polystar.common.models.image import Image, load_image
 from research.common.datasets.dataset import Dataset, LazyDataset, TargetT
 
 ImageDataset = Dataset[Image, TargetT]
 
 
 class ImageFileDataset(LazyDataset[Path, TargetT], ABC):
-    def __iter__(self) -> Iterator[Tuple[Path, TargetT]]:
+    def __iter__(self) -> Iterator[Tuple[Path, TargetT, str]]:
         for image_file in self.image_files:
-            yield image_file, self.target_from_image_file(image_file)
+            yield image_file, self.target_from_image_file(image_file), image_file.stem
 
     @abstractmethod
     def target_from_image_file(self, image_file: Path) -> TargetT:

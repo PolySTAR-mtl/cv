@@ -11,8 +11,6 @@ from polystar.common.models.object import Object, ObjectFactory
 
 @dataclass
 class ROCOAnnotation:
-    name: str
-
     objects: List[Object]
 
     has_rune: bool
@@ -23,13 +21,13 @@ class ROCOAnnotation:
     @staticmethod
     def from_xml_file(xml_file: Path) -> "ROCOAnnotation":
         try:
-            return ROCOAnnotation.from_xml_dict(xmltodict.parse(xml_file.read_text())["annotation"], xml_file.stem)
+            return ROCOAnnotation.from_xml_dict(xmltodict.parse(xml_file.read_text())["annotation"])
         except Exception as e:
             logging.exception(f"Error parsing annotation file {xml_file}")
             raise e
 
     @staticmethod
-    def from_xml_dict(xml_dict: Dict, name: str) -> "ROCOAnnotation":
+    def from_xml_dict(xml_dict: Dict) -> "ROCOAnnotation":
         json_objects = xml_dict.get("object", []) or []
         json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
         roco_json_objects = [obj_json for obj_json in json_objects if not obj_json["name"].startswith("rune")]
@@ -40,7 +38,6 @@ class ROCOAnnotation:
             has_rune=len(roco_json_objects) != len(json_objects),
             w=int(xml_dict["size"]["width"]),
             h=int(xml_dict["size"]["height"]),
-            name=name,
         )
 
     def to_xml(self) -> str:

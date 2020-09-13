@@ -16,6 +16,9 @@ class ArmorColor(NoCaseEnum):
     Red = auto()
     Unknown = auto()
 
+    def __str__(self):
+        return self.name.lower()
+
 
 ORDERED_ARMOR_COLORS = [ArmorColor.Blue, ArmorColor.Grey, ArmorColor.Red]
 
@@ -41,6 +44,9 @@ class Object:
 class Armor(Object):
     number: ArmorNumber
     color: ArmorColor
+
+    def __repr__(self):
+        return f"<{self} {self.color} {self.number}>"
 
 
 class ObjectFactory:

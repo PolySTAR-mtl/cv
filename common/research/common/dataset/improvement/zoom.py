@@ -4,8 +4,7 @@ from typing import Iterable, List, Tuple
 
 from polystar.common.models.box import Box
 from polystar.common.models.image import Image
-from polystar.common.target_pipeline.objects_validators.in_box_validator import \
-    InBoxValidator
+from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
@@ -13,7 +12,7 @@ from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 
 def crop_image_annotation(
     image: Image, annotation: ROCOAnnotation, box: Box, min_coverage: float, name: str
-) -> Tuple[Image, ROCOAnnotation]:
+) -> Tuple[Image, ROCOAnnotation, str]:
     objects = InBoxValidator(box, min_coverage).filter(annotation.objects, image)
     objects = [copy(o) for o in objects]
     for obj in objects:
@@ -25,7 +24,8 @@ def crop_image_annotation(
         )
     return (
         image[box.y1 : box.y2, box.x1 : box.x2],
-        ROCOAnnotation(w=box.w, h=box.h, objects=objects, has_rune=False, name=name),
+        ROCOAnnotation(w=box.w, h=box.h, objects=objects, has_rune=False),
+        name,
     )
 
 
@@ -36,12 +36,12 @@ class Zoomer:
     max_overlap: float
     min_coverage: float
 
-    def zoom(self, image: Image, annotation: ROCOAnnotation) -> Iterable[Tuple[Image, ROCOAnnotation]]:
+    def zoom(self, image: Image, annotation: ROCOAnnotation, name: str) -> Iterable[Tuple[Image, ROCOAnnotation, str]]:
         boxes = [obj.box for obj in annotation.objects]
         boxes = self._create_views_covering(boxes, annotation)
         boxes = self._remove_overlapping_boxes(boxes)
         return (
-            crop_image_annotation(image, annotation, box, self.min_coverage, name=f"{annotation.name}_zoom_{i}")
+            crop_image_annotation(image, annotation, box, self.min_coverage, name=f"{name}_zoom_{i}")
             for (i, box) in enumerate(boxes, 1)
         )
 

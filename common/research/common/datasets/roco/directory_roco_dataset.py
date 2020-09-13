@@ -10,7 +10,6 @@ class DirectoryROCODataset(ImageDirectoryDataset[ROCOAnnotation]):
         super().__init__(dataset_path / "image", name)
         self.main_dir = dataset_path
         self.annotations_dir: Path = self.main_dir / "image_annotation"
-        self.annotations_dir: Path = self.main_dir / "image_annotation"
 
     def target_from_image_file(self, image_file: Path) -> ROCOAnnotation:
         return ROCOAnnotation.from_xml_file(self.annotations_dir / f"{image_file.stem}.xml")
@@ -20,6 +19,6 @@ class DirectoryROCODataset(ImageDirectoryDataset[ROCOAnnotation]):
         self.images_dir.mkdir()
         self.annotations_dir.mkdir()
 
-    def add(self, image: Image, annotation: ROCOAnnotation):
-        save_image(image, self.images_dir / f"{annotation.name}.jpg")
-        (self.annotations_dir / f"{annotation.name}.xml").write_text(annotation.to_xml())
+    def add(self, image: Image, annotation: ROCOAnnotation, name: str):
+        save_image(image, self.images_dir / f"{name}.jpg")
+        (self.annotations_dir / f"{name}.xml").write_text(annotation.to_xml())

@@ -1,16 +1,15 @@
 from typing import Iterable, Iterator, Tuple
 
-from polystar.common.models.image import Image
-from research.common.datasets.dataset import ExampleT, LazyDataset, TargetT
-from research.common.datasets.image_dataset import ImageDataset
+from research.common.datasets.dataset import (Dataset, ExampleT, LazyDataset,
+                                              TargetT)
 
 
 class UnionDataset(LazyDataset[ExampleT, TargetT]):
-    def __init__(self, datasets: Iterable[ImageDataset[TargetT]], name: str):
-        super().__init__(name)
+    def __init__(self, datasets: Iterable[Dataset[ExampleT, TargetT]], name: str = None):
         self.datasets = list(datasets)
+        super().__init__(name or "_".join(d.name for d in self.datasets))
 
-    def __iter__(self) -> Iterator[Tuple[Image, TargetT]]:
+    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT, str]]:
         for dataset in self.datasets:
             yield from dataset
 

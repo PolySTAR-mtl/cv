@@ -1,3 +1,4 @@
+from polystar.common.utils.tqdm import smart_tqdm
 from research.common.dataset.improvement.zoom import Zoomer
 from research.common.dataset.perturbations.image_modifiers.brightness import \
     BrightnessModifier
@@ -9,7 +10,6 @@ from research.common.dataset.perturbations.perturbator import ImagePerturbator
 from research.common.datasets.roco.roco_dataset import ROCOFileDataset
 from research.common.datasets.roco.zoo.dji_zoomed import DJIROCOZoomedDatasets
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
-from tqdm import tqdm
 
 
 def improve_dji_roco_dataset_by_zooming_and_perturbating(
@@ -18,10 +18,10 @@ def improve_dji_roco_dataset_by_zooming_and_perturbating(
     zoomed_dset = DJIROCOZoomedDatasets.make_dataset(dset.name)
     zoomed_dset.create()
 
-    for img, annotation in tqdm(dset.open(), desc=f"Processing {dset}", unit="image", total=len(dset)):
-        for zoomed_image, zoomed_annotation in zoomer.zoom(img, annotation):
+    for img, annotation, name in smart_tqdm(dset.open(), desc=f"Processing {dset}", unit="image", total=len(dset)):
+        for zoomed_image, zoomed_annotation, zoomed_name in zoomer.zoom(img, annotation, name):
             zoomed_image = perturbator.perturbate(zoomed_image)
-            zoomed_dset.add(zoomed_image, zoomed_annotation)
+            zoomed_dset.add(zoomed_image, zoomed_annotation, zoomed_name)
 
 
 def improve_all_dji_datasets_by_zooming_and_perturbating(zoomer: Zoomer, perturbator: ImagePerturbator):

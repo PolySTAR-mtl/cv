@@ -6,7 +6,7 @@ from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 def visualize_dataset(dataset: ROCODataset, n_images: int):
     viewer = PltResultViewer(dataset.name)
 
-    for i, (image, annotation) in enumerate(dataset, 1):
+    for i, (image, annotation, name) in enumerate(dataset, 1):
         viewer.display_image_with_objects(image, annotation.objects)
 
         if i == n_images:

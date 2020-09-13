@@ -15,17 +15,16 @@ def create_one_record_per_roco_dset():
 def create_twitch_records():
     TensorflowRecordFactory.from_datasets(
         [
-            TwitchROCODatasets.TWITCH_470149568,
-            TwitchROCODatasets.TWITCH_470150052,
-            TwitchROCODatasets.TWITCH_470151286,
-            TwitchROCODatasets.TWITCH_470152289,
-            TwitchROCODatasets.TWITCH_470152730,
+            TwitchROCODatasets.T470149568,
+            TwitchROCODatasets.T470150052,
+            TwitchROCODatasets.T470151286,
+            TwitchROCODatasets.T470152289,
+            TwitchROCODatasets.T470152730,
         ],
         "Twitch_Train_",
     )
     TensorflowRecordFactory.from_datasets(
-        [TwitchROCODatasets.TWITCH_470152838, TwitchROCODatasets.TWITCH_470153081, TwitchROCODatasets.TWITCH_470158483],
-        "Twitch_Test_",
+        [TwitchROCODatasets.T470152838, TwitchROCODatasets.T470153081, TwitchROCODatasets.T470158483], "Twitch_Test_",
     )
 
 

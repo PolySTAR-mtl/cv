@@ -2,9 +2,9 @@ from pathlib import Path
 from typing import Iterable
 
 import cv2
-from nptyping import Array
+import numpy as np
 
-Image = Array[int, ..., ..., 3]
+Image = np.ndarray
 
 
 def load_image(image_path: Path, conversion: int = cv2.COLOR_BGR2RGB) -> Image:

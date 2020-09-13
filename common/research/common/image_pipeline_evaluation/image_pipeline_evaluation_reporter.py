@@ -12,10 +12,12 @@ from polystar.common.utils.dataframe import format_df_column, format_df_row, for
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
-from research.common.dataset.roco_dataset import ROCODataset
-from research.common.image_pipeline_evaluation.image_pipeline_evaluator import (ClassificationResults,
-                                                                                ImagePipelineEvaluator,
-                                                                                SetClassificationResults)
+from research.common.datasets.roco.roco_dataset import ROCOFileDataset
+from research.common.image_pipeline_evaluation.image_pipeline_evaluator import (
+    ClassificationResults,
+    ImagePipelineEvaluator,
+    SetClassificationResults,
+)
 
 
 @dataclass
@@ -54,17 +56,17 @@ class ImagePipelineEvaluationReporter:
 
     @staticmethod
     def _report_dataset(
-        mf: MarkdownFile, roco_datasets: List[ROCODataset], dataset_sizes: List[int], labels: List[Any]
+        mf: MarkdownFile, roco_datasets: List[ROCOFileDataset], dataset_sizes: List[int], labels: List[Any]
     ):
         total = len(labels)
         mf.paragraph(f"{total} images")
         df = DataFrame(
             {
-                dataset.dataset_name: Counter(labels[start:end])
+                dataset.name: Counter(labels[start:end])
                 for dataset, start, end in zip(roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes))
             }
         ).fillna(0)
-        df["Total"] = sum([df[d.dataset_name] for d in roco_datasets])
+        df["Total"] = sum([df[d.name] for d in roco_datasets])
         df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
         mf.table(df)
 

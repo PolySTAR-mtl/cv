@@ -3,6 +3,7 @@ from collections import deque
 from typing import Callable, Generic, Iterable, Iterator, Tuple, TypeVar
 
 from more_itertools import ilen
+from polystar.common.utils.iterable_utils import smart_len
 from polystar.common.utils.misc import identity
 
 ExampleT = TypeVar("ExampleT")
@@ -11,7 +12,7 @@ ExampleU = TypeVar("ExampleU")
 TargetU = TypeVar("TargetU")
 
 
-class Dataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT]], ABC):
+class Dataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT, str]], ABC):
     def __init__(self, name: str):
         self.name = name
 
@@ -25,8 +26,13 @@ class Dataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT]], AB
     def targets(self) -> Iterable[TargetT]:
         pass
 
+    @property
     @abstractmethod
-    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT]]:
+    def names(self) -> Iterable[TargetT]:
+        pass
+
+    @abstractmethod
+    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT, str]]:
         pass
 
     @abstractmethod
@@ -45,7 +51,10 @@ class Dataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT]], AB
         self, example_transformer: Callable[[ExampleT], ExampleU], target_transformer: Callable[[TargetT], TargetU]
     ) -> "Dataset[ExampleU, TargetU]":
         return GeneratorDataset(
-            self.name, lambda: ((example_transformer(example), target_transformer(target)) for example, target in self)
+            self.name,
+            lambda: (
+                (example_transformer(example), target_transformer(target), name) for example, target, name in self
+            ),
         )
 
     def __str__(self):
@@ -54,16 +63,13 @@ class Dataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT]], AB
     __repr__ = __str__
 
     def check_consistency(self):
-        targets, examples = self.targets, self.examples
-        if isinstance(targets, list) and isinstance(examples, list):
-            assert len(targets) == len(examples)
-        assert ilen(targets) == ilen(examples)
+        assert smart_len(self.targets) == smart_len(self.examples) == smart_len(self.names)
 
 
 class LazyUnzipper:
-    def __init__(self, iterator: Iterator[Tuple]):
+    def __init__(self, iterator: Iterator[Tuple], n: int):
         self._iterator = iterator
-        self._memory = [deque(), deque()]
+        self._memory = [deque() for _ in range(n)]
 
     def empty(self, i: int):
         return self._iterator is None and not self._memory[i]
@@ -77,7 +83,9 @@ class LazyUnzipper:
             else:
                 try:
                     elements = next(self._iterator)
-                    self._memory[1 - i].append(elements[1 - i])
+                    for k in range(len(elements)):
+                        if k != i:
+                            self._memory[k].append(elements[k])
                     yield elements[i]
                 except StopIteration:
                     self._iterator = None
@@ -87,28 +95,33 @@ class LazyUnzipper:
 class LazyDataset(Dataset[ExampleT, TargetT], ABC):
     def __init__(self, name: str):
         super().__init__(name)
-        self._unzipper = LazyUnzipper(iter(self))
+        self._unzipper = None
 
     @property
     def examples(self) -> Iterable[ExampleT]:
-        if self._unzipper.empty(0):
-            self._unzipper = LazyUnzipper(iter(self))
-        return self._unzipper.elements(0)
+        return self._elements(0)
 
     @property
-    def targets(self) -> Iterable[ExampleT]:
-        if self._unzipper.empty(1):
-            self._unzipper = LazyUnzipper(iter(self))
-        return self._unzipper.elements(1)
+    def targets(self) -> Iterable[TargetT]:
+        return self._elements(1)
+
+    @property
+    def names(self) -> Iterable[str]:
+        return self._elements(2)
 
     def __len__(self):
         return ilen(self)
 
+    def _elements(self, i: int) -> Iterable:
+        if self._unzipper is None or self._unzipper.empty(i):
+            self._unzipper = LazyUnzipper(iter(self), 3)
+        return self._unzipper.elements(i)
+
 
 class GeneratorDataset(LazyDataset[ExampleT, TargetT]):
-    def __init__(self, name: str, generator: Callable[[], Iterator[Tuple[ExampleT, TargetT]]]):
+    def __init__(self, name: str, generator: Callable[[], Iterator[Tuple[ExampleT, TargetT, str]]]):
         self.generator = generator
         super().__init__(name)
 
-    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT]]:
+    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT, str]]:
         return self.generator()
