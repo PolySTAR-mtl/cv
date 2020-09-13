@@ -6,7 +6,7 @@ from xml.dom.minidom import parseString
 
 import xmltodict
 from dicttoxml import dicttoxml
-from polystar.common.models.image import Image
+from polystar.common.models.image import Image, load_image, save_image
 from polystar.common.models.object import Object, ObjectFactory
 
 
@@ -28,7 +28,7 @@ class ImageAnnotation:
     @property
     def image(self) -> Image:
         if self._image is None:
-            self._image = Image.from_path(self.image_path)
+            self._image = load_image(self.image_path)
         return self._image
 
     @staticmethod
@@ -78,5 +78,5 @@ class ImageAnnotation:
         self.image_path.parent.mkdir(exist_ok=True, parents=True)
         self.xml_path.parent.mkdir(exist_ok=True, parents=True)
 
-        Image.save(self.image, self.image_path)
+        save_image(self.image, self.image_path)
         self.xml_path.write_text(self.to_xml())

@@ -3,8 +3,7 @@ from pathlib import Path
 from typing import Iterable
 
 from more_itertools import ilen
-
-from polystar.common.models.image import Image
+from polystar.common.models.image import Image, load_image
 from polystar.common.models.image_annotation import ImageAnnotation
 
 
@@ -17,7 +16,7 @@ class ROCODataset:
     @property
     def images(self) -> Iterable[Image]:
         for image_path in self.image_paths:
-            yield Image.from_path(image_path)
+            yield load_image(image_path)
 
     @property
     def image_annotations(self) -> Iterable[ImageAnnotation]:

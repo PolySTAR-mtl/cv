@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from numpy import asarray, float32
 from numpy.testing import assert_array_almost_equal
-from polystar.common.models.image import Image
+from polystar.common.models.image import save_image
 from research.common.datasets.roco.directory_roco_dataset import \
     DirectoryROCODataset
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
@@ -35,7 +35,7 @@ class TestDirectoryROCODataset(TestCase):
             dataset.annotations_dir.mkdir()
             dataset.images_dir.mkdir()
             (dataset.annotations_dir / "frame_1.xml").write_text(annotation.to_xml())
-            Image.save(image, dataset.images_dir / "frame_1.jpg")
+            save_image(image, dataset.images_dir / "frame_1.jpg")
 
             image_dataset = dataset.open()
 

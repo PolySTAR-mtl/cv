@@ -25,7 +25,7 @@ class ImageFileDataset(LazyDataset[Path, TargetT], ABC):
         pass
 
     def open(self) -> ImageDataset:
-        return self.transform_examples(Image.from_path)
+        return self.transform_examples(load_image)
 
     def __len__(self):
         return ilen(self.image_files)

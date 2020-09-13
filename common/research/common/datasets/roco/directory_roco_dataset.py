@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from polystar.common.models.image import Image
+from polystar.common.models.image import Image, save_image
 from research.common.datasets.image_dataset import ImageDirectoryDataset
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 
@@ -21,5 +21,5 @@ class DirectoryROCODataset(ImageDirectoryDataset[ROCOAnnotation]):
         self.annotations_dir.mkdir()
 
     def add(self, image: Image, annotation: ROCOAnnotation):
-        Image.save(image, self.images_dir / f"{annotation.name}.jpg")
+        save_image(image, self.images_dir / f"{annotation.name}.jpg")
         (self.annotations_dir / f"{annotation.name}.xml").write_text(annotation.to_xml())
