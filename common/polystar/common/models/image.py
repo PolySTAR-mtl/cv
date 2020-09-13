@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Iterable
 
 import cv2
-
 from nptyping import Array
 
 

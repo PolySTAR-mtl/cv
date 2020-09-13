@@ -19,10 +19,8 @@ class TensorflowRecordFactory:
         name = prefix + "_".join(d.name for d in datasets)
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{name}.record"))
         c = 0
-        for dataset in tqdm(datasets, desc=name, total=len(datasets)):
-            for image_path, annotation in tqdm(
-                dataset.unloaded_items(), desc=dataset.name, total=len(dataset), unit="img", leave=False
-            ):
+        for dataset in tqdm(datasets, desc=name, total=len(datasets), unit="dataset"):
+            for image_path, annotation in tqdm(dataset, desc=dataset.name, total=len(dataset), unit="img", leave=False):
                 writer.write(_example_from_image_annotation(image_path, annotation).SerializeToString())
                 c += 1
         writer.close()

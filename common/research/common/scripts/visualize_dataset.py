@@ -14,4 +14,4 @@ def visualize_dataset(dataset: ROCODataset, n_images: int):
 
 
 if __name__ == "__main__":
-    visualize_dataset(ROCODatasetsZoo.DJI_ZOOMED.CentralChina, 20)
+    visualize_dataset(ROCODatasetsZoo.DJI_ZOOMED.CentralChina.open(), 20)

@@ -1,58 +1,45 @@
-from typing import Generic, Iterable, Iterator, List, Tuple, TypeVar
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Iterator, List, Tuple
 
+from memoized_property import memoized_property
+from more_itertools import ilen
 from polystar.common.models.image import Image
+from research.common.datasets.dataset import Dataset, LazyDataset, TargetT
 
-TargetT = TypeVar("TargetT")
+ImageDataset = Dataset[Image, TargetT]
 
 
-class ImageDataset(Generic[TargetT], Iterable[Tuple[Image, TargetT]]):
-    def __init__(self, name: str, images: List[Image] = None, targets: List[TargetT] = None):
-        self.name = name
-        self._targets = targets
-        self._images = images
-        self._check_consistency()
+class ImageFileDataset(LazyDataset[Path, TargetT], ABC):
+    def __iter__(self) -> Iterator[Tuple[Path, TargetT]]:
+        for image_file in self.image_files:
+            yield image_file, self.target_from_image_file(image_file)
 
-    def __iter__(self) -> Iterator[Tuple[Image, TargetT]]:
-        return zip(self.images, self.targets)
+    @abstractmethod
+    def target_from_image_file(self, image_file: Path) -> TargetT:
+        pass
+
+    @property
+    @abstractmethod
+    def image_files(self) -> Iterator[Path]:
+        pass
+
+    def open(self) -> ImageDataset:
+        return self.transform_examples(Image.from_path)
 
     def __len__(self):
-        if not self._is_loaded:
-            self._load_data()
-        return len(self.images)
+        return ilen(self.image_files)
 
-    def __str__(self):
-        return f"<{self.__class__.__name__} {self.name}>"
 
-    __repr__ = __str__
+class ImageDirectoryDataset(ImageFileDataset[TargetT], ABC):
+    def __init__(self, images_dir: Path, name: str, extension: str = "jpg"):
+        super().__init__(name)
+        self.extension = extension
+        self.images_dir = images_dir
 
-    @property
-    def images(self) -> List[Image]:
-        self._load_data()
-        return self._images
+    @memoized_property
+    def image_files(self) -> List[Path]:
+        return list(sorted(self.images_dir.glob(f"*.{self.extension}")))
 
-    @property
-    def targets(self) -> List[TargetT]:
-        self._load_data()
-        return self._targets
-
-    def _load_data(self):
-        if self._is_loaded:
-            return
-        self._images, self._targets = [], []
-        for image, target in self:
-            self._images.append(image)
-            self._targets.append(target)
-        self._check_consistency()
-
-    def _check_consistency(self):
-        assert self._is_loaded or self._has_custom_load
-        if self._is_loaded:
-            assert len(self.targets) == len(self.images)
-
-    @property
-    def _is_loaded(self) -> bool:
-        return self._images is not None and self._targets is not None
-
-    @property
-    def _has_custom_load(self) -> bool:
-        return not self.__iter__.__qualname__.startswith("ImageDataset")
+    def __len__(self):
+        return len(self.image_files)

@@ -1,11 +1,11 @@
-from itertools import chain
-from typing import Iterable, Iterator, List, Tuple
+from typing import Iterable, Iterator, Tuple
 
 from polystar.common.models.image import Image
-from research.common.datasets.image_dataset import ImageDataset, TargetT
+from research.common.datasets.dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.image_dataset import ImageDataset
 
 
-class UnionDataset(ImageDataset[TargetT]):
+class UnionDataset(LazyDataset[ExampleT, TargetT]):
     def __init__(self, datasets: Iterable[ImageDataset[TargetT]], name: str):
         super().__init__(name)
         self.datasets = list(datasets)
@@ -14,6 +14,5 @@ class UnionDataset(ImageDataset[TargetT]):
         for dataset in self.datasets:
             yield from dataset
 
-    @property
-    def targets(self) -> List[TargetT]:
-        return list(chain(*(dataset.targets for dataset in self.datasets)))
+    def __len__(self):
+        return sum(map(len, self.datasets))

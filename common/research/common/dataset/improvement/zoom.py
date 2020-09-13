@@ -121,10 +121,10 @@ class Zoomer:
 if __name__ == "__main__":
     zoomer = Zoomer(854, 480, 0.15, 0.5)
 
-    for k, (img, annotation) in enumerate(ROCODatasetsZoo.DJI.NorthChina):
+    for k, (img, annot) in enumerate(ROCODatasetsZoo.DJI.NorthChina):
         viewer = PltResultViewer(f"img {i}")
 
-        for (cropped_image, cropped_annotation) in zoomer.zoom(img, annotation):
+        for (cropped_image, cropped_annotation) in zoomer.zoom(img, annot):
             viewer.display_image_with_objects(cropped_image, cropped_annotation.objects)
 
         if k == 2:

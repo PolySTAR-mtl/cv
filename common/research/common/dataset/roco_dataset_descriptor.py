@@ -8,6 +8,7 @@ from polystar.common.utils.markdown import MarkdownFile
 from research.common.datasets.roco.roco_dataset import ROCODataset
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 from research.common.datasets.union_dataset import UnionDataset
+from tqdm import tqdm
 
 
 @dataclass
@@ -28,7 +29,7 @@ class ROCODatasetStats:
         rv.armors_color2num2count = {c: {n: 0 for n in range(10)} for c in colors}
         for c in colors:
             rv.armors_color2num2count[c]["total"] = 0
-        for annotation in dataset.targets:
+        for annotation in tqdm(dataset.targets, desc=dataset.name, unit="frame", total=len(dataset)):
             rv.n_images += 1
             rv.n_runes += annotation.has_rune
             for obj in annotation.objects:
@@ -69,4 +70,4 @@ if __name__ == "__main__":
     for datasets in ROCODatasetsZoo():
         make_markdown_dataset_report(UnionDataset(datasets, datasets.name), datasets.directory)
         for dset in datasets:
-            make_markdown_dataset_report(dset, dset.dataset_path)
+            make_markdown_dataset_report(dset, dset.main_dir)
