@@ -1,9 +1,13 @@
 from typing import Iterable, List
 
-from research.common.dataset.directory_roco_dataset import DirectoryROCODataset
-from research.common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import ImagePipelineEvaluationReporter
-from research.common.image_pipeline_evaluation.image_pipeline_evaluator import ImagePipelineEvaluator
-from research.robots_at_robots.dataset.armor_digit_dataset_factory import ArmorDigitDatasetGenerator
+from research.common.datasets.roco.directory_roco_dataset import \
+    DirectoryROCODataset
+from research.common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import \
+    ImagePipelineEvaluationReporter
+from research.common.image_pipeline_evaluation.image_pipeline_evaluator import \
+    ImagePipelineEvaluator
+from research.robots_at_robots.armor_digit.armor_digit_dataset import \
+    ArmorDigitDatasetGenerator
 
 
 class ArmorDigitPipelineReporterFactory:
@@ -17,7 +21,7 @@ class ArmorDigitPipelineReporterFactory:
             evaluator=ImagePipelineEvaluator(
                 train_roco_datasets=train_roco_datasets,
                 test_roco_datasets=test_roco_datasets,
-                image_dataset_generator=ArmorDigitDatasetGenerator(set(acceptable_digits)),
+                image_dataset_generator=ArmorDigitDatasetGenerator(acceptable_digits),
             ),
             evaluation_project="armor-digit",
         )
