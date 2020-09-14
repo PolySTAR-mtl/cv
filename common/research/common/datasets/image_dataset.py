@@ -25,10 +25,14 @@ class ImageFileDataset(LazyDataset[Path, TargetT], ABC):
         pass
 
     def open(self) -> ImageDataset:
-        return self.transform_examples(load_image)
+        return open_file_dataset(self)
 
     def __len__(self):
         return ilen(self.image_files)
+
+
+def open_file_dataset(dataset: Dataset[Path, TargetT]) -> ImageDataset:
+    return dataset.transform_examples(load_image)
 
 
 class ImageDirectoryDataset(ImageFileDataset[TargetT], ABC):

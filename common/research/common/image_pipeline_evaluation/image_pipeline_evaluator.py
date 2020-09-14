@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, List, Sequence, Tuple
 import numpy as np
 from memoized_property import memoized_property
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
-from polystar.common.models.image import Image, load_image
+from polystar.common.models.image import Image, load_images
 from research.common.datasets.roco.directory_roco_dataset import \
     DirectoryROCODataset
 from research.robots_at_robots.dataset.armor_value_dataset import \
@@ -86,10 +86,11 @@ class ImagePipelineEvaluator:
 
 
 def load_datasets(
-    datasets: List[DirectoryROCODataset], image_dataset_generator: ArmorValueDatasetGenerator
+    roco_datasets: List[DirectoryROCODataset], image_dataset_generator: ArmorValueDatasetGenerator,
 ) -> Tuple[List[Path], List[Image], List[Any], List[int]]:
-    dataset_sizes = [len(d) for d in datasets]
-    dataset = image_dataset_generator.from_roco_datasets(datasets)
+    dataset = image_dataset_generator.from_roco_datasets(roco_datasets)
+    dataset_sizes = [len(d) for d in dataset.datasets]
+
     paths, targets = list(dataset.examples), list(dataset.targets)
-    images = list(map(load_image, paths))
+    images = list(load_images(paths))
     return paths, images, targets, dataset_sizes
