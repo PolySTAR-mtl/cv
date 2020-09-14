@@ -1,6 +1,8 @@
 import json
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
+from shutil import rmtree
 from typing import ClassVar, Generic, List, TypeVar
 
 from polystar.common.models.image import Image, save_image
@@ -27,8 +29,14 @@ class ArmorValueDirectoryDataset(Generic[ValueT], ImageDirectoryDataset[ValueT],
         pass
 
 
+@dataclass
+class WrongVersionException(Exception):
+    actual: str
+    expected: str
+
+
 class ArmorValueDatasetGenerator(Generic[ValueT], ABC):
-    VERSION: ClassVar[str] = "1.0"
+    VERSION: ClassVar[str] = "2.0"
 
     def __init__(self, task_name: str):
         self.task_name = task_name
@@ -47,24 +55,35 @@ class ArmorValueDatasetGenerator(Generic[ValueT], ABC):
         pass
 
     def _generate_if_absent(self, roco_dataset: DirectoryROCODataset):
-        if self._exists_and_is_valid(roco_dataset):
-            return
-        self._generate(roco_dataset)
+        try:
+            self._assert_exists_and_is_valid(roco_dataset)
+        except FileNotFoundError:
+            self._generate(roco_dataset, "lock not found")
+        except WrongVersionException as e:
+            self._generate(roco_dataset, f"upgrade [{e.actual} -> {e.expected}]")
 
     def _task_dir(self, roco_dataset: DirectoryROCODataset) -> Path:
         return roco_dataset.main_dir / self.task_name
 
-    def _generate(self, roco_dataset: DirectoryROCODataset):
+    def _generate(self, roco_dataset: DirectoryROCODataset, cause: str = ""):
+        rmtree(self._task_dir(roco_dataset), ignore_errors=True)
         armor_dataset = self._make_dataset(roco_dataset)
+        if cause:
+            cause = f"(cause: {cause})"
         for image, target, name in smart_tqdm(
-            armor_dataset, desc=f"Generating dataset {roco_dataset.name}_{self.task_name} ", unit="frame"
+            armor_dataset, desc=f"Generating dataset {roco_dataset.name}_{self.task_name} {cause}", unit="frame"
         ):
             save_image(image, self._task_dir(roco_dataset) / f"{name}-{target}.jpg")
         self._lock_file(roco_dataset).write_text(json.dumps({"version": self.VERSION, "date": create_time_id()}))
 
-    def _exists_and_is_valid(self, roco_dataset: DirectoryROCODataset) -> bool:
+    def _assert_exists_and_is_valid(self, roco_dataset: DirectoryROCODataset):
         lock = self._lock_file(roco_dataset)
-        return lock.exists() and json.loads(lock.read_text())["version"] == self.VERSION
+        if not lock.exists():
+            raise FileNotFoundError()
+
+        version = json.loads(lock.read_text())["version"]
+        if version != self.VERSION:
+            raise WrongVersionException(version, self.VERSION)
 
     def _make_dataset(self, roco_dataset) -> Dataset[Image, ValueT]:
         return ArmorDatasetFactory(roco_dataset).make().transform_targets(self._value_from_armor)
