@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 from time import time
-from typing import Any, Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, Generic, Iterable, List, Sequence, Tuple
 
 import numpy as np
 from memoized_property import memoized_property
@@ -10,13 +10,13 @@ from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image, load_images
 from research.common.datasets.roco.directory_roco_dataset import \
     DirectoryROCODataset
-from research.robots_at_robots.dataset.armor_value_dataset import \
-    ArmorValueDatasetCache
+from research.robots_at_robots.dataset.armor_value_dataset import (
+    ArmorValueDatasetCache, ValueT)
 from sklearn.metrics import classification_report, confusion_matrix
 
 
 @dataclass
-class SetClassificationResults:
+class SetClassificationResults(Generic[ValueT]):
     labels: np.ndarray
     predictions: np.ndarray
     mean_inference_time: float
@@ -34,23 +34,23 @@ class SetClassificationResults:
         return np.where(self.labels != self.predictions)[0]
 
     @memoized_property
-    def unique_labels(self) -> List[Any]:
+    def unique_labels(self) -> List[ValueT]:
         return sorted(set(self.labels) | set(self.predictions))
 
 
 @dataclass
-class ClassificationResults:
-    train_results: SetClassificationResults
-    test_results: SetClassificationResults
+class ClassificationResults(Generic[ValueT]):
+    train_results: SetClassificationResults[ValueT]
+    test_results: SetClassificationResults[ValueT]
     full_pipeline_name: str
 
 
-class ImagePipelineEvaluator:
+class ImagePipelineEvaluator(Generic[ValueT]):
     def __init__(
         self,
         train_roco_datasets: List[DirectoryROCODataset],
         test_roco_datasets: List[DirectoryROCODataset],
-        image_dataset_cache: ArmorValueDatasetCache,
+        image_dataset_cache: ArmorValueDatasetCache[ValueT],
     ):
         logging.info("Loading data")
         self.train_roco_datasets = train_roco_datasets
@@ -63,22 +63,24 @@ class ImagePipelineEvaluator:
         )
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
-        return {str(pipeline): self.evaluate(pipeline) for pipeline in pipelines}
+        return {str(pipeline): self.evaluate_pipeline(pipeline) for pipeline in pipelines}
 
-    def evaluate(self, pipeline: ImagePipeline) -> ClassificationResults:
+    def evaluate_pipeline(self, pipeline: ImagePipeline) -> ClassificationResults:
         logging.info(f"Training pipeline {pipeline}")
         pipeline.fit(self.train_images, self.train_labels)
 
         logging.info(f"Infering")
-        train_results = self._evaluate_on_set(pipeline, self.train_images, self.train_labels)
-        test_results = self._evaluate_on_set(pipeline, self.test_images, self.test_labels)
+        train_results = self._evaluate_pipeline_on_set(pipeline, self.train_images, self.train_labels)
+        test_results = self._evaluate_pipeline_on_set(pipeline, self.test_images, self.test_labels)
 
         return ClassificationResults(
             train_results=train_results, test_results=test_results, full_pipeline_name=repr(pipeline),
         )
 
     @staticmethod
-    def _evaluate_on_set(pipeline: ImagePipeline, images: List[Image], labels: List[Any]) -> SetClassificationResults:
+    def _evaluate_pipeline_on_set(
+        pipeline: ImagePipeline, images: List[Image], labels: List[ValueT]
+    ) -> SetClassificationResults:
         t = time()
         preds = pipeline.predict(images)
         mean_time = (time() - t) / len(images)
@@ -87,7 +89,7 @@ class ImagePipelineEvaluator:
 
 def load_datasets(
     roco_datasets: List[DirectoryROCODataset], image_dataset_cache: ArmorValueDatasetCache,
-) -> Tuple[List[Path], List[Image], List[Any], List[int]]:
+) -> Tuple[List[Path], List[Image], List[ValueT], List[int]]:
     dataset = image_dataset_cache.from_roco_datasets(roco_datasets)
     dataset_sizes = [len(d) for d in dataset.datasets]
 

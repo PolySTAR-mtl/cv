@@ -2,24 +2,27 @@ from collections import Counter
 from dataclasses import dataclass
 from os.path import relpath
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple, Generic
 
 import numpy as np
 from pandas import DataFrame
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
-from polystar.common.utils.dataframe import (format_df_column, format_df_row,
-                                             format_df_rows)
+from polystar.common.utils.dataframe import format_df_column, format_df_row, format_df_rows
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
 from research.common.datasets.roco.roco_dataset import ROCOFileDataset
+from research.robots_at_robots.dataset.armor_value_dataset import ValueT
 from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
-    ClassificationResults, ImagePipelineEvaluator, SetClassificationResults)
+    ClassificationResults,
+    ImagePipelineEvaluator,
+    SetClassificationResults,
+)
 
 
 @dataclass
-class ImagePipelineEvaluationReporter:
-    evaluator: ImagePipelineEvaluator
+class ImagePipelineEvaluationReporter(Generic[ValueT]):
+    evaluator: ImagePipelineEvaluator[ValueT]
     evaluation_project: str
     main_metric: Tuple[str, str] = ("f1-score", "weighted avg")
 
@@ -67,17 +70,17 @@ class ImagePipelineEvaluationReporter:
         df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
         mf.table(df)
 
-    def _report_aggregated_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults]):
+    def _report_aggregated_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[ValueT]]):
         aggregated_results = self._aggregate_results(pipeline2results)
         mf.title("Aggregated results", level=2)
         mf.paragraph("On test set:")
         mf.table(aggregated_results)
 
-    def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults]):
+    def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[ValueT]]):
         for pipeline_name, results in pipeline2results.items():
             self._report_pipeline_results(mf, pipeline_name, results)
 
-    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults):
+    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults[ValueT]):
         mf.title(pipeline_name, level=2)
 
         mf.paragraph(results.full_pipeline_name)
@@ -93,7 +96,9 @@ class ImagePipelineEvaluationReporter:
         )
 
     @staticmethod
-    def _report_pipeline_set_results(mf: MarkdownFile, results: SetClassificationResults, image_paths: List[Path]):
+    def _report_pipeline_set_results(
+        mf: MarkdownFile, results: SetClassificationResults[ValueT], image_paths: List[Path]
+    ):
         mf.title("Metrics", level=4)
         mf.paragraph(f"Inference time: {results.mean_inference_time: .2e} s/img")
         df = DataFrame(results.report)
@@ -119,7 +124,7 @@ class ImagePipelineEvaluationReporter:
             ).set_index("images")
         )
 
-    def _aggregate_results(self, pipeline2results: Dict[str, ClassificationResults]) -> DataFrame:
+    def _aggregate_results(self, pipeline2results: Dict[str, ClassificationResults[ValueT]]) -> DataFrame:
         main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"
         df = DataFrame(columns=["pipeline", main_metric_name, "inf time"]).set_index("pipeline")
 
