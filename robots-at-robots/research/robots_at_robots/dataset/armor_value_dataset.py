@@ -11,11 +11,9 @@ from polystar.common.utils.time import create_time_id
 from polystar.common.utils.tqdm import smart_tqdm
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.image_dataset import ImageDirectoryDataset
-from research.common.datasets.roco.directory_roco_dataset import \
-    DirectoryROCODataset
+from research.common.datasets.roco.directory_roco_dataset import DirectoryROCODataset
 from research.common.datasets.union_dataset import UnionDataset
-from research.robots_at_robots.dataset.armor_dataset_factory import \
-    ArmorDatasetFactory
+from research.robots_at_robots.dataset.armor_dataset_factory import ArmorDatasetFactory
 
 ValueT = TypeVar("ValueT")
 
@@ -35,7 +33,7 @@ class WrongVersionException(Exception):
     expected: str
 
 
-class ArmorValueDatasetGenerator(Generic[ValueT], ABC):
+class ArmorValueDatasetCache(Generic[ValueT], ABC):
     VERSION: ClassVar[str] = "2.0"
 
     def __init__(self, task_name: str):

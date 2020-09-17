@@ -10,7 +10,7 @@ from research.common.datasets.filtered_dataset import FilteredTargetsDataset
 from research.common.datasets.image_dataset import open_file_dataset
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 from research.robots_at_robots.dataset.armor_value_dataset import (
-    ArmorValueDatasetGenerator, ArmorValueDirectoryDataset)
+    ArmorValueDatasetCache, ArmorValueDirectoryDataset)
 
 
 class ArmorDigitDirectoryDataset(ArmorValueDirectoryDataset[int]):
@@ -19,7 +19,7 @@ class ArmorDigitDirectoryDataset(ArmorValueDirectoryDataset[int]):
         return int(label)
 
 
-class ArmorDigitDatasetGenerator(ArmorValueDatasetGenerator[str]):
+class ArmorDigitDatasetCache(ArmorValueDatasetCache[str]):
     def __init__(self, acceptable_digits: Iterable[int]):
         super().__init__("digits")
         self.acceptable_digits = acceptable_digits
@@ -34,7 +34,7 @@ class ArmorDigitDatasetGenerator(ArmorValueDatasetGenerator[str]):
 
 if __name__ == "__main__":
     _dataset = open_file_dataset(
-        ArmorDigitDatasetGenerator((1, 2, 3, 4, 5, 7)).from_roco_dataset(ROCODatasetsZoo.TWITCH.T470150052)
+        ArmorDigitDatasetCache((1, 2, 3, 4, 5, 7)).from_roco_dataset(ROCODatasetsZoo.TWITCH.T470150052)
     )
 
     for _image, _value, _name in islice(_dataset, 40, 50):

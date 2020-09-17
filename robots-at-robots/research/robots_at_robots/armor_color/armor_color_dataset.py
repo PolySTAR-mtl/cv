@@ -7,7 +7,7 @@ from research.common.datasets.dataset import Dataset
 from research.common.datasets.image_dataset import open_file_dataset
 from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
 from research.robots_at_robots.dataset.armor_value_dataset import (
-    ArmorValueDatasetGenerator, ArmorValueDirectoryDataset)
+    ArmorValueDatasetCache, ArmorValueDirectoryDataset)
 
 
 class ArmorColorDirectoryDataset(ArmorValueDirectoryDataset[str]):
@@ -16,7 +16,7 @@ class ArmorColorDirectoryDataset(ArmorValueDirectoryDataset[str]):
         return label
 
 
-class ArmorColorDatasetGenerator(ArmorValueDatasetGenerator[str]):
+class ArmorColorDatasetCache(ArmorValueDatasetCache[str]):
     def __init__(self):
         super().__init__("colors")
 
@@ -28,7 +28,7 @@ class ArmorColorDatasetGenerator(ArmorValueDatasetGenerator[str]):
 
 
 if __name__ == "__main__":
-    _dataset = open_file_dataset(ArmorColorDatasetGenerator().from_roco_dataset(ROCODatasetsZoo.TWITCH.T470150052))
+    _dataset = open_file_dataset(ArmorColorDatasetCache().from_roco_dataset(ROCODatasetsZoo.TWITCH.T470150052))
 
     for _image, _value, _name in islice(_dataset, 40, 50):
         print(_value)

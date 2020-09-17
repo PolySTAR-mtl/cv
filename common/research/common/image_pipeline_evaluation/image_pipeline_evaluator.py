@@ -11,7 +11,7 @@ from polystar.common.models.image import Image, load_images
 from research.common.datasets.roco.directory_roco_dataset import \
     DirectoryROCODataset
 from research.robots_at_robots.dataset.armor_value_dataset import \
-    ArmorValueDatasetGenerator
+    ArmorValueDatasetCache
 from sklearn.metrics import classification_report, confusion_matrix
 
 
@@ -50,16 +50,16 @@ class ImagePipelineEvaluator:
         self,
         train_roco_datasets: List[DirectoryROCODataset],
         test_roco_datasets: List[DirectoryROCODataset],
-        image_dataset_generator: ArmorValueDatasetGenerator,
+        image_dataset_cache: ArmorValueDatasetCache,
     ):
         logging.info("Loading data")
         self.train_roco_datasets = train_roco_datasets
         self.test_roco_datasets = test_roco_datasets
         (self.train_images_paths, self.train_images, self.train_labels, self.train_dataset_sizes) = load_datasets(
-            train_roco_datasets, image_dataset_generator
+            train_roco_datasets, image_dataset_cache
         )
         (self.test_images_paths, self.test_images, self.test_labels, self.test_dataset_sizes) = load_datasets(
-            test_roco_datasets, image_dataset_generator
+            test_roco_datasets, image_dataset_cache
         )
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
@@ -86,9 +86,9 @@ class ImagePipelineEvaluator:
 
 
 def load_datasets(
-    roco_datasets: List[DirectoryROCODataset], image_dataset_generator: ArmorValueDatasetGenerator,
+    roco_datasets: List[DirectoryROCODataset], image_dataset_cache: ArmorValueDatasetCache,
 ) -> Tuple[List[Path], List[Image], List[Any], List[int]]:
-    dataset = image_dataset_generator.from_roco_datasets(roco_datasets)
+    dataset = image_dataset_cache.from_roco_datasets(roco_datasets)
     dataset_sizes = [len(d) for d in dataset.datasets]
 
     paths, targets = list(dataset.examples), list(dataset.targets)
