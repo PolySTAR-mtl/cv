@@ -2,12 +2,12 @@ from typing import Iterable, List
 
 from research.common.datasets.roco.directory_roco_dataset import \
     DirectoryROCODataset
-from research.common.image_pipeline_evaluation.image_pipeline_evaluation_reporter import \
-    ImagePipelineEvaluationReporter
-from research.common.image_pipeline_evaluation.image_pipeline_evaluator import \
-    ImagePipelineEvaluator
 from research.robots_at_robots.armor_digit.armor_digit_dataset import \
     ArmorDigitDatasetCache
+from research.robots_at_robots.evaluation.image_pipeline_evaluation_reporter import \
+    ImagePipelineEvaluationReporter
+from research.robots_at_robots.evaluation.image_pipeline_evaluator import \
+    ImagePipelineEvaluator
 
 
 class ArmorDigitPipelineReporterFactory:
