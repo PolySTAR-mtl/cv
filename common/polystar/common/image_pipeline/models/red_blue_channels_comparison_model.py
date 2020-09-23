@@ -14,7 +14,7 @@ class RedBlueComparisonModel(AbsoluteClassifierModelABC):
     blue_channel_id: int = 2
 
     def __post_init__(self):
-        self.labels_ = np.asarray(sorted(["Red", "Grey", "Blue"]))
+        self.labels_ = np.asarray(sorted(["red", "grey", "blue"]))
         self.label2index_ = {label: i for i, label in enumerate(self.labels_)}
 
     def fit(self, features: List[Any], labels: List[Any]) -> "RedBlueComparisonModel":
@@ -22,7 +22,7 @@ class RedBlueComparisonModel(AbsoluteClassifierModelABC):
 
     def predict(self, features: List[Tuple[float, float, float]]) -> List[str]:
         return [
-            "Red" if feature[self.red_channel_id] >= feature[self.blue_channel_id] else "Blue" for feature in features
+            "red" if feature[self.red_channel_id] >= feature[self.blue_channel_id] else "blue" for feature in features
         ]
 
     def __str__(self) -> str:

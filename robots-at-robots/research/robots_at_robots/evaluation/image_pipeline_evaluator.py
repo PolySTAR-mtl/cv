@@ -8,10 +8,8 @@ import numpy as np
 from memoized_property import memoized_property
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image, load_images
-from research.common.datasets.roco.directory_roco_dataset import \
-    DirectoryROCODataset
-from research.robots_at_robots.dataset.armor_value_dataset import (
-    ArmorValueDatasetCache, ValueT)
+from research.common.datasets.roco.directory_roco_dataset import DirectoryROCODataset
+from research.robots_at_robots.dataset.armor_value_dataset import ArmorValueDatasetCache, ValueT
 from sklearn.metrics import classification_report, confusion_matrix
 
 
@@ -43,6 +41,11 @@ class ClassificationResults(Generic[ValueT]):
     train_results: SetClassificationResults[ValueT]
     test_results: SetClassificationResults[ValueT]
     full_pipeline_name: str
+
+    def on_set(self, set_: str) -> SetClassificationResults[ValueT]:
+        if set_ is "train":
+            return self.train_results
+        return self.test_results
 
 
 class ImagePipelineEvaluator(Generic[ValueT]):
