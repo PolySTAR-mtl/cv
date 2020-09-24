@@ -1,4 +1,4 @@
-from typing import Iterable, Type
+from typing import Iterable, Iterator, Type
 
 from research.common.datasets_v3.roco.roco_datasets import ROCODatasets
 from research.common.datasets_v3.roco.zoo.dji import DJIROCODatasets
@@ -11,7 +11,7 @@ class ROCODatasetsZoo(Iterable[Type[ROCODatasets]]):
     DJI = DJIROCODatasets
     TWITCH = TwitchROCODatasets
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Type[ROCODatasets]]:
         return iter((self.DJI, self.DJI_ZOOMED, self.TWITCH))
 
 

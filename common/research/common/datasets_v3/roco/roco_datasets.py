@@ -1,10 +1,10 @@
 from abc import abstractmethod
-from enum import Enum
+from enum import Enum, EnumMeta
 from pathlib import Path
 from typing import Iterator
 
 from polystar.common.utils.str_utils import snake2camel
-from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets_v3.roco.roco_dataset import (
     LazyROCODataset,
     LazyROCOFileDataset,
@@ -45,8 +45,9 @@ class ROCODatasets(Enum):
     def datasets_dir(cls) -> Path:  # Fixme: in python 37, we can define a class var using the _ignore_ attribute
         pass
 
-    def __iter__(self) -> Iterator["ROCODatasets"]:  # needed for pycharm typing, dont know why
-        return self.__iter__()
+    @classmethod
+    def __iter__(cls) -> Iterator["ROCODatasets"]:  # needed for pycharm typing, dont know why
+        return EnumMeta.__iter__(cls)
 
     @classmethod
     def union(cls) -> UnionLazyDataset[Path, ROCOAnnotation]:

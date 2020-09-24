@@ -1,15 +1,10 @@
 from os import remove
 from shutil import copy, make_archive, move, rmtree
 
-from research.common.constants import (TWITCH_DSET_DIR,
-                                       TWITCH_DSET_ROBOTS_VIEWS_DIR,
-                                       TWITCH_ROBOTS_VIEWS_DIR)
-from research.common.datasets.roco.directory_roco_dataset import \
-    DirectoryROCODataset
-from research.common.datasets.roco.roco_dataset_descriptor import \
-    make_markdown_dataset_report
-from research.common.scripts.construct_dataset_from_manual_annotation import \
-    construct_dataset_from_manual_annotations
+from research.common.constants import TWITCH_DSET_DIR, TWITCH_DSET_ROBOTS_VIEWS_DIR, TWITCH_ROBOTS_VIEWS_DIR
+from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets_v3.roco.roco_dataset_descriptor import make_markdown_dataset_report
+from research.common.scripts.construct_dataset_from_manual_annotation import construct_dataset_from_manual_annotations
 from research.common.scripts.correct_annotations import AnnotationFileCorrector
 
 
@@ -25,15 +20,15 @@ def _correct_manual_annotations():
 
 
 def _extract_runes_images():
-    all_twitch_dataset = _get_mixed_dataset()
+    all_twitch_dataset = _get_mixed_dataset_builder()
     for image_file, annotation, _ in all_twitch_dataset:
         if annotation.has_rune:
             copy(str(image_file), str(TWITCH_DSET_DIR / "runes" / image_file.name))
 
 
 def _separate_twitch_videos():
-    all_twitch_dataset = _get_mixed_dataset()
-    for image_file, annotation, _ in all_twitch_dataset:
+    all_twitch_dataset_builder = _get_mixed_dataset_builder()
+    for image_file, annotation, _ in all_twitch_dataset_builder:
         video_name = image_file.name.split("-")[0]
         dset_path = TWITCH_DSET_ROBOTS_VIEWS_DIR / video_name
         images_path = dset_path / "image"
@@ -42,7 +37,7 @@ def _separate_twitch_videos():
         annotations_path.mkdir(exist_ok=True, parents=True)
         move(str(image_file), str(images_path / image_file.name))
         xml_name = f"{image_file.stem}.xml"
-        move(str(all_twitch_dataset.annotations_dir / xml_name), str(annotations_path / xml_name))
+        move(str(all_twitch_dataset_builder.annotations_dir / xml_name), str(annotations_path / xml_name))
     if list((TWITCH_DSET_ROBOTS_VIEWS_DIR / "image").glob("*")):
         raise Exception(f"Some images remains unmoved")
     for remaining_file in (TWITCH_DSET_ROBOTS_VIEWS_DIR / "image_annotation").glob("*"):
@@ -53,19 +48,19 @@ def _separate_twitch_videos():
 
 
 def _make_global_report():
-    all_twitch_dataset = _get_mixed_dataset()
-    make_markdown_dataset_report(all_twitch_dataset, all_twitch_dataset.main_dir)
+    all_twitch_dataset_builder = _get_mixed_dataset_builder()
+    make_markdown_dataset_report(all_twitch_dataset_builder.build_lazy(), all_twitch_dataset_builder.main_dir)
 
 
-def _get_mixed_dataset() -> DirectoryROCODataset:
-    return DirectoryROCODataset(TWITCH_DSET_ROBOTS_VIEWS_DIR, "Twitch")
+def _get_mixed_dataset_builder() -> ROCODatasetBuilder:
+    return ROCODatasetBuilder(TWITCH_DSET_ROBOTS_VIEWS_DIR, "Twitch")
 
 
 def _make_separate_reports():
     for video_dset_path in TWITCH_DSET_ROBOTS_VIEWS_DIR.glob("*"):
         if video_dset_path.is_dir():
-            twitch_dset = DirectoryROCODataset(video_dset_path, f"TWITCH_{video_dset_path.name}")
-            make_markdown_dataset_report(twitch_dset, twitch_dset.main_dir)
+            twitch_dset = ROCODatasetBuilder(video_dset_path, f"TWITCH_{video_dset_path.name}")
+            make_markdown_dataset_report(twitch_dset.build_lazy(), twitch_dset.main_dir)
 
 
 if __name__ == "__main__":

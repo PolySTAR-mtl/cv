@@ -1,4 +1,4 @@
-from typing import Callable, Generic, Iterable
+from typing import Callable, Generic, Iterable, Iterator, Tuple
 
 from polystar.common.filters.filter_abc import FilterABC
 from polystar.common.filters.pass_through_filter import PassThroughFilter
@@ -9,7 +9,7 @@ from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, Targ
 from research.common.datasets_v3.transform_dataset import TransformDataset
 
 
-class DatasetBuilder(Generic[ExampleT, TargetT]):
+class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT, str]]):
     def __init__(self, dataset: LazyDataset[ExampleT, TargetT]):
         self.dataset = dataset
         self._built = False
@@ -18,6 +18,9 @@ class DatasetBuilder(Generic[ExampleT, TargetT]):
         assert not self._built
         self._built = True
         return self.dataset
+
+    def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT, str]]:
+        return iter(self.build_lazy())
 
     def build(self) -> Dataset[ExampleT, TargetT]:
         assert not self._built

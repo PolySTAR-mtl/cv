@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import Dict
 
 from pandas import DataFrame
-from tqdm import tqdm
 
 from polystar.common.models.object import Armor, ObjectType
 from polystar.common.utils.markdown import MarkdownFile
+from polystar.common.utils.tqdm import smart_tqdm
 from research.common.datasets_v3.roco.roco_dataset import LazyROCOFileDataset
 from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
@@ -29,7 +29,7 @@ class ROCODatasetStats:
         rv.armors_color2num2count = {c: {n: 0 for n in range(10)} for c in colors}
         for c in colors:
             rv.armors_color2num2count[c]["total"] = 0
-        for (_, annotation, _) in tqdm(dataset, desc=dataset.name, unit="frame"):
+        for (_, annotation, _) in smart_tqdm(dataset, desc=dataset.name, unit="frame"):
             rv.n_images += 1
             rv.n_runes += annotation.has_rune
             for obj in annotation.objects:

@@ -15,3 +15,8 @@ class LazyDataset(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT, 
 
     def __len__(self):
         raise NotImplemented()
+
+    def __str__(self):
+        return f"dataset {self.name}"
+
+    __repr__ = __str__
