@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Dict
 
 from pandas import DataFrame
+from tqdm import tqdm
+
 from polystar.common.models.object import Armor, ObjectType
 from polystar.common.utils.markdown import MarkdownFile
-from research.common.datasets.roco.roco_dataset import ROCODataset
-from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
-from research.common.datasets.union_dataset import UnionDataset
-from tqdm import tqdm
+from research.common.datasets_v3.roco.roco_dataset import LazyROCOFileDataset
+from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
 @dataclass
@@ -23,13 +23,13 @@ class ROCODatasetStats:
     armors_color2num2count: Dict[str, Dict[int, int]] = field(default_factory=dict)
 
     @staticmethod
-    def from_dataset(dataset: ROCODataset) -> "ROCODatasetStats":
+    def from_dataset(dataset: LazyROCOFileDataset) -> "ROCODatasetStats":
         rv = ROCODatasetStats()
         colors = ["red", "grey", "blue", "total"]
         rv.armors_color2num2count = {c: {n: 0 for n in range(10)} for c in colors}
         for c in colors:
             rv.armors_color2num2count[c]["total"] = 0
-        for annotation in tqdm(dataset.targets, desc=dataset.name, unit="frame", total=len(dataset)):
+        for (_, annotation, _) in tqdm(dataset, desc=dataset.name, unit="frame"):
             rv.n_images += 1
             rv.n_runes += annotation.has_rune
             for obj in annotation.objects:
@@ -46,7 +46,7 @@ class ROCODatasetStats:
         return rv
 
 
-def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
+def make_markdown_dataset_report(dataset: LazyROCOFileDataset, report_dir: Path):
     report_path = report_dir / f"dset_{dataset.name}_report.md"
 
     stats = ROCODatasetStats.from_dataset(dataset)
@@ -67,7 +67,8 @@ def make_markdown_dataset_report(dataset: ROCODataset, report_dir: Path):
 
 
 if __name__ == "__main__":
-    for datasets in ROCODatasetsZoo():
-        make_markdown_dataset_report(UnionDataset(datasets, datasets.name), datasets.directory)
+    dset = ROCODatasetsZoo.DJI.FINAL
+    for datasets in ROCODatasetsZoo:
+        make_markdown_dataset_report(datasets.union(), datasets.datasets_dir())
         for dset in datasets:
-            make_markdown_dataset_report(dset, dset.main_dir)
+            make_markdown_dataset_report(dset.lazy_files(), dset.main_dir)
