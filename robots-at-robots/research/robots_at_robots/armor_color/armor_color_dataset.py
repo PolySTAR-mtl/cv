@@ -19,7 +19,7 @@ def make_armor_color_dataset_generator() -> ArmorValueDatasetGenerator[str]:
 
 
 if __name__ == "__main__":
-    _roco_dataset_builder = ROCODatasetsZoo.DJI.CENTRAL_CHINA.builder
+    _roco_dataset_builder = ROCODatasetsZoo.DJI.CENTRAL_CHINA
     _armor_color_dataset = make_armor_color_dataset_generator().from_roco_dataset(_roco_dataset_builder)
 
     for p, c, _name in islice(_armor_color_dataset, 20, 25):

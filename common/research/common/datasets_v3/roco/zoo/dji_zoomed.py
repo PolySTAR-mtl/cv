@@ -1,20 +1,17 @@
-from enum import auto
-from pathlib import Path
-
 from polystar.common.utils.str_utils import snake2camel
 from research.common.constants import DJI_ROCO_ZOOMED_DSET_DIR
+from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets_v3.roco.roco_datasets import ROCODatasets
 
 
 class DJIROCOZoomedDatasets(ROCODatasets):
-    def __init__(self, _):
-        super().__init__(self.name.lower(), f"{snake2camel(self.name)}ZoomedV2")
+    main_dir = DJI_ROCO_ZOOMED_DSET_DIR
 
-    CENTRAL_CHINA = auto()
-    NORTH_CHINA = auto()
-    SOUTH_CHINA = auto()
-    FINAL = auto()
+    CENTRAL_CHINA: ROCODatasetBuilder = ()
+    NORTH_CHINA: ROCODatasetBuilder = ()
+    SOUTH_CHINA: ROCODatasetBuilder = ()
+    FINAL: ROCODatasetBuilder = ()
 
     @classmethod
-    def datasets_dir(cls) -> Path:
-        return DJI_ROCO_ZOOMED_DSET_DIR
+    def _make_builder_from_args(cls, name: str) -> ROCODatasetBuilder:
+        return ROCODatasetBuilder(cls.main_dir / name.lower(), f"{snake2camel(name)}Zoomed")

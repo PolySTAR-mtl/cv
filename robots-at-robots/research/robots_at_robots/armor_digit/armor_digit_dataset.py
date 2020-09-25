@@ -21,7 +21,7 @@ def make_armor_digit_dataset_generator(acceptable_digits: Iterable[int]) -> Armo
 
 
 if __name__ == "__main__":
-    _roco_dataset_builder = ROCODatasetsZoo.DJI.CENTRAL_CHINA.builder
+    _roco_dataset_builder = ROCODatasetsZoo.DJI.CENTRAL_CHINA
     _armor_digit_dataset = make_armor_digit_dataset_generator([1, 2]).from_roco_dataset(_roco_dataset_builder)
 
     for p, c, _name in islice(_armor_digit_dataset, 20, 30):

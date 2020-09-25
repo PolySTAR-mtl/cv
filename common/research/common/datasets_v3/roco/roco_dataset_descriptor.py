@@ -67,8 +67,7 @@ def make_markdown_dataset_report(dataset: LazyROCOFileDataset, report_dir: Path)
 
 
 if __name__ == "__main__":
-    dset = ROCODatasetsZoo.DJI.FINAL
     for datasets in ROCODatasetsZoo:
-        make_markdown_dataset_report(datasets.union(), datasets.datasets_dir())
+        make_markdown_dataset_report(datasets.union(), datasets.main_dir)
         for dset in datasets:
-            make_markdown_dataset_report(dset.lazy_files(), dset.main_dir)
+            make_markdown_dataset_report(dset.build_lazy(), dset.main_dir)

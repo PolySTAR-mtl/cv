@@ -31,7 +31,7 @@ def create_dji_records():
     TensorflowRecordFactory.from_datasets(
         [DJIROCODatasets.CENTRAL_CHINA, DJIROCODatasets.NORTH_CHINA, DJIROCODatasets.SOUTH_CHINA], "DJI_Train_"
     )
-    TensorflowRecordFactory.from_dataset(DJIROCODatasets.Final, "DJI_Test_")
+    TensorflowRecordFactory.from_dataset(DJIROCODatasets.FINAL, "DJI_Test_")
 
 
 def create_dji_zoomed_records():

@@ -10,19 +10,17 @@ from polystar.common.models.label_map import label_map
 from polystar.common.utils.tqdm import smart_tqdm
 from research.common.constants import TENSORFLOW_RECORDS_DIR
 from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets_v3.roco.roco_datasets import ROCODatasets
+from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
 
 
 class TensorflowRecordFactory:
     @staticmethod
-    def from_datasets(datasets: List[ROCODatasets], prefix: str = ""):
+    def from_datasets(datasets: List[ROCODatasetBuilder], prefix: str = ""):
         record_name = prefix + "_".join(d.name for d in datasets)
         writer = python_io.TFRecordWriter(str(TENSORFLOW_RECORDS_DIR / f"{record_name}.record"))
         c = 0
         for dataset in smart_tqdm(datasets, desc=record_name, unit="dataset"):
-            for image_path, annotation, _ in smart_tqdm(
-                dataset.lazy_files(), desc=dataset.name, unit="img", leave=False
-            ):
+            for image_path, annotation, _ in smart_tqdm(dataset, desc=dataset.name, unit="img", leave=False):
                 writer.write(_example_from_image_annotation(image_path, annotation).SerializeToString())
                 c += 1
         writer.close()
@@ -32,7 +30,7 @@ class TensorflowRecordFactory:
         )
 
     @staticmethod
-    def from_dataset(dataset: ROCODatasets, prefix: str = ""):
+    def from_dataset(dataset: ROCODatasetBuilder, prefix: str = ""):
         TensorflowRecordFactory.from_datasets([dataset], prefix)
 
 

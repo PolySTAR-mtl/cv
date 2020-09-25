@@ -28,7 +28,9 @@ def improve_dji_roco_dataset_by_zooming_and_perturbating(
 
 def improve_all_dji_datasets_by_zooming_and_perturbating(zoomer: Zoomer, perturbator: ImagePerturbator):
     for _dset in ROCODatasetsZoo.DJI:
-        improve_dji_roco_dataset_by_zooming_and_perturbating(zoomer=zoomer, dset=_dset.lazy(), perturbator=perturbator)
+        improve_dji_roco_dataset_by_zooming_and_perturbating(
+            zoomer=zoomer, dset=_dset.to_images().build_lazy(), perturbator=perturbator
+        )
 
 
 def _prepare_empty_zoomed_dir(dir_path: Path) -> Tuple[Path, Path]:

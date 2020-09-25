@@ -31,7 +31,7 @@ class ArmorDataset(LazyDataset[Image, Armor]):
 
 
 if __name__ == "__main__":
-    for _armor_img, _armor, _name in islice(ArmorDataset(ROCODatasetsZoo.DJI.CENTRAL_CHINA.lazy()), 20, 30):
+    for _armor_img, _armor, _name in islice(ArmorDataset(ROCODatasetsZoo.DJI.CENTRAL_CHINA.to_images()), 20, 30):
         print(_name, repr(_armor))
         plt.imshow(_armor_img)
         plt.show()

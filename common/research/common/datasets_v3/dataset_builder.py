@@ -23,6 +23,9 @@ class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, Target
     def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT, str]]:
         return iter(self.build_lazy())
 
+    def __len__(self):
+        return len(self.dataset)
+
     def build(self) -> Dataset[ExampleT, TargetT]:
         assert not self._built
         self._built = True

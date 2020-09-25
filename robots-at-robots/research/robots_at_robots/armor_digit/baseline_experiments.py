@@ -11,8 +11,8 @@ if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
 
     reporter = ArmorDigitPipelineReporterFactory.from_roco_datasets(
-        train_roco_datasets=[ROCODatasetsZoo.TWITCH.T470151286.builder, ROCODatasetsZoo.TWITCH.T470150052.builder],
-        test_roco_datasets=[ROCODatasetsZoo.TWITCH.T470152289.builder],
+        train_roco_datasets=[ROCODatasetsZoo.TWITCH.T470151286, ROCODatasetsZoo.TWITCH.T470150052],
+        test_roco_datasets=[ROCODatasetsZoo.TWITCH.T470152289],
     )
 
     random_pipeline = ClassifierImagePipeline(model=RandomModel(), custom_name="random")

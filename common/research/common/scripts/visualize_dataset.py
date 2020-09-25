@@ -14,4 +14,4 @@ def visualize_dataset(dataset: LazyROCODataset, n_images: int):
 
 
 if __name__ == "__main__":
-    visualize_dataset(ROCODatasetsZoo.DJI_ZOOMED.CENTRAL_CHINA.lazy(), 20)
+    visualize_dataset(ROCODatasetsZoo.DJI_ZOOMED.CENTRAL_CHINA.to_images().build_lazy(), 20)

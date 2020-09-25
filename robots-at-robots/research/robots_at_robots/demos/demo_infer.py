@@ -16,7 +16,7 @@ if __name__ == "__main__":
     filters = [ConfidenceObjectValidator(confidence_threshold=0.5)]
 
     with PltResultViewer("Demo of tf model") as viewer:
-        for image, _, _ in ROCODatasetsZoo.DJI.CENTRAL_CHINA.builder.to_images().cap(5):
+        for image, _, _ in ROCODatasetsZoo.DJI.CENTRAL_CHINA.to_images().cap(5):
             objects = objects_detector.detect(image)
             for f in filters:
                 objects = f.filter(objects, image)
