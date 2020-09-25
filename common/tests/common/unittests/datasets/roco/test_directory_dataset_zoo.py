@@ -7,7 +7,7 @@ from numpy.testing import assert_array_almost_equal
 
 from polystar.common.models.image import save_image
 from research.common.datasets.roco.directory_roco_dataset import DirectoryROCODataset
-from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 
 
 class TestDirectoryROCODataset(TestCase):

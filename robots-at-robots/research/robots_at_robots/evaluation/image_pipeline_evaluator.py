@@ -10,8 +10,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image, load_images
-from research.common.datasets_v3.lazy_dataset import TargetT
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.lazy_dataset import TargetT
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
 
 

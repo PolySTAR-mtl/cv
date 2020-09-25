@@ -1,9 +1,9 @@
 from typing import Iterable, Iterator, Type
 
-from research.common.datasets_v3.roco.roco_datasets import ROCODatasets
-from research.common.datasets_v3.roco.zoo.dji import DJIROCODatasets
-from research.common.datasets_v3.roco.zoo.dji_zoomed import DJIROCOZoomedDatasets
-from research.common.datasets_v3.roco.zoo.twitch import TwitchROCODatasets
+from research.common.datasets.roco.roco_datasets import ROCODatasets
+from research.common.datasets.roco.zoo.dji import DJIROCODatasets
+from research.common.datasets.roco.zoo.dji_zoomed import DJIROCOZoomedDatasets
+from research.common.datasets.roco.zoo.twitch import TwitchROCODatasets
 
 
 class ROCODatasetsZoo(Iterable[Type[ROCODatasets]]):

@@ -1,7 +1,7 @@
 from itertools import islice
 from typing import Iterator, Tuple
 
-from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
 class CappedDataset(LazyDataset):

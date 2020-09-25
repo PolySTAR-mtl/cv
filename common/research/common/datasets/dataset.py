@@ -1,6 +1,6 @@
 from typing import Iterator, List, Tuple
 
-from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
 class Dataset(LazyDataset[ExampleT, TargetT]):

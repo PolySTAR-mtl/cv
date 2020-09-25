@@ -3,11 +3,11 @@ from typing import Generic, List
 
 from polystar.common.filters.filter_abc import FilterABC
 from polystar.common.filters.pass_through_filter import PassThroughFilter
-from research.common.datasets_v3.dataset import Dataset
-from research.common.datasets_v3.image_file_dataset_builder import DirectoryDatasetBuilder
-from research.common.datasets_v3.lazy_dataset import TargetT
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets_v3.union_dataset import UnionDataset
+from research.common.datasets.dataset import Dataset
+from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
+from research.common.datasets.lazy_dataset import TargetT
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.union_dataset import UnionDataset
 from research.robots_at_robots.dataset.armor_value_dataset_cache import ArmorValueDatasetCache
 from research.robots_at_robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 

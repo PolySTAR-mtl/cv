@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from polystar.common.models.image import Image
 from polystar.common.models.object import Armor, ObjectType
 from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
-from research.common.datasets_v3.lazy_dataset import LazyDataset
-from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets_v3.roco.roco_dataset import LazyROCODataset
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.lazy_dataset import LazyDataset
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.roco.roco_dataset import LazyROCODataset
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
 class ArmorDataset(LazyDataset[Image, Armor]):

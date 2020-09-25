@@ -2,7 +2,7 @@ import logging
 
 from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
 from polystar.common.image_pipeline.models.random_model import RandomModel
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.armor_digit.armor_digit_pipeline_reporter_factory import (
     ArmorDigitPipelineReporterFactory,
 )

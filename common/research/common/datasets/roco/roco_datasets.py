@@ -2,9 +2,9 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import ClassVar, Iterator, Set
 
-from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets_v3.union_dataset import UnionLazyDataset
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.union_dataset import UnionLazyDataset
 
 
 class ROCODatasetsMeta(type):

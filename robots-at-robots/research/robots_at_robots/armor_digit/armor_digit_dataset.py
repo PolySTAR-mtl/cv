@@ -3,7 +3,7 @@ from typing import Iterable
 
 from polystar.common.filters.keep_filter import KeepFilter
 from polystar.common.models.object import Armor
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
 from research.robots_at_robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 

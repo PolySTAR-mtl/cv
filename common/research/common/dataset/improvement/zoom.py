@@ -7,8 +7,8 @@ from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
 from polystar.common.view.plt_results_viewer import PltResultViewer
-from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
 def crop_image_annotation(

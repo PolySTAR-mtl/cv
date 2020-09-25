@@ -4,7 +4,7 @@ from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierI
 from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
 from polystar.common.image_pipeline.models.random_model import RandomModel
 from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.armor_color.armor_color_pipeline_reporter_factory import (
     ArmorColorPipelineReporterFactory,
 )

@@ -1,7 +1,7 @@
 from typing import Callable, Iterator, Tuple
 
-from research.common.datasets_v3.dataset_builder import ExampleU, TargetU
-from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.dataset_builder import ExampleU, TargetU
+from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
 class TransformDataset(LazyDataset[ExampleU, TargetU]):

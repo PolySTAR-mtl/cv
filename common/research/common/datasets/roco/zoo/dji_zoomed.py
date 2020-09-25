@@ -1,7 +1,7 @@
 from polystar.common.utils.str_utils import snake2camel
 from research.common.constants import DJI_ROCO_ZOOMED_DSET_DIR
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets_v3.roco.roco_datasets import ROCODatasets
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.roco.roco_datasets import ROCODatasets
 
 
 class DJIROCOZoomedDatasets(ROCODatasets):

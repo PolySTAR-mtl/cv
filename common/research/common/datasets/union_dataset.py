@@ -1,7 +1,7 @@
 from typing import Iterable, Iterator, List, Tuple
 
-from research.common.datasets_v3.dataset import Dataset
-from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.dataset import Dataset
+from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
 class UnionLazyDataset(LazyDataset[ExampleT, TargetT]):

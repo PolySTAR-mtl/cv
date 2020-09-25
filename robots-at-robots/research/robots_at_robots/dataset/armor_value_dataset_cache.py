@@ -7,9 +7,9 @@ from polystar.common.models.image import Image, save_image
 from polystar.common.utils.misc import identity
 from polystar.common.utils.time import create_time_id
 from polystar.common.utils.tqdm import smart_tqdm
-from research.common.datasets_v3.lazy_dataset import LazyDataset, TargetT
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets_v3.transform_dataset import TransformDataset
+from research.common.datasets.lazy_dataset import LazyDataset, TargetT
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.transform_dataset import TransformDataset
 from research.robots_at_robots.dataset.armor_dataset_factory import ArmorDataset
 from research.robots_at_robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 

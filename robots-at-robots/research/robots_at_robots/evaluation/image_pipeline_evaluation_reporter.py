@@ -15,8 +15,8 @@ from polystar.common.utils.dataframe import Format, format_df_column, format_df_
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
-from research.common.datasets_v3.lazy_dataset import TargetT
-from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.lazy_dataset import TargetT
+from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
     ClassificationResults,
     ImagePipelineEvaluator,

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Generic
 
 from polystar.common.models.object import Armor
-from research.common.datasets_v3.lazy_dataset import TargetT
+from research.common.datasets.lazy_dataset import TargetT
 
 
 class ArmorValueTargetFactory(Generic[TargetT]):

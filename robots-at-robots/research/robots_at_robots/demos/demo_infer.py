@@ -5,7 +5,7 @@ from polystar.common.target_pipeline.objects_validators.confidence_object_valida
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
-from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.demos.utils import load_tf_model
 
 if __name__ == "__main__":

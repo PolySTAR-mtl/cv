@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from research.common.datasets_v3.image_file_dataset_builder import DirectoryDatasetBuilder
-from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 
 
 class ROCODatasetBuilder(DirectoryDatasetBuilder[ROCOAnnotation]):
