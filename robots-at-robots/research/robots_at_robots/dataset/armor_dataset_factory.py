@@ -2,28 +2,23 @@ from itertools import islice
 from typing import Iterator, List, Tuple
 
 import matplotlib.pyplot as plt
+
 from polystar.common.models.image import Image
 from polystar.common.models.object import Armor, ObjectType
-from polystar.common.target_pipeline.objects_validators.type_object_validator import \
-    TypeObjectValidator
-from research.common.datasets.dataset import Dataset, GeneratorDataset
-from research.common.datasets.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets.roco.roco_dataset import (ROCODataset,
-                                                        ROCOFileDataset)
-from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
-
-ArmorDataset = Dataset[Image, Armor]
+from polystar.common.target_pipeline.objects_validators.type_object_validator import TypeObjectValidator
+from research.common.datasets_v3.lazy_dataset import LazyDataset
+from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets_v3.roco.roco_dataset import LazyROCODataset
+from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
-class ArmorDatasetFactory:
-    def __init__(self, dataset: ROCOFileDataset):
-        self.dataset: ROCODataset = dataset.open()
+class ArmorDataset(LazyDataset[Image, Armor]):
+    def __init__(self, dataset: LazyROCODataset):
+        super().__init__(f"{dataset.name}_armors")
+        self.roco_dataset = dataset
 
-    def make(self) -> ArmorDataset:
-        return GeneratorDataset(f"{self.dataset.name}_armors", self._make_generator)
-
-    def _make_generator(self) -> Iterator[Tuple[Image, Armor, str]]:
-        for image, annotation, name in self.dataset:
+    def __iter__(self) -> Iterator[Tuple[Image, Armor, str]]:
+        for image, annotation, name in self.roco_dataset:
             yield from self._generate_from_single(image, annotation, name)
 
     @staticmethod
@@ -36,7 +31,7 @@ class ArmorDatasetFactory:
 
 
 if __name__ == "__main__":
-    for _armor_img, _armor, _name in islice(ArmorDatasetFactory(ROCODatasetsZoo.DJI.CentralChina).make(), 20, 30):
+    for _armor_img, _armor, _name in islice(ArmorDataset(ROCODatasetsZoo.DJI.CENTRAL_CHINA.lazy()), 20, 30):
         print(_name, repr(_armor))
         plt.imshow(_armor_img)
         plt.show()

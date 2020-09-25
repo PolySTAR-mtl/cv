@@ -1,44 +1,28 @@
 from itertools import islice
-from pathlib import Path
 from typing import Iterable
 
-import matplotlib.pyplot as plt
 from polystar.common.filters.keep_filter import KeepFilter
 from polystar.common.models.object import Armor
-from research.common.datasets.dataset import Dataset
-from research.common.datasets.filtered_dataset import FilteredTargetsDataset
-from research.common.datasets.image_dataset import open_file_dataset
-from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
-from research.robots_at_robots.dataset.armor_value_dataset import (
-    ArmorValueDatasetCache, ArmorValueDirectoryDataset)
+from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
+from research.robots_at_robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 
 
-class ArmorDigitDirectoryDataset(ArmorValueDirectoryDataset[int]):
-    @staticmethod
-    def _value_from_str(label: str) -> int:
+class ArmorDigitTargetFactory(ArmorValueTargetFactory[int]):
+    def from_str(self, label: str) -> int:
         return int(label)
 
-
-class ArmorDigitDatasetCache(ArmorValueDatasetCache[str]):
-    def __init__(self, acceptable_digits: Iterable[int]):
-        super().__init__("digits")
-        self.acceptable_digits = acceptable_digits
-
-    def _value_from_armor(self, armor: Armor) -> int:
+    def from_armor(self, armor: Armor) -> int:
         return armor.number
 
-    def from_directory_and_name(self, directory: Path, name: str) -> Dataset[Path, int]:
-        full_dataset = ArmorDigitDirectoryDataset(directory, name)
-        return FilteredTargetsDataset(full_dataset, KeepFilter(self.acceptable_digits))
+
+def make_armor_digit_dataset_generator(acceptable_digits: Iterable[int]) -> ArmorValueDatasetGenerator[int]:
+    return ArmorValueDatasetGenerator("digits", ArmorDigitTargetFactory(), KeepFilter(set(acceptable_digits)))
 
 
 if __name__ == "__main__":
-    _dataset = open_file_dataset(
-        ArmorDigitDatasetCache((1, 2, 3, 4, 5, 7)).from_roco_dataset(ROCODatasetsZoo.TWITCH.T470150052)
-    )
+    _roco_dataset_builder = ROCODatasetsZoo.DJI.CENTRAL_CHINA.builder
+    _armor_digit_dataset = make_armor_digit_dataset_generator([1, 2]).from_roco_dataset(_roco_dataset_builder)
 
-    for _image, _value, _name in islice(_dataset, 40, 50):
-        print(_value)
-        plt.imshow(_image)
-        plt.show()
-        plt.clf()
+    for p, c, _name in islice(_armor_digit_dataset, 20, 30):
+        print(p, c, _name)

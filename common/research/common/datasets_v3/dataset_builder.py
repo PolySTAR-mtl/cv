@@ -3,6 +3,7 @@ from typing import Callable, Generic, Iterable, Iterator, Tuple
 from polystar.common.filters.filter_abc import FilterABC
 from polystar.common.filters.pass_through_filter import PassThroughFilter
 from polystar.common.utils.misc import identity
+from research.common.datasets_v3.capped_dataset import CappedDataset
 from research.common.datasets_v3.dataset import Dataset
 from research.common.datasets_v3.filter_dataset import ExampleU, FilterDataset, TargetU
 from research.common.datasets_v3.lazy_dataset import ExampleT, LazyDataset, TargetT
@@ -52,6 +53,10 @@ class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, Target
         self, target_transformer: Callable[[TargetT], TargetU]
     ) -> "DatasetBuilder[ExampleT, TargetU]":
         self.dataset = TransformDataset(self.dataset, identity, target_transformer)
+        return self
+
+    def cap(self, n: int) -> "DatasetBuilder[ExampleT, TargetT]":
+        self.dataset = CappedDataset(self.dataset, n)
         return self
 
     @property

@@ -4,7 +4,7 @@ from research.common.datasets_v3.image_file_dataset_builder import DirectoryData
 from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
 
 
-class ROCODatasetBuilder(DirectoryDatasetBuilder):
+class ROCODatasetBuilder(DirectoryDatasetBuilder[ROCOAnnotation]):
     def __init__(self, directory: Path, name: str, extension: str = "jpg"):
         super().__init__(directory / "image", self.roco_annotation_from_image_file, name, extension)
         self.annotations_dir = directory / "image_annotation"

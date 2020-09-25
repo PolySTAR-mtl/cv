@@ -1,13 +1,14 @@
 from copy import copy
 from dataclasses import dataclass
+from itertools import islice
 from typing import Iterable, List, Tuple
 
 from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
 from polystar.common.view.plt_results_viewer import PltResultViewer
-from research.common.datasets.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets.roco.zoo.roco_datasets_zoo import ROCODatasetsZoo
+from research.common.datasets_v3.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
 def crop_image_annotation(
@@ -119,13 +120,10 @@ class Zoomer:
 
 
 if __name__ == "__main__":
-    zoomer = Zoomer(854, 480, 0.15, 0.5)
+    _zoomer = Zoomer(854, 480, 0.15, 0.5)
 
-    for k, (img, annot) in enumerate(ROCODatasetsZoo.DJI.NorthChina):
-        viewer = PltResultViewer(f"img {i}")
+    for _img, _annot, _name in islice(ROCODatasetsZoo.DJI.NORTH_CHINA.lazy(), 0, 3):
+        _viewer = PltResultViewer(f"img {_name}")
 
-        for (cropped_image, cropped_annotation) in zoomer.zoom(img, annot):
-            viewer.display_image_with_objects(cropped_image, cropped_annotation.objects)
-
-        if k == 2:
-            break
+        for (_cropped_image, _cropped_annotation, _cropped_name) in _zoomer.zoom(_img, _annot, _name):
+            _viewer.display_image_with_objects(_cropped_image, _cropped_annotation.objects)

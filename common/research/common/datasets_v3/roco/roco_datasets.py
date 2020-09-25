@@ -21,23 +21,23 @@ class ROCODatasets(Enum):
         self._dataset_dir_name = dataset_dir_name
 
     def lazy(self) -> LazyROCODataset:
-        return self._dataset_builder.to_images().build_lazy()
+        return self.builder.to_images().build_lazy()
 
     def lazy_files(self) -> LazyROCOFileDataset:
-        return self._dataset_builder.build_lazy()
+        return self.builder.build_lazy()
 
     def dataset(self) -> ROCODataset:
-        return self._dataset_builder.to_images().build()
+        return self.builder.to_images().build()
 
     def files_dataset(self) -> ROCOFileDataset:
-        return self._dataset_builder.build()
+        return self.builder.build()
 
     @property
     def main_dir(self):
         return self.datasets_dir() / self._dataset_dir_name
 
     @property
-    def _dataset_builder(self) -> ROCODatasetBuilder:
+    def builder(self) -> ROCODatasetBuilder:
         return ROCODatasetBuilder(self.main_dir, self.dataset_name)
 
     @classmethod

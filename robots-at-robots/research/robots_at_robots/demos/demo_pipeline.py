@@ -1,36 +1,24 @@
 import cv2
+
 from polystar.common.communication.print_target_sender import PrintTargetSender
-from polystar.common.image_pipeline.classifier_image_pipeline import \
-    ClassifierImagePipeline
-from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import \
-    MeanChannelsFeaturizer
-from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import \
-    RedBlueComparisonModel
+from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
+from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
+from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
-from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import \
-    ArmorsColorDescriptor
+from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
-from polystar.common.target_pipeline.detected_objects.detected_objects_factory import \
-    DetectedObjectFactory
-from polystar.common.target_pipeline.object_selectors.closest_object_selector import \
-    ClosestObjectSelector
-from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import \
-    TFModelObjectsDetector
-from polystar.common.target_pipeline.objects_linker.simple_objects_linker import \
-    SimpleObjectsLinker
-from polystar.common.target_pipeline.objects_validators.confidence_object_validator import \
-    ConfidenceObjectValidator
-from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import \
-    RatioSimpleTargetFactory
-from polystar.common.target_pipeline.target_pipeline import \
-    NoTargetFoundException
+from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
+from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
+from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
+from polystar.common.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
+from polystar.common.target_pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
+from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
+from polystar.common.target_pipeline.target_pipeline import NoTargetFoundException
 from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
-from research.common.dataset.dji.dji_roco_datasets import DJIROCODataset
-from research.common.dataset.twitch.twitch_roco_datasets import \
-    TwitchROCODataset
+from research.common.datasets_v3.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.demos.utils import load_tf_model
 
 if __name__ == "__main__":
@@ -59,8 +47,8 @@ if __name__ == "__main__":
     )
 
     with PltResultViewer("Demo of tf model") as viewer:
-        for dset in (TwitchROCODataset.TWITCH_470150052, DJIROCODataset.CentralChina):
-            for i, image_path in enumerate(dset.image_paths):
+        for dset in (ROCODatasetsZoo.TWITCH.T470150052, ROCODatasetsZoo.DJI.CENTRAL_CHINA):
+            for image_path, _, _ in dset.builder.cap(5):
                 try:
                     image = cv2.cvtColor(cv2.imread(str(image_path)), cv2.COLOR_BGR2RGB)
                     target = pipeline.predict_target(image)
@@ -68,6 +56,3 @@ if __name__ == "__main__":
                     pass
                 finally:
                     viewer.display_debug_info(pipeline.debug_info_)
-
-                if i == 5:
-                    break

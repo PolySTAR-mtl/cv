@@ -6,15 +6,17 @@ from typing import Dict, Generic, Iterable, List, Sequence, Tuple
 
 import numpy as np
 from memoized_property import memoized_property
+from sklearn.metrics import classification_report, confusion_matrix
+
 from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image, load_images
-from research.common.datasets.roco.directory_roco_dataset import DirectoryROCODataset
-from research.robots_at_robots.dataset.armor_value_dataset import ArmorValueDatasetCache, ValueT
-from sklearn.metrics import classification_report, confusion_matrix
+from research.common.datasets_v3.lazy_dataset import TargetT
+from research.common.datasets_v3.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
 
 
 @dataclass
-class SetClassificationResults(Generic[ValueT]):
+class SetClassificationResults(Generic[TargetT]):
     labels: np.ndarray
     predictions: np.ndarray
     mean_inference_time: float
@@ -32,37 +34,37 @@ class SetClassificationResults(Generic[ValueT]):
         return np.where(self.labels != self.predictions)[0]
 
     @memoized_property
-    def unique_labels(self) -> List[ValueT]:
+    def unique_labels(self) -> List[TargetT]:
         return sorted(set(self.labels) | set(self.predictions))
 
 
 @dataclass
-class ClassificationResults(Generic[ValueT]):
-    train_results: SetClassificationResults[ValueT]
-    test_results: SetClassificationResults[ValueT]
+class ClassificationResults(Generic[TargetT]):
+    train_results: SetClassificationResults[TargetT]
+    test_results: SetClassificationResults[TargetT]
     full_pipeline_name: str
 
-    def on_set(self, set_: str) -> SetClassificationResults[ValueT]:
+    def on_set(self, set_: str) -> SetClassificationResults[TargetT]:
         if set_ is "train":
             return self.train_results
         return self.test_results
 
 
-class ImagePipelineEvaluator(Generic[ValueT]):
+class ImagePipelineEvaluator(Generic[TargetT]):
     def __init__(
         self,
-        train_roco_datasets: List[DirectoryROCODataset],
-        test_roco_datasets: List[DirectoryROCODataset],
-        image_dataset_cache: ArmorValueDatasetCache[ValueT],
+        train_roco_datasets: List[ROCODatasetBuilder],
+        test_roco_datasets: List[ROCODatasetBuilder],
+        image_dataset_generator: ArmorValueDatasetGenerator[TargetT],
     ):
         logging.info("Loading data")
         self.train_roco_datasets = train_roco_datasets
         self.test_roco_datasets = test_roco_datasets
         (self.train_images_paths, self.train_images, self.train_labels, self.train_dataset_sizes) = load_datasets(
-            train_roco_datasets, image_dataset_cache
+            train_roco_datasets, image_dataset_generator
         )
         (self.test_images_paths, self.test_images, self.test_labels, self.test_dataset_sizes) = load_datasets(
-            test_roco_datasets, image_dataset_cache
+            test_roco_datasets, image_dataset_generator
         )
 
     def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
@@ -82,7 +84,7 @@ class ImagePipelineEvaluator(Generic[ValueT]):
 
     @staticmethod
     def _evaluate_pipeline_on_set(
-        pipeline: ImagePipeline, images: List[Image], labels: List[ValueT]
+        pipeline: ImagePipeline, images: List[Image], labels: List[TargetT]
     ) -> SetClassificationResults:
         t = time()
         preds = pipeline.predict(images)
@@ -91,9 +93,9 @@ class ImagePipelineEvaluator(Generic[ValueT]):
 
 
 def load_datasets(
-    roco_datasets: List[DirectoryROCODataset], image_dataset_cache: ArmorValueDatasetCache,
-) -> Tuple[List[Path], List[Image], List[ValueT], List[int]]:
-    dataset = image_dataset_cache.from_roco_datasets(roco_datasets)
+    roco_datasets: List[ROCODatasetBuilder], image_dataset_generator: ArmorValueDatasetGenerator[TargetT],
+) -> Tuple[List[Path], List[Image], List[TargetT], List[int]]:
+    dataset = image_dataset_generator.from_roco_datasets(roco_datasets)
     dataset_sizes = [len(d) for d in dataset.datasets]
 
     paths, targets = list(dataset.examples), list(dataset.targets)
