@@ -4,10 +4,9 @@ from typing import Any, Dict, Iterable, List
 from xml.dom.minidom import parseString
 
 import cv2
-
 import xmltodict
 from dicttoxml import dicttoxml
-from polystar.common.models.image import Image
+from polystar.common.models.image import Image, load_image, save_image
 
 
 @dataclass
@@ -35,7 +34,7 @@ class LabeledImage:
     point_of_interests: List[PointOfInterest] = field(default_factory=list)
 
     def save(self, directory_path: Path, name: str):
-        Image.save(self.image, directory_path / "image" / f"{name}.jpg")
+        save_image(self.image, directory_path / "image" / f"{name}.jpg")
         self._save_annotation(directory_path / "image_annotation" / f"{name}.xml")
 
     def _save_annotation(self, annotation_path: Path):
@@ -57,7 +56,7 @@ class LabeledImage:
         directory: Path, name: str, conversion: int = cv2.COLOR_BGR2RGB, ext: str = "jpg"
     ) -> "LabeledImage":
         return LabeledImage(
-            image=Image.from_path(directory / "image" / f"{name}.{ext}", conversion),
+            image=load_image(directory / "image" / f"{name}.{ext}", conversion),
             point_of_interests=PointOfInterest.from_annotation_file(directory / "image_annotation" / f"{name}.xml"),
         )
 

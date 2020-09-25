@@ -1,37 +1,32 @@
 from copy import copy
 from dataclasses import dataclass
-from time import time
+from itertools import islice
 from typing import Iterable, List, Tuple
 
 from polystar.common.models.box import Box
-from polystar.common.models.image_annotation import ImageAnnotation
+from polystar.common.models.image import Image
 from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
 from polystar.common.view.plt_results_viewer import PltResultViewer
-from research.common.dataset.dji.dji_roco_datasets import DJIROCODataset
+from research.common.datasets.roco.roco_annotation import ROCOAnnotation
+from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
-def crop_image_annotation(image_annotation: ImageAnnotation, box: Box, min_coverage: float) -> ImageAnnotation:
-    objects = InBoxValidator(box, min_coverage).filter(image_annotation.objects, image_annotation.image)
+def crop_image_annotation(
+    image: Image, annotation: ROCOAnnotation, box: Box, min_coverage: float, name: str
+) -> Tuple[Image, ROCOAnnotation, str]:
+    objects = InBoxValidator(box, min_coverage).filter(annotation.objects, image)
     objects = [copy(o) for o in objects]
     for obj in objects:
-        x, y, w, h = obj.box.x, obj.box.y, obj.box.w, obj.box.h
-        x -= box.x1
-        y -= box.y1
-        if x < 0:
-            w += x
-            x = 0
-        if y < 0:
-            h += y
-            y = 0
-        obj.box = Box.from_size(x, y, w, h)
-    return ImageAnnotation(
-        image_path=None,
-        xml_path=None,
-        width=box.w,
-        height=box.h,
-        objects=objects,
-        has_rune=False,
-        _image=image_annotation.image[box.y1 : box.y2, box.x1 : box.x2],
+        obj.box = Box.from_positions(
+            x1=max(0, obj.box.x1 - box.x1),
+            y1=max(0, obj.box.y1 - box.y1),
+            x2=min(box.x2, obj.box.x2 - box.x1),
+            y2=min(box.y2, obj.box.y2 - box.y1),
+        )
+    return (
+        image[box.y1 : box.y2, box.x1 : box.x2],
+        ROCOAnnotation(w=box.w, h=box.h, objects=objects, has_rune=False),
+        name,
     )
 
 
@@ -42,18 +37,21 @@ class Zoomer:
     max_overlap: float
     min_coverage: float
 
-    def zoom(self, image_annotation: ImageAnnotation) -> Iterable[ImageAnnotation]:
-        boxes = [obj.box for obj in image_annotation.objects]
-        boxes = self._create_views_covering(boxes, image_annotation)
+    def zoom(self, image: Image, annotation: ROCOAnnotation, name: str) -> Iterable[Tuple[Image, ROCOAnnotation, str]]:
+        boxes = [obj.box for obj in annotation.objects]
+        boxes = self._create_views_covering(boxes, annotation)
         boxes = self._remove_overlapping_boxes(boxes)
-        return (crop_image_annotation(image_annotation, box, self.min_coverage) for box in boxes)
+        return (
+            crop_image_annotation(image, annotation, box, self.min_coverage, name=f"{name}_zoom_{i}")
+            for (i, box) in enumerate(boxes, 1)
+        )
 
-    def _create_views_covering(self, boxes: List[Box], image_annotation: ImageAnnotation) -> List[Box]:
+    def _create_views_covering(self, boxes: List[Box], annotation: ROCOAnnotation) -> List[Box]:
         views: List[Box] = []
 
         while boxes:
             view, boxes = self._find_new_cluster(boxes)
-            view = self._re_frame_box_with_respect_of(view, views, image_annotation)
+            view = self._re_frame_box_with_respect_of(view, views, annotation)
             views.append(view)
             boxes = self._remove_covered_boxes(boxes, views)
 
@@ -70,7 +68,7 @@ class Zoomer:
                 remaining_boxes.append(box)
         return cluster, remaining_boxes
 
-    def _re_frame_box_with_respect_of(self, box: Box, boxes: List[Box], image_annotation: ImageAnnotation) -> Box:
+    def _re_frame_box_with_respect_of(self, box: Box, boxes: List[Box], annotation: ROCOAnnotation) -> Box:
         missing_width = self.w - box.w
         missing_height = self.h - box.h
 
@@ -84,8 +82,8 @@ class Zoomer:
         dx = -(missing_width // 2) * (not close_box_on_left) * (1 + close_box_on_right)
         dy = -(missing_height // 2) * (not close_box_on_top) * (1 + close_box_on_bottom)
 
-        x = max(0, min(image_annotation.width - self.w, box.x1 + dx))
-        y = max(0, min(image_annotation.height - self.h, box.y1 + dy))
+        x = max(0, min(annotation.w - self.w, box.x1 + dx))
+        y = max(0, min(annotation.h - self.h, box.y1 + dy))
         return Box.from_size(x, y, self.w, self.h)
 
     def _remove_covered_boxes(self, boxes: List[Box], views: List[Box]) -> List[Box]:
@@ -122,19 +120,10 @@ class Zoomer:
 
 
 if __name__ == "__main__":
-    zoomer = Zoomer(854, 480, 0.15, 0.5)
+    _zoomer = Zoomer(854, 480, 0.15, 0.5)
 
-    t = time()
-    c = 0
+    for _img, _annot, _name in islice(ROCODatasetsZoo.DJI.NORTH_CHINA.lazy(), 0, 3):
+        _viewer = PltResultViewer(f"img {_name}")
 
-    for i, img in enumerate(DJIROCODataset.CentralChina.image_annotations):
-        viewer = PltResultViewer(f"img {i}")
-
-        for res in zoomer.zoom(img):
-            viewer.display_image_annotation(res)
-            c += 1
-
-        if i == 10:
-            break
-
-    print(time() - t, c)
+        for (_cropped_image, _cropped_annotation, _cropped_name) in _zoomer.zoom(_img, _annot, _name):
+            _viewer.display_image_with_objects(_cropped_image, _cropped_annotation.objects)
