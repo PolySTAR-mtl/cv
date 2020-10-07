@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from polystar.common.filters.filter_abc import FilterABC
+from polystar.common.filters.keep_filter import KeepFilter
 
 
 class OddFilter(FilterABC[int]):
@@ -61,3 +62,17 @@ class TestFilterABC(TestCase):
         numbers = [1, 2, 3, 4, 5, 6]
 
         self.assertEqual(([False, True, False, True, False, True]), f.validate(numbers))
+
+    def test_or(self):
+        f = KeepFilter([2, 3]) | KeepFilter([3, 4])
+
+        numbers = [1, 2, 3, 4, 5, 6]
+
+        self.assertEqual(([False, True, True, True, False, False]), f.validate(numbers))
+
+    def test_and(self):
+        f = KeepFilter([2, 3]) & KeepFilter([3, 4])
+
+        numbers = [1, 2, 3, 4, 5, 6]
+
+        self.assertEqual(([False, False, True, False, False, False]), f.validate(numbers))

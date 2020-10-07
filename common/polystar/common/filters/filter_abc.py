@@ -37,6 +37,31 @@ class FilterABC(Generic[T], ABC):
     def validate_single(self, example: T) -> bool:
         pass
 
+    def __or__(self, other: "FilterABC") -> "FilterABC[T]":
+        return UnionFilter(self, other)
+
+    def __and__(self, other: "FilterABC") -> "FilterABC[T]":
+        return IntersectionFilter(self, other)
+
+
+class IntersectionFilter(FilterABC[T]):
+    def __init__(self, *filters: FilterABC[T]):
+        self.filters = filters
+        assert self.filters
+
+    def validate_single(self, example: T) -> bool:
+        return all(f.validate_single(example) for f in self.filters)
+
+
+class UnionFilter(FilterABC[T]):
+    def __init__(self, *filters: FilterABC[T]):
+        print(self, filters)
+        self.filters = filters
+        assert self.filters
+
+    def validate_single(self, example: T) -> bool:
+        return any(f.validate_single(example) for f in self.filters)
+
 
 def _filter_with_siblings_from_preds(
     are_valid: List[bool], examples: List[T], *siblings: List, expected_value: bool = True
