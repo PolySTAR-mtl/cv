@@ -3,7 +3,28 @@
 ## Setup
 
 
-### Requirements
+### Gitlab / SSH keys
+
+Once you have access to [our gitlab](https://git.step.polymtl.ca/polystar/robomaster/computer-vision), you should setup your ssh key, so you don't have to enter your credentials at every git operation. [The tutorials on gitlab (Settings > SSH keys)](https://git.step.polymtl.ca/profile/keys) should get you set upped on this.
+
+
+### IDE / PyCharm
+
+Our IDE is [PyCharm](https://www.jetbrains.com/fr-fr/pycharm/). As students, we have access to a free full version [https://www.jetbrains.com/fr-fr/community/education/#students]().
+
+You can use another IDE, but you need to find how to configure the following tools on your own.
+
+
+### Relative imports / PyCharm
+
+If you are using pycharm, then add [common](./common) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`). The project you are woking on should be added the same way.
+
+![Add common to Sources Root](./doc/add_common_to_source_root.png)
+
+It will enable the relative imports (eg. `from polystar.common.utils.str_utils import snake2camel` will be understood by Pycharm).
+
+
+### Dependency management / Poetry
 
 We use [poetry](https://python-poetry.org/) to manage our dependencies.
 
@@ -24,33 +45,87 @@ We use [poetry](https://python-poetry.org/) to manage our dependencies.
      c. Hit `Ok`, then `Apply`. PyCharm should update its indexes. **Restart the terminal for the changes to apply in it if you use PyCharm's terminal**
 
 
+### Code formatter / Black
+
+To format your code in the same way as everybody else, we use [Black](https://pypi.org/project/black/). They have a [nice install section](https://black.readthedocs.io/en/stable/editor_integration.html#pycharm-intellij-idea). I strongly recommend doing their 3rd step, using the File Watchers plugin to run Black on every file save. This way, your files will be nicely formatted every time you save them.
+
+For reference, the config used is in [./pyproject.toml](pyproject.toml).
 
 
-### Relative imports
+### Clean imports / Isort and AutoFlake
 
-If you are using pycharm, then add [common](./) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`). The project you are woking on should be added the same way.
+#### Isort
 
-![Add common to Sources Root](./doc/add_common_to_source_root.png)
+[Isort](https://pypi.org/project/isort/) is a tool that will keep your imports sorted nicely, so you dont have to worry about that part.
 
-It will enable the relative imports.
+We install it and use it with the File Watchers plugin, as done for Black:
+
+1. Install isort
+
+    `pip install isort`
+    
+2. Locate it
+
+    (MacOS / Linux) `which isort`
+    
+    (Windows) `where isort`
+    
+3. Create a watcher in PyCharm.
+
+    Refer to the parameters used for black. It should look like:
+    
+    ![Add Isort to File Watcher](doc/add_isort.png)
+
+    
+#### AutoFlake    
+
+[AutoFlake](https://pypi.org/project/autoflake/) will remove the unused imports for you. Reproduce the steps you used to set up isort, and use the following for the `Arguments` field on FileWacher: `--in-place --remove-all-unused-imports $FilePath$`.
+    
+    
+### Dataset
+
+#### ROCO
+
+Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB) in Drive, with the 4 datasets given by DJI, and unzip in folder [dataset/dji_roco](../dataset/dji_roco).
+
+The dji_roco directory should look like:
+
+![DJI ROCO Dataset directory organization](./doc/dataset_dji_repo.png)
+
+#### TWITCH
+
+Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/datasets/twitch/v1](https://drive.google.com/drive/folders/1TaxdzB57U9wII9K2VDOEP8vUMm94_cR7) in Drive, with the 8 labelized videos from twitch, and unzip in folder [dataset/twitch/v1](dataset/twitch/v1).
+
+The twitch/v1 directory should look like:
+
+![Twitch Dataset directory organization](./doc/dataset_twitch_repo.png)
 
 
-## Repo Organisation
+#### Check
 
- - [./common] In this directory, we write common code that can be used by every sub-project
- - [./dataset] In this directory, we add the images that are part of our dataset
+To verify that the datasets are correctly set upped, you can run the tests in [./common/tests/common/integration_tests/datasets](./common/tests/common/integration_tests/datasets).
+
+
+
+## Quick overview on organisation
+
+### Repo Organisation
+
+ - [./common](common) In this directory, we write common code that can be used by every sub-project
+ - [./dataset](dataset) In this directory, we add the images that are part of our dataset
  - Sub projects
-    - [./drone-at-base]: The goal is to detect the base from the drone
-    - [./robots-at-robots]: The goal is to identify and track the robots 
-    - [./robots-at-runes]: The goal is to infer the runes rotation angle and speed
+    - [./robots-at-robots](robots-at-robots): The goal is to identify and track the robots 
+    - [./robots-at-runes](robots-at-runes): The goal is to infer the runes rotation angle and speed
     
-    
-## Sub-project organisation
+  
+### Sub-project organisation
 
 The organisation for ech sub-project should follow the structure:
 
- - a `research` directory, where all the tests / model training, and code that shouldn't be ran by the robots would go
- - a `polystar/{sub_project_name}` directory, where the code that should be ran by the robots should go 
+ - a `research/{sub_project_name}` directory, where all the tests / model training, and code that shouldn't be ran by the robots would go
+ - a `polystar/{sub_project_name}` directory, where the code that should be run by the robots should go 
+ - (optional) a `tests/{sub_project_name}` directory, where we test the code
+
 
 
 ## Goals
