@@ -1,20 +1,20 @@
 from itertools import islice
 
-from polystar.common.models.object import Armor
+from polystar.common.models.object import Armor, ArmorColor
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
 from research.robots_at_robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 
 
-class ArmorColorTargetFactory(ArmorValueTargetFactory[str]):
-    def from_str(self, label: str) -> str:
-        return label
+class ArmorColorTargetFactory(ArmorValueTargetFactory[ArmorColor]):
+    def from_str(self, label: str) -> ArmorColor:
+        return ArmorColor(label)
 
-    def from_armor(self, armor: Armor) -> str:
-        return armor.color.name.lower()
+    def from_armor(self, armor: Armor) -> ArmorColor:
+        return armor.color
 
 
-def make_armor_color_dataset_generator() -> ArmorValueDatasetGenerator[str]:
+def make_armor_color_dataset_generator() -> ArmorValueDatasetGenerator[ArmorColor]:
     return ArmorValueDatasetGenerator("colors", ArmorColorTargetFactory())
 
 

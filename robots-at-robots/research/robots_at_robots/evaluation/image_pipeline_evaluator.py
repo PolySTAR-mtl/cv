@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from time import time
 from typing import Dict, Generic, Iterable, List, Sequence, Tuple
@@ -8,8 +9,8 @@ import numpy as np
 from memoized_property import memoized_property
 from sklearn.metrics import classification_report, confusion_matrix
 
-from polystar.common.image_pipeline.image_pipeline import ImagePipeline
 from polystar.common.models.image import Image, load_images
+from polystar.common.pipeline.pipeline import Pipeline
 from research.common.datasets.lazy_dataset import TargetT
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
@@ -67,10 +68,10 @@ class ImagePipelineEvaluator(Generic[TargetT]):
             test_roco_datasets, image_dataset_generator
         )
 
-    def evaluate_pipelines(self, pipelines: Iterable[ImagePipeline]) -> Dict[str, ClassificationResults]:
+    def evaluate_pipelines(self, pipelines: Iterable[Pipeline]) -> Dict[str, ClassificationResults]:
         return {str(pipeline): self.evaluate_pipeline(pipeline) for pipeline in pipelines}
 
-    def evaluate_pipeline(self, pipeline: ImagePipeline) -> ClassificationResults:
+    def evaluate_pipeline(self, pipeline: Pipeline) -> ClassificationResults:
         logging.info(f"Training pipeline {pipeline}")
         pipeline.fit(self.train_images, self.train_labels)
 
@@ -84,12 +85,12 @@ class ImagePipelineEvaluator(Generic[TargetT]):
 
     @staticmethod
     def _evaluate_pipeline_on_set(
-        pipeline: ImagePipeline, images: List[Image], labels: List[TargetT]
+        pipeline: Pipeline, images: List[Image], labels: List[TargetT]
     ) -> SetClassificationResults:
         t = time()
         preds = pipeline.predict(images)
         mean_time = (time() - t) / len(images)
-        return SetClassificationResults(np.asarray(labels), np.asarray(preds), mean_time)
+        return SetClassificationResults(_labels_to_numpy(labels), _labels_to_numpy(preds), mean_time)
 
 
 def load_datasets(
@@ -101,3 +102,7 @@ def load_datasets(
     paths, targets = list(dataset.examples), list(dataset.targets)
     images = list(load_images(paths))
     return paths, images, targets, dataset_sizes
+
+
+def _labels_to_numpy(labels: List[Enum]) -> np.ndarray:
+    return np.asarray([label.name for label in labels])

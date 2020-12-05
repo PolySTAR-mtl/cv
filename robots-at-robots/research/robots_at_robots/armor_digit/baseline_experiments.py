@@ -1,11 +1,17 @@
 import logging
 
-from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
-from polystar.common.image_pipeline.models.random_model import RandomModel
+from polystar.common.models.object import ArmorDigit
+from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.common.pipeline.classification.random_model import RandomClassifier
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.armor_digit.armor_digit_pipeline_reporter_factory import (
     ArmorDigitPipelineReporterFactory,
 )
+
+
+class ArmorTypePipeline(ClassificationPipeline):
+    enum = ArmorDigit
+
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
@@ -15,6 +21,6 @@ if __name__ == "__main__":
         test_roco_datasets=[ROCODatasetsZoo.TWITCH.T470152289],
     )
 
-    random_pipeline = ClassifierImagePipeline(model=RandomModel(), custom_name="random")
+    random_pipeline = ArmorTypePipeline.from_pipes([RandomClassifier()], name="random")
 
     reporter.report([random_pipeline], evaluation_short_name="baseline")

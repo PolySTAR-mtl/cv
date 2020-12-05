@@ -3,19 +3,19 @@ from dataclasses import dataclass
 from math import log
 from os.path import relpath
 from pathlib import Path
-from typing import Any, Dict, Generic, Iterable, List, Optional, Tuple
+from typing import Dict, Generic, Iterable, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 from pandas import DataFrame
 
-from polystar.common.image_pipeline.image_pipeline import ImagePipeline
+from polystar.common.pipeline.classification.classification_pipeline import EnumT
+from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.utils.dataframe import Format, format_df_column, format_df_row, format_df_rows, make_formater
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
-from research.common.datasets.lazy_dataset import TargetT
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
     ClassificationResults,
@@ -25,12 +25,12 @@ from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
 
 
 @dataclass
-class ImagePipelineEvaluationReporter(Generic[TargetT]):
-    evaluator: ImagePipelineEvaluator[TargetT]
+class ImagePipelineEvaluationReporter(Generic[EnumT]):
+    evaluator: ImagePipelineEvaluator[EnumT]
     evaluation_project: str
     main_metric: Tuple[str, str] = ("f1-score", "weighted avg")
 
-    def report(self, pipelines: Iterable[ImagePipeline], evaluation_short_name: str):
+    def report(self, pipelines: Iterable[Pipeline], evaluation_short_name: str):
 
         pipeline2results = self.evaluator.evaluate_pipelines(pipelines)
 
@@ -57,22 +57,29 @@ class ImagePipelineEvaluationReporter(Generic[TargetT]):
 
     @staticmethod
     def _report_dataset(
-        mf: MarkdownFile, roco_datasets: List[ROCODatasetBuilder], dataset_sizes: List[int], labels: List[Any]
+        mf: MarkdownFile, roco_datasets: List[ROCODatasetBuilder], dataset_sizes: List[int], labels: List[EnumT]
     ):
         total = len(labels)
+        labels = [str(label) for label in labels]
         mf.paragraph(f"{total} images")
-        df = DataFrame(
-            {
-                dataset.name: Counter(labels[start:end])
-                for dataset, start, end in zip(roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes))
-            }
-        ).fillna(0)
+        df = (
+            DataFrame(
+                {
+                    dataset.name: Counter(labels[start:end])
+                    for dataset, start, end in zip(
+                        roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes)
+                    )
+                }
+            )
+            .fillna(0)
+            .sort_index()
+        )
         df["Total"] = sum([df[d.name] for d in roco_datasets])
         df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
         mf.table(df)
 
     def _report_aggregated_results(
-        self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[TargetT]], report_dir: Path
+        self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]], report_dir: Path
     ):
         fig, (ax_test, ax_train) = plt.subplots(1, 2, figsize=(16, 5))
         aggregated_test_results = self._aggregate_results(pipeline2results, ax_test, "test")
@@ -88,11 +95,11 @@ class ImagePipelineEvaluationReporter(Generic[TargetT]):
         mf.paragraph("On train set:")
         mf.table(aggregated_train_results)
 
-    def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[TargetT]]):
+    def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]]):
         for pipeline_name, results in pipeline2results.items():
             self._report_pipeline_results(mf, pipeline_name, results)
 
-    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults[TargetT]):
+    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults[EnumT]):
         mf.title(pipeline_name, level=2)
 
         mf.paragraph(results.full_pipeline_name)
@@ -109,7 +116,7 @@ class ImagePipelineEvaluationReporter(Generic[TargetT]):
 
     @staticmethod
     def _report_pipeline_set_results(
-        mf: MarkdownFile, results: SetClassificationResults[TargetT], image_paths: List[Path]
+        mf: MarkdownFile, results: SetClassificationResults[EnumT], image_paths: List[Path]
     ):
         mf.title("Metrics", level=4)
         mf.paragraph(f"Inference time: {results.mean_inference_time: .2e} s/img")
@@ -137,7 +144,7 @@ class ImagePipelineEvaluationReporter(Generic[TargetT]):
         )
 
     def _aggregate_results(
-        self, pipeline2results: Dict[str, ClassificationResults[TargetT]], ax: Axes, set_: str
+        self, pipeline2results: Dict[str, ClassificationResults[EnumT]], ax: Axes, set_: str
     ) -> DataFrame:
         main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"
         df = (
