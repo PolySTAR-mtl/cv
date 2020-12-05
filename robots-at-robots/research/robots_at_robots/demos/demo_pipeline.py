@@ -1,9 +1,6 @@
 import cv2
 
 from polystar.common.communication.print_target_sender import PrintTargetSender
-from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
-from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
-from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
 from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
@@ -19,6 +16,11 @@ from polystar.common.utils.tensorflow import patch_tf_v2
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from polystar.robots_at_robots.dependency_injection import make_injector
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.robots_at_robots.armor_color.baseline_experiments import (
+    ArmorColorPipeline,
+    MeanChannels,
+    RedBlueComparisonClassifier,
+)
 from research.robots_at_robots.demos.utils import load_tf_model
 
 if __name__ == "__main__":
@@ -29,13 +31,7 @@ if __name__ == "__main__":
         objects_detector=TFModelObjectsDetector(
             DetectedObjectFactory(
                 injector.get(LabelMap),
-                [
-                    ArmorsColorDescriptor(
-                        ClassifierImagePipeline(
-                            image_featurizer=MeanChannelsFeaturizer(), model=RedBlueComparisonModel()
-                        )
-                    )
-                ],
+                [ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()]))],
             ),
             load_tf_model(),
         ),

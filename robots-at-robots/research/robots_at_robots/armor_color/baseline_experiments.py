@@ -1,27 +1,66 @@
 import logging
+from dataclasses import dataclass
 
-from polystar.common.image_pipeline.classifier_image_pipeline import ClassifierImagePipeline
-from polystar.common.image_pipeline.image_featurizer.mean_rgb_channels_featurizer import MeanChannelsFeaturizer
-from polystar.common.image_pipeline.models.random_model import RandomModel
-from polystar.common.image_pipeline.models.red_blue_channels_comparison_model import RedBlueComparisonModel
+from nptyping import Array
+from sklearn.linear_model import LogisticRegression
+
+from polystar.common.image_pipeline.featurizers.histogram_2d import Histogram2D
+from polystar.common.image_pipeline.preprocessors.rgb_to_hsv import RGB2HSV
+from polystar.common.models.image import Image
+from polystar.common.models.object import ArmorColor
+from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.common.pipeline.classification.random_model import RandomClassifier
+from polystar.common.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
+from polystar.common.pipeline.pipe_abc import PipeABC
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots_at_robots.armor_color.armor_color_pipeline_reporter_factory import (
     ArmorColorPipelineReporterFactory,
 )
 
+
+class ArmorColorPipeline(ClassificationPipeline):
+    enum = ArmorColor
+
+
+@dataclass
+class MeanChannels(PipeABC):
+    def transform_single(self, image: Image) -> Array[float, float, float]:
+        return image.mean(axis=(0, 1))
+
+
+class RedBlueComparisonClassifier(RuleBasedClassifierABC):
+    """A very simple model that compares the blue and red values obtained by the MeanChannels"""
+
+    def predict_single(self, features: Array[float, float, float]) -> ArmorColor:
+        return ArmorColor.Red if features[0] >= features[2] else ArmorColor.Blue
+
+
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
 
     reporter = ArmorColorPipelineReporterFactory.from_roco_datasets(
-        train_roco_datasets=[ROCODatasetsZoo.TWITCH.T470151286, ROCODatasetsZoo.TWITCH.T470150052],
-        test_roco_datasets=[ROCODatasetsZoo.TWITCH.T470152289],
+        train_roco_datasets=[
+            ROCODatasetsZoo.TWITCH.T470150052,
+            ROCODatasetsZoo.TWITCH.T470152289,
+            ROCODatasetsZoo.TWITCH.T470149568,
+            ROCODatasetsZoo.TWITCH.T470151286,
+        ],
+        test_roco_datasets=[
+            ROCODatasetsZoo.TWITCH.T470152838,
+            ROCODatasetsZoo.TWITCH.T470153081,
+            ROCODatasetsZoo.TWITCH.T470158483,
+            ROCODatasetsZoo.TWITCH.T470152730,
+        ],
     )
 
-    red_blue_comparison_pipeline = ClassifierImagePipeline(
-        image_featurizer=MeanChannelsFeaturizer(),
-        model=RedBlueComparisonModel(red_channel_id=0, blue_channel_id=2),
-        custom_name="rb-comparison",
+    red_blue_comparison_pipeline = ArmorColorPipeline.from_pipes(
+        [MeanChannels(), RedBlueComparisonClassifier()], name="rb-comparison",
     )
-    random_pipeline = ClassifierImagePipeline(model=RandomModel(), custom_name="random")
+    random_pipeline = ArmorColorPipeline.from_pipes([RandomClassifier()], name="random")
+    hsv_hist_lr_pipeline = ArmorColorPipeline.from_pipes(
+        [RGB2HSV(), Histogram2D(), LogisticRegression()], name="hsv-hist-lr",
+    )
 
-    reporter.report([random_pipeline, red_blue_comparison_pipeline], evaluation_short_name="baselines")
+    reporter.report(
+        [random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline], evaluation_short_name="baselines"
+    )

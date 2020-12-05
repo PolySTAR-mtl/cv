@@ -14,13 +14,40 @@ class ArmorColor(NoCaseEnum):
     Grey = auto()
     Blue = auto()
     Red = auto()
+
     Unknown = auto()
 
     def __str__(self):
         return self.name.lower()
 
+    @property
+    def short(self) -> str:
+        return self.name[0] if self != ArmorColor.Unknown else "?"
 
-ORDERED_ARMOR_COLORS = [ArmorColor.Blue, ArmorColor.Grey, ArmorColor.Red]
+
+class ArmorDigit(NoCaseEnum):  # CHANGING
+    # Those have real numbers
+    HERO = 1
+    ENGINEER = 2
+    STANDARD_1 = 3
+    STANDARD_2 = 4
+    STANDARD_3 = 5
+    # Those have symbols
+    OUTPOST = auto()
+    BASE = auto()
+    SENTRY = auto()
+
+    UNKNOWN = auto()
+    OUTDATED = auto()  # Old labelisation
+
+    def __str__(self) -> str:
+        if self.value <= 5:
+            return f"{self.value} ({self.name.title()})"
+        return self.name.title()
+
+    @property
+    def short(self) -> str:
+        return self.name[0] if self != ArmorDigit.UNKNOWN else "?"
 
 
 class ObjectType(NoCaseEnum):
@@ -43,6 +70,7 @@ class Object:
 @dataclass
 class Armor(Object):
     number: ArmorNumber
+    type: ArmorDigit
     color: ArmorColor
 
     def __repr__(self):
