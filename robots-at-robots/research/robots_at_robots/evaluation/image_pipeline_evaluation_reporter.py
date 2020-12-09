@@ -1,5 +1,6 @@
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from enum import Enum
 from math import log
 from os.path import relpath
 from pathlib import Path
@@ -7,12 +8,14 @@ from typing import Dict, Generic, Iterable, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.axes import Axes
+import seaborn as sns
+from matplotlib.axes import Axes, logging
+from matplotlib.figure import Figure
 from pandas import DataFrame
 
 from polystar.common.pipeline.classification.classification_pipeline import EnumT
 from polystar.common.pipeline.pipeline import Pipeline
-from polystar.common.utils.dataframe import Format, format_df_column, format_df_row, format_df_rows, make_formater
+from polystar.common.utils.dataframe import Format, format_df_row, format_df_rows, make_formater
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
@@ -24,23 +27,42 @@ from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
 )
 
 
+class Metric(Enum):
+    F1_WEIGHTED_AVG = ("f1-score", "weighted avg")
+    ACCURACY = ("precision", "accuracy")
+
+    def __str__(self):
+        if self.value[1] == "accuracy":
+            return "accuracy"
+        return " ".join(self.value)
+
+    def __getitem__(self, item):
+        return self.value[item]
+
+
 @dataclass
 class ImagePipelineEvaluationReporter(Generic[EnumT]):
     evaluator: ImagePipelineEvaluator[EnumT]
     evaluation_project: str
-    main_metric: Tuple[str, str] = ("f1-score", "weighted avg")
+    experiment_name: str
+    main_metric: Metric = Metric.F1_WEIGHTED_AVG
+    other_metrics: List[Metric] = field(default_factory=lambda: [Metric.ACCURACY])
 
-    def report(self, pipelines: Iterable[Pipeline], evaluation_short_name: str):
+    def __post_init__(self):
+        self.report_dir = EVALUATION_DIR / self.evaluation_project / f"{create_time_id()}_{self.experiment_name}"
+
+    def report(self, pipelines: Iterable[Pipeline]):
+        logging.info(f"Running experiment {self.experiment_name}")
 
         pipeline2results = self.evaluator.evaluate_pipelines(pipelines)
 
-        report_dir = EVALUATION_DIR / self.evaluation_project / f"{evaluation_short_name}_{create_time_id()}"
-
-        with MarkdownFile(report_dir / "report.md") as mf:
-            mf.title(f"Evaluation report {evaluation_short_name}")
+        with MarkdownFile(self.report_dir / "report.md") as mf:
+            mf.title(f"Evaluation report")
             self._report_datasets(mf)
-            self._report_aggregated_results(mf, pipeline2results, report_dir)
+            self._report_aggregated_results(mf, pipeline2results, self.report_dir)
             self._report_pipelines_results(mf, pipeline2results)
+
+            logging.info(f"Report generated at file:///{self.report_dir/'report.md'}")
 
     def _report_datasets(self, mf: MarkdownFile):
         mf.title("Datasets", level=2)
@@ -81,22 +103,26 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
     def _report_aggregated_results(
         self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]], report_dir: Path
     ):
-        fig, (ax_test, ax_train) = plt.subplots(1, 2, figsize=(16, 5))
-        aggregated_test_results = self._aggregate_results(pipeline2results, ax_test, "test")
-        aggregated_train_results = self._aggregate_results(pipeline2results, ax_train, "train")
-        fig.tight_layout()
-        aggregated_image_name = "aggregated_test_results.png"
-        fig.savefig(report_dir / aggregated_image_name, transparent=True)
+        fig_scores, fig_times, aggregated_results = self._aggregate_results(pipeline2results)
+        aggregated_scores_image_name = "aggregated_scores.png"
+        fig_scores.savefig(report_dir / aggregated_scores_image_name)
+        aggregated_times_image_name = "aggregated_times.png"
+        fig_times.savefig(report_dir / aggregated_times_image_name)
 
         mf.title("Aggregated results", level=2)
-        mf.image(aggregated_image_name)
+        mf.image(aggregated_scores_image_name)
+        mf.image(aggregated_times_image_name)
         mf.paragraph("On test set:")
-        mf.table(aggregated_test_results)
+        mf.table(aggregated_results[aggregated_results["set"] == "test"].drop(columns="set"))
         mf.paragraph("On train set:")
-        mf.table(aggregated_train_results)
+        mf.table(aggregated_results[aggregated_results["set"] == "train"].drop(columns="set"))
 
     def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]]):
-        for pipeline_name, results in pipeline2results.items():
+        for pipeline_name, results in sorted(
+            pipeline2results.items(),
+            key=lambda name_results: name_results[1].test_results.report[self.main_metric[1]][self.main_metric[0]],
+            reverse=True,
+        ):
             self._report_pipeline_results(mf, pipeline_name, results)
 
     def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults[EnumT]):
@@ -126,8 +152,8 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
         mf.table(df)
         mf.title("Confusion Matrix:", level=4)
         mf.table(DataFrame(results.confusion_matrix, index=results.unique_labels, columns=results.unique_labels))
-        mf.title("10 Mistakes examples", level=4)
-        mistakes_idx = np.random.choice(results.mistakes, min(len(results.mistakes), 10), replace=False)
+        mf.title("25 Mistakes examples", level=4)
+        mistakes_idx = np.random.choice(results.mistakes, min(len(results.mistakes), 25), replace=False)
         relative_paths = [
             f"![img]({relpath(str(image_paths[idx]), str(mf.markdown_path.parent))})" for idx in mistakes_idx
         ]
@@ -136,39 +162,64 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
             DataFrame(
                 {
                     "images": relative_paths,
-                    "labels": results.labels[mistakes_idx],
-                    "predictions": results.predictions[mistakes_idx],
+                    "labels": map(str, results.labels[mistakes_idx]),
+                    "predictions": map(str, results.predictions[mistakes_idx]),
                     "image names": images_names,
                 }
             ).set_index("images")
         )
 
     def _aggregate_results(
-        self, pipeline2results: Dict[str, ClassificationResults[EnumT]], ax: Axes, set_: str
-    ) -> DataFrame:
-        main_metric_name = f"{self.main_metric[0]} {self.main_metric[1]}"
-        df = (
-            DataFrame.from_records(
-                [
-                    (
-                        pipeline_name,
-                        results.on_set(set_).report[self.main_metric[1]][self.main_metric[0]],
-                        results.on_set(set_).mean_inference_time,
-                    )
-                    for pipeline_name, results in pipeline2results.items()
-                ],
-                columns=["pipeline", main_metric_name, "inf time"],
-            )
-            .set_index("pipeline")
-            .sort_values(main_metric_name, ascending=False)
+        self, pipeline2results: Dict[str, ClassificationResults[EnumT]]
+    ) -> Tuple[Figure, Figure, DataFrame]:
+        sns.set_style()
+        sets = ["train", "test"]
+        df = DataFrame.from_records(
+            [
+                {
+                    "pipeline": pipeline_name,
+                    str(self.main_metric): results.on_set(set_).report[self.main_metric[1]][self.main_metric[0]],
+                    "inference time": results.on_set(set_).mean_inference_time,
+                    "set": set_,
+                }
+                for pipeline_name, results in pipeline2results.items()
+                # for metric in [self.main_metric]  # + self.other_metrics
+                for set_ in sets
+            ]
+        ).sort_values(["set", str(self.main_metric)], ascending=[True, False])
+
+        return (
+            _cat_pipeline_results(df, str(self.main_metric), "{:.1%}", limits=(0, 1)),
+            _cat_pipeline_results(df, "inference time", "{:.2e}", log_scale=True),
+            df.set_index("pipeline"),
         )
 
-        bar_plot_with_secondary(df, set_.title(), fmt_y1="{:.1%}", fmt_y2="{:.1e}", y2_log=True, ax=ax)
 
-        format_df_column(df, main_metric_name, "{:.1%}")
-        format_df_column(df, "inf time", "{:.2e}")
+def _cat_pipeline_results(
+    df: DataFrame, y: str, fmt: str, limits: Optional[Tuple[float, float]] = None, log_scale: bool = False
+) -> Figure:
+    grid: sns.FacetGrid = sns.catplot(
+        data=df,
+        x="pipeline",
+        y=y,
+        col="set",
+        kind="bar",
+        sharey=True,
+        legend=False,
+        col_order=["test", "train"],
+        height=10,
+    )
+    grid.set_xticklabels(rotation=30, ha="right")
 
-        return df
+    fig: Figure = grid.fig
+
+    _format_axes(fig.get_axes(), fmt, limits=limits, log_scale=log_scale)
+
+    fig.tight_layout()
+
+    fig.suptitle(y)
+
+    return fig
 
 
 def bar_plot_with_secondary(
@@ -181,7 +232,7 @@ def bar_plot_with_secondary(
     limits_y1: Tuple[float, float] = None,
     limits_y2: Tuple[float, float] = None,
     ax: Axes = None,
-):
+) -> Tuple[Axes, Axes]:
     if ax is None:
         (_, ax) = plt.subplots()
 
@@ -196,6 +247,8 @@ def bar_plot_with_secondary(
 
     _legend_with_secondary(ax1, ax2)
 
+    return ax1, ax2
+
 
 def _legend_with_secondary(ax1: Axes, ax2: Axes):
     lines_1, labels_1 = ax1.get_legend_handles_labels()
@@ -205,28 +258,40 @@ def _legend_with_secondary(ax1: Axes, ax2: Axes):
     ax1.legend(lines, labels, loc=0)
 
 
-def _format_ax(ax: Axes, label: str, fmt: Format, log_scale: bool, limits: Optional[Tuple[float, float]]):
-    ax.set_ylabel(label)
+def _format_axes(axes: List[Axes], fmt: Format, log_scale: bool = False, limits: Optional[Tuple[float, float]] = None):
+    for ax in axes:
+        _format_ax(ax, fmt, log_scale, limits)
 
+
+def _format_ax(ax: Axes, fmt: Format, log_scale: bool = False, limits: Optional[Tuple[float, float]] = None):
     if limits:
         ax.set_ylim(*limits)
 
     if log_scale:
         ax.set_yscale("log")
 
-    m, _ = ax.get_ylim()
+    m, M = ax.get_ylim()
 
     fmt = make_formater(fmt)
 
-    for p in ax.patches:
+    for rect in ax.patches:
+        h = rect.get_height()
+        va = "center"
         if log_scale:
-            h = pow(10, 0.5 * (log(p.get_height(), 10) + log(m, 10)))
+            log_m, log_M = log(m, 10), log(M, 10)
+            log_h = log(h, 10)
+            if (log_h - log_m) / (log_M - log_m) < 0.25:
+                y = h
+                va = "bottom"
+            else:
+                y = pow(10, (log_h + log_m) / 2)
         else:
-            h = 0.6 * p.get_height()
+            if (h - m) / (M - m) < 0.25:
+                y = h
+                va = "bottom"
+            else:
+                y = 0.6 * rect.get_height()
+        x = rect.get_x() + rect.get_width() / 2
         ax.annotate(
-            fmt(p.get_height()),
-            (p.get_x() + p.get_width() / 2.0, h),
-            ha="center",
-            va="center",
-            textcoords="offset points",
+            fmt(rect.get_height()), (x, y), ha="center", va=va, rotation=90,
         )

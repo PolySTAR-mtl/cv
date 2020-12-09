@@ -12,12 +12,12 @@ class ArmorDigitTargetFactory(ArmorValueTargetFactory[ArmorDigit]):
         n = int(label)
 
         if 1 <= n <= 5:  # CHANGING
-            return ArmorType(n)
+            return ArmorDigit(n)
 
         return ArmorDigit.OUTDATED
 
     def from_armor(self, armor: Armor) -> ArmorDigit:
-        return ArmorType(armor.number)
+        return ArmorDigit(armor.number) if armor.number else ArmorDigit.UNKNOWN
 
 
 def make_armor_digit_dataset_generator() -> ArmorValueDatasetGenerator[int]:

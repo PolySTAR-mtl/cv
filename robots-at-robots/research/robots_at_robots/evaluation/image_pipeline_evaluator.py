@@ -8,6 +8,7 @@ from typing import Dict, Generic, Iterable, List, Sequence, Tuple
 import numpy as np
 from memoized_property import memoized_property
 from sklearn.metrics import classification_report, confusion_matrix
+from tqdm import tqdm
 
 from polystar.common.models.image import Image, load_images
 from polystar.common.pipeline.pipeline import Pipeline
@@ -69,13 +70,13 @@ class ImagePipelineEvaluator(Generic[TargetT]):
         )
 
     def evaluate_pipelines(self, pipelines: Iterable[Pipeline]) -> Dict[str, ClassificationResults]:
-        return {str(pipeline): self.evaluate_pipeline(pipeline) for pipeline in pipelines}
+        tqdm_pipelines = tqdm(pipelines, desc="Training", unit="pipeline")
+        return {str(pipeline): self.evaluate_pipeline(pipeline, tqdm_pipelines) for pipeline in tqdm_pipelines}
 
-    def evaluate_pipeline(self, pipeline: Pipeline) -> ClassificationResults:
-        logging.info(f"Training pipeline {pipeline}")
+    def evaluate_pipeline(self, pipeline: Pipeline, tqdm_pipelines: tqdm) -> ClassificationResults:
+        tqdm_pipelines.set_postfix({"pipeline": pipeline.name}, True)
         pipeline.fit(self.train_images, self.train_labels)
 
-        logging.info(f"Infering")
         train_results = self._evaluate_pipeline_on_set(pipeline, self.train_images, self.train_labels)
         test_results = self._evaluate_pipeline_on_set(pipeline, self.test_images, self.test_labels)
 
@@ -105,4 +106,4 @@ def load_datasets(
 
 
 def _labels_to_numpy(labels: List[Enum]) -> np.ndarray:
-    return np.asarray([label.name for label in labels])
+    return np.asarray([str(label) for label in labels])

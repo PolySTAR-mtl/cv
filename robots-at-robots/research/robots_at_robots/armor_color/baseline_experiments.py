@@ -62,5 +62,6 @@ if __name__ == "__main__":
     )
 
     reporter.report(
-        [random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline], evaluation_short_name="baselines"
+        # [random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline]
+        [ArmorColorPipeline.from_pipes([RandomClassifier()], name=f"random{i}") for i in range(10)]
     )
