@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Generic, Iterable, Iterator, Tuple
 
-from polystar.common.models.image import Image, load_image
+from polystar.common.models.image import FileImage, Image, load_image
 from research.common.datasets.dataset_builder import DatasetBuilder
 from research.common.datasets.lazy_dataset import LazyDataset, TargetT
 
@@ -26,6 +26,9 @@ class FileDatasetBuilder(Generic[TargetT], DatasetBuilder[Path, TargetT]):
 
     def to_images(self) -> DatasetBuilder[Image, TargetT]:
         return self.transform_examples(load_image)
+
+    def to_file_images(self) -> DatasetBuilder[FileImage, TargetT]:
+        return self.transform_examples(FileImage)
 
 
 class DirectoryDatasetBuilder(FileDatasetBuilder[TargetT]):

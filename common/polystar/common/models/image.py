@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
@@ -5,6 +6,19 @@ import cv2
 import numpy as np
 
 Image = np.ndarray
+
+
+@dataclass
+class FileImage:
+    path: Path
+    image: Image = field(default=None)
+
+    def __post_init__(self):
+        if not self.image:
+            self.image = load_image(self.path)
+
+    def __array__(self) -> np.ndarray:
+        return self.image
 
 
 def load_image(image_path: Path, conversion: int = cv2.COLOR_BGR2RGB) -> Image:
