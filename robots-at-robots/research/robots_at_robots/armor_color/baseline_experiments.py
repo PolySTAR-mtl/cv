@@ -51,6 +51,7 @@ if __name__ == "__main__":
             ROCODatasetsZoo.TWITCH.T470158483,
             ROCODatasetsZoo.TWITCH.T470152730,
         ],
+        experiment_name="test",
     )
 
     red_blue_comparison_pipeline = ArmorColorPipeline.from_pipes(
@@ -61,7 +62,4 @@ if __name__ == "__main__":
         [RGB2HSV(), Histogram2D(), LogisticRegression()], name="hsv-hist-lr",
     )
 
-    reporter.report(
-        # [random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline]
-        [ArmorColorPipeline.from_pipes([RandomClassifier()], name=f"random{i}") for i in range(10)]
-    )
+    reporter.report([random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline])

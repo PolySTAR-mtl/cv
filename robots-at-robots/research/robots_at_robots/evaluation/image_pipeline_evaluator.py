@@ -14,6 +14,7 @@ from polystar.common.models.image import Image, load_images
 from polystar.common.pipeline.pipeline import Pipeline
 from research.common.datasets.lazy_dataset import TargetT
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
+from research.common.datasets.union_dataset import UnionDataset
 from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
 
 
@@ -97,9 +98,11 @@ class ImagePipelineEvaluator(Generic[TargetT]):
 def load_datasets(
     roco_datasets: List[ROCODatasetBuilder], image_dataset_generator: ArmorValueDatasetGenerator[TargetT],
 ) -> Tuple[List[Path], List[Image], List[TargetT], List[int]]:
-    dataset = image_dataset_generator.from_roco_datasets(roco_datasets)
-    dataset_sizes = [len(d) for d in dataset.datasets]
+    # TODO we should receive a list of FileImageDataset
+    datasets = [builder.build() for builder in image_dataset_generator.from_roco_datasets(roco_datasets)]
+    dataset_sizes = [len(d) for d in datasets]
 
+    dataset = UnionDataset(datasets)
     paths, targets = list(dataset.examples), list(dataset.targets)
     images = list(load_images(paths))
     return paths, images, targets, dataset_sizes
