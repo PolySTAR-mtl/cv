@@ -52,6 +52,12 @@ class TestRuleBasedClassifier(TestCase):
             self.pipeline.predict_proba(list("aacbz")),
         )
 
+    def test_predict_proba_and_classes(self):
+        self.pipeline.classifier.n_classes = 3  # This is normally done during fitting
+        proba, classes = self.pipeline.predict_proba_and_classes(list("aacbz"))
+        array_equal(asarray([[1, 0, 0], [1, 0, 0], [0, 0, 1], [0, 1, 0], [0, 0, 1]]), proba)
+        self.assertEqual([Letter.A, Letter.A, Letter.Z, Letter.B, Letter.Z], classes)
+
 
 class StrToIntPipe(PipeABC[str, int]):
     def transform_single(self, example: str) -> int:

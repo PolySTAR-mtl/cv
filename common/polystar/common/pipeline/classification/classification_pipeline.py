@@ -27,8 +27,13 @@ class ClassificationPipeline(Pipeline, Generic[IT, EnumT], ABC):
         return super().fit(x, y_indices, **fit_params)
 
     def predict(self, x: Sequence[IT]) -> List[EnumT]:
-        indices = asarray(self.predict_proba(x)).argmax(axis=1)
-        return [self.classes_[i] for i in indices]
+        return self.predict_proba_and_classes(x)[1]
+
+    def predict_proba_and_classes(self, x: Sequence[IT]) -> Tuple[ndarray, List[EnumT]]:
+        proba = asarray(self.predict_proba(x))
+        indices = proba.argmax(axis=1)
+        classes = [self.classes_[i] for i in indices]
+        return proba, classes
 
     def score(self, x: Sequence[IT], y: List[EnumT], **score_params) -> float:
         """It is needed to have a proper CV"""
