@@ -1,2 +1,5 @@
-*
-!.gitignore
+**/*.jpg
+**/*.png
+**/*.jpeg
+**/*.lock
+**/*.xml
