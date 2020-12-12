@@ -1,4 +1,5 @@
-**/*.xml
 **/*.jpg
-**/colors
-**/digits
+**/*.png
+**/*.jpeg
+**/*.lock
+**/*.xml
