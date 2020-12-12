@@ -3,10 +3,10 @@ from typing import Callable, Generic, Iterable, Iterator, Tuple
 from polystar.common.filters.filter_abc import FilterABC
 from polystar.common.filters.pass_through_filter import PassThroughFilter
 from polystar.common.utils.misc import identity
-from research.common.datasets.capped_dataset import CappedDataset
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.filter_dataset import ExampleU, FilterDataset, TargetU
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.slice_dataset import SliceDataset
 from research.common.datasets.transform_dataset import TransformDataset
 
 
@@ -59,7 +59,11 @@ class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, Target
         return self
 
     def cap(self, n: int) -> "DatasetBuilder[ExampleT, TargetT]":
-        self.dataset = CappedDataset(self.dataset, n)
+        self.dataset = SliceDataset(self.dataset, stop=n)
+        return self
+
+    def skip(self, n: int) -> "DatasetBuilder[ExampleT, TargetT]":
+        self.dataset = SliceDataset(self.dataset, start=n)
         return self
 
     @property
