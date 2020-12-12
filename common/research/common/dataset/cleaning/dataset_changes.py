@@ -10,7 +10,7 @@ from polystar.common.utils.time import create_time_id
 INVALIDATED_KEY: str = "invalidated"
 
 
-class ArmorDatasetChanges:
+class DatasetChanges:
     def __init__(self, dataset_directory: Path):
         self.changes_file: Path = dataset_directory / ".changes"
 
