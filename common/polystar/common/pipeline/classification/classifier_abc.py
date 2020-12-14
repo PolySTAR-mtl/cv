@@ -10,7 +10,7 @@ from polystar.common.utils.named_mixin import NamedMixin
 class ClassifierABC(BaseEstimator, NamedMixin, Generic[IT], ABC):
     n_classes: int
 
-    def fit(self, examples: List[IT], label_indices: List[int]) -> "ClassifierABC":
+    def fit(self, examples: List[IT], label_indices: List[int], validation_size: int) -> "ClassifierABC":
         return self
 
     @abstractmethod

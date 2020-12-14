@@ -49,6 +49,10 @@ class ClassificationPerformances(Iterable[ContextualizedClassificationPerformanc
     def test(self) -> "ClassificationPerformances":
         return self.on_set(Set.TEST)
 
+    @property
+    def validation(self) -> "ClassificationPerformances":
+        return self.on_set(Set.VALIDATION)
+
     def on_set(self, set_: Set) -> "ClassificationPerformances":
         return ClassificationPerformances(SetClassificationPerformanceFilter(set_).filter(self.performances))
 

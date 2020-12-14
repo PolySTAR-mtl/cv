@@ -37,19 +37,20 @@ if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
 
     _benchmarker = make_armor_color_benchmarker(
-        [
+        train_roco_datasets=[
             ROCODatasetsZoo.TWITCH.T470150052,
             ROCODatasetsZoo.TWITCH.T470152289,
             ROCODatasetsZoo.TWITCH.T470149568,
             ROCODatasetsZoo.TWITCH.T470151286,
         ],
-        [
+        validation_roco_datasets=[],
+        test_roco_datasets=[
             ROCODatasetsZoo.TWITCH.T470152838,
             ROCODatasetsZoo.TWITCH.T470153081,
             ROCODatasetsZoo.TWITCH.T470158483,
             ROCODatasetsZoo.TWITCH.T470152730,
         ],
-        "test",
+        experiment_name="test",
     )
 
     red_blue_comparison_pipeline = ArmorColorPipeline.from_pipes(

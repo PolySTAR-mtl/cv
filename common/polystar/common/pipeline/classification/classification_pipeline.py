@@ -22,7 +22,9 @@ class ClassificationPipeline(Pipeline, Generic[IT, EnumT], ABC):
     def classifier(self) -> ClassifierABC:
         return self.steps[-1][-1]
 
-    def fit(self, x: Sequence[IT], y: List[EnumT], **fit_params):
+    def fit(self, x: Sequence[IT], y: List[EnumT], validation_size: int = 0, **fit_params):
+        if isinstance(self.classifier, ClassifierABC):
+            fit_params[f"{self.classifier.__class__.__name__}__validation_size"] = validation_size
         y_indices = _labels_to_indices(y)
         return super().fit(x, y_indices, **fit_params)
 

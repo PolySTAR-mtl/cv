@@ -16,13 +16,14 @@ class Benchmarker:
     def __init__(
         self,
         train_datasets: List[FileImageDataset],
+        validation_datasets: List[FileImageDataset],
         test_datasets: List[FileImageDataset],
         evaluation_project: str,
         experiment_name: str,
         classes: List,
     ):
-        self.trainer = ImageClassificationPipelineTrainer(train_datasets)
-        self.evaluator = ImageClassificationPipelineEvaluator(train_datasets, test_datasets)
+        self.trainer = ImageClassificationPipelineTrainer(train_datasets, validation_datasets)
+        self.evaluator = ImageClassificationPipelineEvaluator(train_datasets, validation_datasets, test_datasets)
         self.reporter = ImagePipelineEvaluationReporter(
             evaluation_project, experiment_name, classes, other_metrics=[F1Metric()]
         )
@@ -34,6 +35,7 @@ class Benchmarker:
 
 def make_armor_value_benchmarker(
     train_roco_datasets: List[ROCODatasetBuilder],
+    validation_roco_datasets: List[ROCODatasetBuilder],
     test_roco_datasets: List[ROCODatasetBuilder],
     evaluation_project: str,
     experiment_name: str,
@@ -41,8 +43,9 @@ def make_armor_value_benchmarker(
     classes: List,
 ):
     return Benchmarker(
-        dataset_generator.from_roco_datasets(train_roco_datasets),
-        dataset_generator.from_roco_datasets(test_roco_datasets),
+        train_datasets=dataset_generator.from_roco_datasets(train_roco_datasets),
+        validation_datasets=dataset_generator.from_roco_datasets(validation_roco_datasets),
+        test_datasets=dataset_generator.from_roco_datasets(test_roco_datasets),
         evaluation_project=evaluation_project,
         experiment_name=experiment_name,
         classes=classes,

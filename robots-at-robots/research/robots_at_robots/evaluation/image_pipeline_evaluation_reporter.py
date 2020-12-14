@@ -52,8 +52,11 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
     def _report_datasets(self):
         self._mf.title("Datasets", level=2)
 
-        self._mf.title("Training", level=3)
+        self._mf.title("Train-val", level=3)
+        self._mf.paragraph("Train")
         self._report_dataset(self._performances.train)
+        self._mf.paragraph("Val")
+        self._report_dataset(self._performances.validation)
 
         self._mf.title("Testing", level=3)
         self._report_dataset(self._performances.test)
@@ -85,9 +88,11 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
         self._mf.figure(fig_times, "aggregated_times.png")
 
         self._mf.paragraph("On test set:")
-        self._mf.table(self._make_aggregated_results_for_set(Set.TRAIN))
-        self._mf.paragraph("On train set:")
         self._mf.table(self._make_aggregated_results_for_set(Set.TEST))
+        self._mf.paragraph("On validation set:")
+        self._mf.table(self._make_aggregated_results_for_set(Set.VALIDATION))
+        self._mf.paragraph("On train set:")
+        self._mf.table(self._make_aggregated_results_for_set(Set.TRAIN))
 
     def _report_pipelines_results(self):
         for pipeline_name, performances in sorted(
@@ -100,11 +105,14 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
     def _report_pipeline_results(self, pipeline_name: str, performances: ClassificationPerformances):
         self._mf.title(pipeline_name, level=2)
 
-        self._mf.title("Train results", level=3)
-        self._report_pipeline_set_results(performances, Set.TRAIN)
-
         self._mf.title("Test results", level=3)
         self._report_pipeline_set_results(performances, Set.TEST)
+
+        self._mf.title("Validation results", level=3)
+        self._report_pipeline_set_results(performances, Set.VALIDATION)
+
+        self._mf.title("Train results", level=3)
+        self._report_pipeline_set_results(performances, Set.TRAIN)
 
     def _report_pipeline_set_results(self, performances: ClassificationPerformances, set_: Set):
         performances = performances.on_set(set_)
@@ -204,7 +212,7 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
         ).sort_values(["set", self.main_metric.name], ascending=[True, False])
 
         df[f"{self.main_metric.name} "] = list(zip(df[self.main_metric.name], df.support))
-        df["time "] = list(zip(df[self.main_metric.name], df.support))
+        df["time "] = list(zip(df.time, df.support))
 
         return (
             _cat_pipeline_results(df, f"{self.main_metric.name} ", "{:.1%}", limits=(0, 1)),
@@ -248,20 +256,19 @@ def _cat_pipeline_results(
         kind="bar",
         sharey=True,
         legend=False,
-        col_order=["test", "train"],
-        height=10,
+        col_order=["test", "validation", "train"],
+        height=8,
         estimator=weighted_mean,
         orient="v",
     )
-    grid.set_xticklabels(rotation=30, ha="right")
 
     fig: Figure = grid.fig
 
+    grid.set_xticklabels(rotation=30, ha="right")
     _format_axes(fig.get_axes(), fmt, limits=limits, log_scale=log_scale)
 
-    fig.tight_layout()
-
     fig.suptitle(y)
+    fig.tight_layout()
 
     return fig
 

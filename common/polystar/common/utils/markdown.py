@@ -33,7 +33,7 @@ class MarkdownFile:
         return self
 
     def image(self, relative_path: str, alt: str = "img") -> "MarkdownFile":
-        self.paragraph(f"![{alt}]({relative_path})")
+        self.paragraph(f"![{alt}]({str(relative_path).replace(' ', '%20')})")
         return self
 
     def figure(self, figure: Figure, name: str, alt: str = "img"):

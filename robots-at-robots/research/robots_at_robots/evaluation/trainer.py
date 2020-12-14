@@ -10,13 +10,14 @@ from research.common.datasets.union_dataset import UnionDataset
 
 
 class ImageClassificationPipelineTrainer(Generic[TargetT]):
-    def __init__(self, training_datasets: List[FileImageDataset]):
-        train_dataset = UnionDataset(training_datasets)
-        self.images = file_images_to_images(train_dataset.examples)
-        self.labels = train_dataset.targets
+    def __init__(self, training_datasets: List[FileImageDataset], validation_datasets: List[FileImageDataset]):
+        dataset = UnionDataset(training_datasets + validation_datasets)
+        self.validation_size = sum(len(d) for d in validation_datasets)
+        self.images = file_images_to_images(dataset.examples)
+        self.labels = dataset.targets
 
     def train_pipeline(self, pipeline: ClassificationPipeline):
-        pipeline.fit(self.images, self.labels)
+        pipeline.fit(self.images, self.labels, validation_size=self.validation_size)
 
     def train_pipelines(self, pipelines: List[ClassificationPipeline]):
         tqdm_pipelines = tqdm(pipelines, desc="Training Pipelines")

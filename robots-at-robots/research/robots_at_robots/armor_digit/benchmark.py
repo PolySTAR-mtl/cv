@@ -29,7 +29,8 @@ class ArmorDigitPipeline(ClassificationPipeline):
 
 
 class KerasClassifier(ClassifierABC):
-    def __init__(self, model: Model, optimizer, logs_dir: Path, with_data_augmentation: bool):
+    def __init__(self, model: Model, optimizer, logs_dir: Path, with_data_augmentation: bool, batch_size: int = 32):
+        self.batch_size = batch_size
         self.logs_dir = logs_dir
         self.with_data_augmentation = with_data_augmentation
         self.model = model
@@ -41,19 +42,17 @@ class KerasClassifier(ClassifierABC):
             return ImageDataGenerator()
         return ImageDataGenerator(rotation_range=45, zoom_range=[0.8, 1])  # brightness_range=[0.7, 1.4]
 
-    def fit(self, images: List[Image], labels: List[int]) -> "KerasClassifier":
-        n_val: int = 371  # FIXME
+    def fit(self, images: List[Image], labels: List[int], validation_size: int) -> "KerasClassifier":
         images = asarray(images)
         labels = to_categorical(asarray(labels), 5)  # FIXME
-        train_images, train_labels = images[:-n_val], labels[:-n_val]
-        val_images, val_labels = images[-n_val:], labels[-n_val:]
+        train_images, train_labels = images[:-validation_size], labels[:-validation_size]
+        val_images, val_labels = images[-validation_size:], labels[-validation_size:]
 
-        batch_size = 32  # FIXME
-        train_generator = self.train_data_gen.flow(train_images, train_labels, batch_size=batch_size, shuffle=True)
+        train_generator = self.train_data_gen.flow(train_images, train_labels, batch_size=self.batch_size, shuffle=True)
 
         self.model.fit(
             x=train_generator,
-            steps_per_epoch=len(train_images) / batch_size,
+            steps_per_epoch=len(train_images) / self.batch_size,
             validation_data=(val_images, val_labels),
             epochs=300,
             callbacks=[
@@ -102,7 +101,7 @@ def make_digits_cnn_pipeline(
 ) -> ArmorDigitPipeline:
     name = (
         f"cnn - ({input_size}) - lr {lr} - "
-        + " / ".join("_".join(map(str, sizes)) for sizes in conv_blocks)
+        + " ".join("_".join(map(str, sizes)) for sizes in conv_blocks)
         + (" - with_data_augm" * with_data_augmentation)
     )
     input_size = (input_size, input_size)
@@ -179,8 +178,8 @@ if __name__ == "__main__":
             ROCODatasetsZoo.TWITCH.T470150052,
             ROCODatasetsZoo.TWITCH.T470149568,
             ROCODatasetsZoo.TWITCH.T470151286,
-            ROCODatasetsZoo.TWITCH.T470152289,
         ],
+        validation_roco_datasets=[ROCODatasetsZoo.TWITCH.T470152289],
         test_roco_datasets=[
             ROCODatasetsZoo.TWITCH.T470152838,
             ROCODatasetsZoo.TWITCH.T470153081,
@@ -190,12 +189,12 @@ if __name__ == "__main__":
         experiment_name="test-benchmarker",
     )
 
-    random_pipeline = ArmorDigitPipeline.from_pipes([RandomClassifier()], name="random")
+    _report_dir = _benchmarker.reporter.report_dir
 
-    report_dir = _benchmarker.reporter.report_dir
-    cnn_pipelines = [
+    _random_pipeline = ArmorDigitPipeline.from_pipes([RandomClassifier()], name="random")
+    _cnn_pipelines = [
         make_digits_cnn_pipeline(
-            32, ((32, 32), (64, 64)), report_dir, with_data_augmentation=with_data_augmentation, lr=lr,
+            32, ((32, 32), (64, 64)), _report_dir, with_data_augmentation=with_data_augmentation, lr=lr,
         )
         for with_data_augmentation in [False]
         for lr in [2.5e-2, 1.6e-2, 1e-2, 6.3e-3, 4e-4]
@@ -209,12 +208,10 @@ if __name__ == "__main__":
     # ]
 
     vgg16_pipelines = [
-        make_vgg16_pipeline(report_dir, input_size=32, with_data_augmentation=False, lr=lr)
+        make_vgg16_pipeline(_report_dir, input_size=32, with_data_augmentation=False, lr=lr)
         for lr in (1e-5, 5e-4, 2e-4, 1e-4, 5e-3)
     ]
 
-    logging.info(f"Run `tensorboard --logdir={report_dir}` for realtime logs")
+    logging.info(f"Run `tensorboard --logdir={_report_dir}` for realtime logs")
 
-    _benchmarker.benchmark(
-        [random_pipeline,]
-    )
+    _benchmarker.benchmark([_random_pipeline] + _cnn_pipelines)
