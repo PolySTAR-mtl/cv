@@ -13,9 +13,7 @@ from polystar.common.pipeline.classification.random_model import RandomClassifie
 from polystar.common.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
 from polystar.common.pipeline.pipe_abc import PipeABC
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
-from research.robots_at_robots.armor_color.armor_color_pipeline_reporter_factory import (
-    ArmorColorPipelineReporterFactory,
-)
+from research.robots_at_robots.armor_color.armor_color_benchmarker import make_armor_color_benchmarker
 
 
 class ArmorColorPipeline(ClassificationPipeline):
@@ -38,20 +36,20 @@ class RedBlueComparisonClassifier(RuleBasedClassifierABC):
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
 
-    reporter = ArmorColorPipelineReporterFactory.from_roco_datasets(
-        train_roco_datasets=[
+    _benchmarker = make_armor_color_benchmarker(
+        [
             ROCODatasetsZoo.TWITCH.T470150052,
             ROCODatasetsZoo.TWITCH.T470152289,
             ROCODatasetsZoo.TWITCH.T470149568,
             ROCODatasetsZoo.TWITCH.T470151286,
         ],
-        test_roco_datasets=[
+        [
             ROCODatasetsZoo.TWITCH.T470152838,
             ROCODatasetsZoo.TWITCH.T470153081,
             ROCODatasetsZoo.TWITCH.T470158483,
             ROCODatasetsZoo.TWITCH.T470152730,
         ],
-        experiment_name="test",
+        "test",
     )
 
     red_blue_comparison_pipeline = ArmorColorPipeline.from_pipes(
@@ -62,4 +60,4 @@ if __name__ == "__main__":
         [RGB2HSV(), Histogram2D(), LogisticRegression()], name="hsv-hist-lr",
     )
 
-    reporter.report([random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline])
+    _benchmarker.benchmark([random_pipeline, red_blue_comparison_pipeline, hsv_hist_lr_pipeline])

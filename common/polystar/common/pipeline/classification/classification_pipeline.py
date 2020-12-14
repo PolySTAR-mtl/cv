@@ -2,7 +2,7 @@ from abc import ABC
 from enum import IntEnum
 from typing import ClassVar, Generic, List, Sequence, Tuple, TypeVar
 
-from numpy import asarray, ndarray
+from numpy import asarray, ndarray, pad
 
 from polystar.common.pipeline.classification.classifier_abc import ClassifierABC
 from polystar.common.pipeline.pipe_abc import IT, PipeABC
@@ -28,6 +28,13 @@ class ClassificationPipeline(Pipeline, Generic[IT, EnumT], ABC):
 
     def predict(self, x: Sequence[IT]) -> List[EnumT]:
         return self.predict_proba_and_classes(x)[1]
+
+    def predict_proba(self, x: Sequence[IT]) -> ndarray:
+        proba = super().predict_proba(x)
+        missing_classes = self.classifier.n_classes - proba.shape[1]
+        if not missing_classes:
+            return proba
+        return pad(proba, ((0, 0), (0, missing_classes)))
 
     def predict_proba_and_classes(self, x: Sequence[IT]) -> Tuple[ndarray, List[EnumT]]:
         proba = asarray(self.predict_proba(x))

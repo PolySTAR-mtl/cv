@@ -1,10 +1,8 @@
 from collections import Counter
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import InitVar, dataclass, field
 from math import log
 from os.path import relpath
-from pathlib import Path
-from typing import Dict, Generic, Iterable, List, Optional, Tuple
+from typing import Generic, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,187 +10,231 @@ import seaborn as sns
 from matplotlib.axes import Axes, logging
 from matplotlib.figure import Figure
 from pandas import DataFrame
+from sklearn.metrics import classification_report, confusion_matrix
 
 from polystar.common.pipeline.classification.classification_pipeline import EnumT
-from polystar.common.pipeline.pipeline import Pipeline
 from polystar.common.utils.dataframe import Format, format_df_row, format_df_rows, make_formater
 from polystar.common.utils.markdown import MarkdownFile
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
-from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.robots_at_robots.evaluation.image_pipeline_evaluator import (
-    ClassificationResults,
-    ImagePipelineEvaluator,
-    SetClassificationResults,
-)
-
-
-class Metric(Enum):
-    F1_WEIGHTED_AVG = ("f1-score", "weighted avg")
-    ACCURACY = ("precision", "accuracy")
-
-    def __str__(self):
-        if self.value[1] == "accuracy":
-            return "accuracy"
-        return " ".join(self.value)
-
-    def __getitem__(self, item):
-        return self.value[item]
+from research.robots_at_robots.evaluation.metrics.accuracy import AccuracyMetric
+from research.robots_at_robots.evaluation.metrics.metric_abc import MetricABC
+from research.robots_at_robots.evaluation.performance import ClassificationPerformance, ClassificationPerformances
+from research.robots_at_robots.evaluation.set import Set
 
 
 @dataclass
 class ImagePipelineEvaluationReporter(Generic[EnumT]):
-    evaluator: ImagePipelineEvaluator[EnumT]
     evaluation_project: str
     experiment_name: str
-    main_metric: Metric = Metric.F1_WEIGHTED_AVG
-    other_metrics: List[Metric] = field(default_factory=lambda: [Metric.ACCURACY])
+    classes: List[EnumT]
+    main_metric: MetricABC = field(default_factory=AccuracyMetric)
+    other_metrics: InitVar[List[MetricABC]] = None
+    _mf: MarkdownFile = field(init=False)
+    _performances: ClassificationPerformances = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self, other_metrics: List[MetricABC]):
         self.report_dir = EVALUATION_DIR / self.evaluation_project / f"{create_time_id()}_{self.experiment_name}"
+        self.all_metrics: List[MetricABC] = [self.main_metric] + (other_metrics or [])
 
-    def report(self, pipelines: Iterable[Pipeline]):
-        logging.info(f"Running experiment {self.experiment_name}")
+    def report(self, performances: ClassificationPerformances):
+        sns.set()
+        self._performances = performances
+        with MarkdownFile(self.report_dir / "report.md") as self._mf:
 
-        pipeline2results = self.evaluator.evaluate_pipelines(pipelines)
-
-        with MarkdownFile(self.report_dir / "report.md") as mf:
-            mf.title(f"Evaluation report")
-            self._report_datasets(mf)
-            self._report_aggregated_results(mf, pipeline2results, self.report_dir)
-            self._report_pipelines_results(mf, pipeline2results)
+            self._mf.title(f"Evaluation report")
+            self._report_datasets()
+            self._report_aggregated_results()
+            self._report_pipelines_results()
 
             logging.info(f"Report generated at file:///{self.report_dir/'report.md'}")
 
-    def _report_datasets(self, mf: MarkdownFile):
-        mf.title("Datasets", level=2)
+    def _report_datasets(self):
+        self._mf.title("Datasets", level=2)
 
-        mf.title("Training", level=3)
-        self._report_dataset(
-            mf, self.evaluator.train_roco_datasets, self.evaluator.train_dataset_sizes, self.evaluator.train_labels
-        )
+        self._mf.title("Training", level=3)
+        self._report_dataset(self._performances.train)
 
-        mf.title("Testing", level=3)
-        self._report_dataset(
-            mf, self.evaluator.test_roco_datasets, self.evaluator.test_dataset_sizes, self.evaluator.test_labels
-        )
+        self._mf.title("Testing", level=3)
+        self._report_dataset(self._performances.test)
 
-    @staticmethod
-    def _report_dataset(
-        mf: MarkdownFile, roco_datasets: List[ROCODatasetBuilder], dataset_sizes: List[int], labels: List[EnumT]
-    ):
-        total = len(labels)
-        labels = [str(label) for label in labels]
-        mf.paragraph(f"{total} images")
+    def _report_dataset(self, performances: ClassificationPerformances):
         df = (
-            DataFrame(
-                {
-                    dataset.name: Counter(labels[start:end])
-                    for dataset, start, end in zip(
-                        roco_datasets, np.cumsum([0] + dataset_sizes), np.cumsum(dataset_sizes)
-                    )
-                }
-            )
+            DataFrame({perf.dataset_name: Counter(perf.labels) for perf in performances})
             .fillna(0)
             .sort_index()
+            .astype(int)
         )
-        df["Total"] = sum([df[d.name] for d in roco_datasets])
-        df["Repartition"] = (df["Total"] / total).map("{:.1%}".format)
-        mf.table(df)
+        df["Total"] = df.sum(axis=1)
+        df["Repartition"] = df["Total"] / df["Total"].sum()
+        df.loc["Total"] = df.sum()
+        df.loc["Repartition"] = df.loc["Total"] / df["Total"]["Total"]
+        dset_repartition = df.loc["Repartition"].map("{:.1%}".format)
+        df["Repartition"] = df["Repartition"].map("{:.1%}".format)
+        df.loc["Repartition"] = dset_repartition
+        df.at["Total", "Repartition"] = ""
+        df.at["Repartition", "Repartition"] = ""
+        df.at["Repartition", "Total"] = ""
+        self._mf.table(df)
 
-    def _report_aggregated_results(
-        self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]], report_dir: Path
-    ):
-        fig_scores, fig_times, aggregated_results = self._aggregate_results(pipeline2results)
-        aggregated_scores_image_name = "aggregated_scores.png"
-        fig_scores.savefig(report_dir / aggregated_scores_image_name)
-        aggregated_times_image_name = "aggregated_times.png"
-        fig_times.savefig(report_dir / aggregated_times_image_name)
+    def _report_aggregated_results(self):
+        fig_scores, fig_times = self._make_aggregate_figures()
 
-        mf.title("Aggregated results", level=2)
-        mf.image(aggregated_scores_image_name)
-        mf.image(aggregated_times_image_name)
-        mf.paragraph("On test set:")
-        mf.table(aggregated_results[aggregated_results["set"] == "test"].drop(columns="set"))
-        mf.paragraph("On train set:")
-        mf.table(aggregated_results[aggregated_results["set"] == "train"].drop(columns="set"))
+        self._mf.title("Aggregated results", level=2)
+        self._mf.figure(fig_scores, "aggregated_scores.png")
+        self._mf.figure(fig_times, "aggregated_times.png")
 
-    def _report_pipelines_results(self, mf: MarkdownFile, pipeline2results: Dict[str, ClassificationResults[EnumT]]):
-        for pipeline_name, results in sorted(
-            pipeline2results.items(),
-            key=lambda name_results: name_results[1].test_results.report[self.main_metric[1]][self.main_metric[0]],
+        self._mf.paragraph("On test set:")
+        self._mf.table(self._make_aggregated_results_for_set(Set.TRAIN))
+        self._mf.paragraph("On train set:")
+        self._mf.table(self._make_aggregated_results_for_set(Set.TEST))
+
+    def _report_pipelines_results(self):
+        for pipeline_name, performances in sorted(
+            self._performances.group_by_pipeline().items(),
+            key=lambda name_perfs: self.main_metric(name_perfs[1].test.merge()),
             reverse=True,
         ):
-            self._report_pipeline_results(mf, pipeline_name, results)
+            self._report_pipeline_results(pipeline_name, performances)
 
-    def _report_pipeline_results(self, mf: MarkdownFile, pipeline_name: str, results: ClassificationResults[EnumT]):
-        mf.title(pipeline_name, level=2)
+    def _report_pipeline_results(self, pipeline_name: str, performances: ClassificationPerformances):
+        self._mf.title(pipeline_name, level=2)
 
-        mf.paragraph(results.full_pipeline_name)
+        self._mf.title("Train results", level=3)
+        self._report_pipeline_set_results(performances, Set.TRAIN)
 
-        mf.title("Train results", level=3)
-        ImagePipelineEvaluationReporter._report_pipeline_set_results(
-            mf, results.train_results, self.evaluator.train_images_paths
-        )
+        self._mf.title("Test results", level=3)
+        self._report_pipeline_set_results(performances, Set.TEST)
 
-        mf.title("Test results", level=3)
-        ImagePipelineEvaluationReporter._report_pipeline_set_results(
-            mf, results.test_results, self.evaluator.test_images_paths
-        )
+    def _report_pipeline_set_results(self, performances: ClassificationPerformances, set_: Set):
+        performances = performances.on_set(set_)
+        perf = performances.merge()
 
-    @staticmethod
-    def _report_pipeline_set_results(
-        mf: MarkdownFile, results: SetClassificationResults[EnumT], image_paths: List[Path]
+        self._mf.title("Metrics", level=4)
+        self._report_pipeline_set_metrics(performances, perf, set_)
+
+        self._mf.title("Confusion Matrix:", level=4)
+        self._report_pipeline_set_confusion_matrix(perf)
+
+        self._mf.title("25 Mistakes examples", level=4)
+        self._report_pipeline_set_mistakes(perf)
+
+    def _report_pipeline_set_metrics(
+        self, performances: ClassificationPerformances, perf: ClassificationPerformance, set_: Set
     ):
-        mf.title("Metrics", level=4)
-        mf.paragraph(f"Inference time: {results.mean_inference_time: .2e} s/img")
-        df = DataFrame(results.report)
+        fig: Figure = plt.figure(figsize=(9, 6))
+        ax: Axes = fig.subplots()
+        sns.barplot(
+            data=DataFrame(
+                [
+                    {"dataset": performance.dataset_name, "score": metric(performance), "metric": metric.name}
+                    for performance in performances
+                    for metric in self.all_metrics
+                ]
+                + [
+                    {"dataset": performance.dataset_name, "score": len(performance) / len(perf), "metric": "support"}
+                    for performance in performances
+                ]
+            ),
+            x="dataset",
+            hue="metric",
+            y="score",
+            ax=ax,
+        )
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha="right")
+        pipeline_name = performances.performances[0].pipeline_name
+        fig.suptitle(f"{pipeline_name} performance across {set_} datasets")
+        _format_ax(ax, "{:.1%}", limits=(0, 1))
+        fig.tight_layout()
+        self._mf.figure(fig, f"{pipeline_name}_{set_}.png")
+
+        self._mf.paragraph(f"Inference time: {perf.mean_inference_time: .2e} s/img")
+        df = DataFrame(classification_report(perf.labels, perf.predictions, output_dict=True))
         format_df_rows(df, ["precision", "recall", "f1-score"], "{:.1%}")
         format_df_row(df, "support", int)
-        mf.table(df)
-        mf.title("Confusion Matrix:", level=4)
-        mf.table(DataFrame(results.confusion_matrix, index=results.unique_labels, columns=results.unique_labels))
-        mf.title("25 Mistakes examples", level=4)
-        mistakes_idx = np.random.choice(results.mistakes, min(len(results.mistakes), 25), replace=False)
+        self._mf.table(df)
+
+    def _report_pipeline_set_confusion_matrix(self, perf: ClassificationPerformance):
+        self._mf.table(
+            DataFrame(
+                confusion_matrix(perf.labels, perf.predictions), index=perf.unique_labels, columns=perf.unique_labels
+            )
+        )
+
+    def _report_pipeline_set_mistakes(self, perf: ClassificationPerformance):
+        mistakes = perf.mistakes
+        mistakes_idx = np.random.choice(mistakes, min(len(mistakes), 25), replace=False)
         relative_paths = [
-            f"![img]({relpath(str(image_paths[idx]), str(mf.markdown_path.parent))})" for idx in mistakes_idx
+            f"![img]({relpath(str(perf.examples[idx].path), str(self._mf.markdown_path.parent))})"
+            for idx in mistakes_idx
         ]
-        images_names = [image_paths[idx].relative_to(DSET_DIR) for idx in mistakes_idx]
-        mf.table(
+        images_names = [
+            f"[{perf.examples[idx].path.relative_to(DSET_DIR)}]"
+            f"({relpath(str(perf.examples[idx].path), str(self._mf.markdown_path.parent))})"
+            for idx in mistakes_idx
+        ]
+        self._mf.table(
             DataFrame(
                 {
                     "images": relative_paths,
-                    "labels": map(str, results.labels[mistakes_idx]),
-                    "predictions": map(str, results.predictions[mistakes_idx]),
+                    "labels": perf.labels[mistakes_idx],
+                    "predictions": perf.predictions[mistakes_idx],
+                    **{
+                        f"p({str(label)})": map("{:.1%}".format, perf.proba[mistakes_idx, i])
+                        for i, label in enumerate(self.classes)
+                    },
                     "image names": images_names,
                 }
             ).set_index("images")
         )
 
-    def _aggregate_results(
-        self, pipeline2results: Dict[str, ClassificationResults[EnumT]]
-    ) -> Tuple[Figure, Figure, DataFrame]:
-        sns.set_style()
-        sets = ["train", "test"]
+    def _make_aggregate_figures(self) -> Tuple[Figure, Figure]:
         df = DataFrame.from_records(
             [
                 {
-                    "pipeline": pipeline_name,
-                    str(self.main_metric): results.on_set(set_).report[self.main_metric[1]][self.main_metric[0]],
-                    "inference time": results.on_set(set_).mean_inference_time,
-                    "set": set_,
+                    "dataset": perf.dataset_name,
+                    "pipeline": perf.pipeline_name,
+                    self.main_metric.name: self.main_metric(perf),
+                    "time": perf.mean_inference_time,
+                    "set": perf.set_.name.lower(),
+                    "support": len(perf),
                 }
-                for pipeline_name, results in pipeline2results.items()
-                # for metric in [self.main_metric]  # + self.other_metrics
-                for set_ in sets
+                for perf in self._performances
             ]
-        ).sort_values(["set", str(self.main_metric)], ascending=[True, False])
+        ).sort_values(["set", self.main_metric.name], ascending=[True, False])
+
+        df[f"{self.main_metric.name} "] = list(zip(df[self.main_metric.name], df.support))
+        df["time "] = list(zip(df[self.main_metric.name], df.support))
 
         return (
-            _cat_pipeline_results(df, str(self.main_metric), "{:.1%}", limits=(0, 1)),
-            _cat_pipeline_results(df, "inference time", "{:.2e}", log_scale=True),
-            df.set_index("pipeline"),
+            _cat_pipeline_results(df, f"{self.main_metric.name} ", "{:.1%}", limits=(0, 1)),
+            _cat_pipeline_results(df, "time ", "{:.2e}", log_scale=True),
         )
+
+    def _make_aggregated_results_for_set(self, set_: Set) -> DataFrame:
+        pipeline2performances = self._performances.on_set(set_).group_by_pipeline()
+        pipeline2performance = {
+            pipeline_name: performances.merge() for pipeline_name, performances in pipeline2performances.items()
+        }
+        return (
+            DataFrame(
+                [
+                    {
+                        "pipeline": pipeline_name,
+                        self.main_metric.name: self.main_metric(performance),
+                        "inference time": performance.mean_inference_time,
+                    }
+                    for pipeline_name, performance in pipeline2performance.items()
+                ]
+            )
+            .set_index("pipeline")
+            .sort_values(self.main_metric.name, ascending=False)
+        )
+
+
+def weighted_mean(x, **kws):
+    val, weight = map(np.asarray, zip(*x))
+    return (val * weight).sum() / weight.sum()
 
 
 def _cat_pipeline_results(
@@ -208,6 +250,8 @@ def _cat_pipeline_results(
         legend=False,
         col_order=["test", "train"],
         height=10,
+        estimator=weighted_mean,
+        orient="v",
     )
     grid.set_xticklabels(rotation=30, ha="right")
 
