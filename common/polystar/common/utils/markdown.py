@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import TextIO, Iterable, Any
+from typing import Any, Iterable, TextIO
 
+from matplotlib.figure import Figure
 from pandas import DataFrame
 from tabulate import tabulate
 
@@ -35,7 +36,11 @@ class MarkdownFile:
         self.paragraph(f"![{alt}]({relative_path})")
         return self
 
+    def figure(self, figure: Figure, name: str, alt: str = "img"):
+        figure.savefig(self.markdown_path.parent / name)
+        return self.image(name, alt)
+
     def table(self, data: DataFrame) -> "MarkdownFile":
-        self.file.write(tabulate(data, tablefmt="pipe", headers="keys"))
+        self.file.write(tabulate(data, tablefmt="pipe", headers="keys").replace(".0 ", "   "))
         self.file.write("\n\n")
         return self

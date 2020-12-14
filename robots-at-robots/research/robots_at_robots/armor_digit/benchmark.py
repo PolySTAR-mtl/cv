@@ -3,8 +3,6 @@ import warnings
 from pathlib import Path
 from typing import List, Sequence, Tuple
 
-import seaborn as sns
-from cv2.cv2 import resize
 from keras_preprocessing.image import ImageDataGenerator
 from numpy import asarray
 from tensorflow_core.python.keras import Input, Model, Sequential
@@ -15,16 +13,15 @@ from tensorflow_core.python.keras.optimizer_v2.adam import Adam
 from tensorflow_core.python.keras.optimizer_v2.gradient_descent import SGD
 from tensorflow_core.python.keras.utils.np_utils import to_categorical
 
+from polystar.common.image_pipeline.preprocessors.normalise import Normalise
+from polystar.common.image_pipeline.preprocessors.resize import Resize
 from polystar.common.models.image import Image
 from polystar.common.models.object import ArmorDigit
 from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
 from polystar.common.pipeline.classification.classifier_abc import ClassifierABC
 from polystar.common.pipeline.classification.random_model import RandomClassifier
-from polystar.common.pipeline.pipe_abc import PipeABC
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
-from research.robots_at_robots.armor_digit.armor_digit_pipeline_reporter_factory import (
-    ArmorDigitPipelineReporterFactory,
-)
+from research.robots_at_robots.armor_digit.armor_digit_benchmarker import make_armor_digit_benchmarker
 
 
 class ArmorDigitPipeline(ClassificationPipeline):
@@ -45,14 +42,14 @@ class KerasClassifier(ClassifierABC):
         return ImageDataGenerator(rotation_range=45, zoom_range=[0.8, 1])  # brightness_range=[0.7, 1.4]
 
     def fit(self, images: List[Image], labels: List[int]) -> "KerasClassifier":
-        n_val: int = 540  # FIXME
+        n_val: int = 371  # FIXME
         images = asarray(images)
         labels = to_categorical(asarray(labels), 5)  # FIXME
         train_images, train_labels = images[:-n_val], labels[:-n_val]
         val_images, val_labels = images[-n_val:], labels[-n_val:]
 
         batch_size = 32  # FIXME
-        train_generator = self.train_data_gen.flow(train_images, train_labels, batch_size)
+        train_generator = self.train_data_gen.flow(train_images, train_labels, batch_size=batch_size, shuffle=True)
 
         self.model.fit(
             x=train_generator,
@@ -98,19 +95,6 @@ class CNN(KerasClassifier):
         super().__init__(
             model, optimizer=SGD(lr=lr, momentum=0.9), logs_dir=logs_dir, with_data_augmentation=with_data_augmentation,
         )
-
-
-class Resize(PipeABC):
-    def __init__(self, size: Tuple[int, int]):
-        self.size = size
-
-    def transform_single(self, image: Image) -> Image:
-        return resize(image, self.size)
-
-
-class Normalise(PipeABC):
-    def transform_single(self, image: Image) -> Image:
-        return image / 255
 
 
 def make_digits_cnn_pipeline(
@@ -186,9 +170,7 @@ if __name__ == "__main__":
     logging.getLogger("tensorflow").setLevel("ERROR")
     warnings.filterwarnings("ignore")
 
-    sns.set_style()
-
-    reporter = ArmorDigitPipelineReporterFactory.from_roco_datasets(
+    _benchmarker = make_armor_digit_benchmarker(
         train_roco_datasets=[
             # ROCODatasetsZoo.DJI.CENTRAL_CHINA,
             # ROCODatasetsZoo.DJI.FINAL,
@@ -200,32 +182,39 @@ if __name__ == "__main__":
             ROCODatasetsZoo.TWITCH.T470152289,
         ],
         test_roco_datasets=[
-            #
             ROCODatasetsZoo.TWITCH.T470152838,
             ROCODatasetsZoo.TWITCH.T470153081,
             ROCODatasetsZoo.TWITCH.T470158483,
             ROCODatasetsZoo.TWITCH.T470152730,
         ],
-        experiment_name="data_augm",
+        experiment_name="test-benchmarker",
     )
 
     random_pipeline = ArmorDigitPipeline.from_pipes([RandomClassifier()], name="random")
 
+    report_dir = _benchmarker.reporter.report_dir
     cnn_pipelines = [
-        make_digits_cnn_pipeline(32, ((32, 32), (64, 64)), reporter.report_dir, with_data_augmentation=True, lr=lr)
-        for lr in (1e-2, 5e-3, 2e-3, 1e-3, 5e-4, 2e-4)
-    ] + [
         make_digits_cnn_pipeline(
-            64, ((32,), (64, 64), (64, 64)), reporter.report_dir, with_data_augmentation=False, lr=lr
+            32, ((32, 32), (64, 64)), report_dir, with_data_augmentation=with_data_augmentation, lr=lr,
         )
-        for lr in (5e-2, 2e-2, 1e-2, 5e-3, 2e-3, 1e-3)
+        for with_data_augmentation in [False]
+        for lr in [2.5e-2, 1.6e-2, 1e-2, 6.3e-3, 4e-4]
     ]
+    # cnn_pipelines = [
+    #     make_digits_cnn_pipeline(
+    #         64, ((32,), (64, 64), (64, 64)), reporter.report_dir, with_data_augmentation=True, lr=lr
+    #     )
+    #     for with_data_augmentation in [True, False]
+    #     for lr in (5.6e-2, 3.1e-2, 1.8e-2, 1e-2, 5.6e-3, 3.1e-3, 1.8e-3, 1e-3)
+    # ]
 
     vgg16_pipelines = [
-        make_vgg16_pipeline(reporter.report_dir, input_size=32, with_data_augmentation=True, lr=lr)
+        make_vgg16_pipeline(report_dir, input_size=32, with_data_augmentation=False, lr=lr)
         for lr in (1e-5, 5e-4, 2e-4, 1e-4, 5e-3)
     ]
 
-    logging.info(f"Run `tensorboard --logdir={reporter.report_dir}` for realtime logs")
+    logging.info(f"Run `tensorboard --logdir={report_dir}` for realtime logs")
 
-    reporter.report([random_pipeline, *cnn_pipelines, *vgg16_pipelines])
+    _benchmarker.benchmark(
+        [random_pipeline,]
+    )

@@ -1,111 +1,57 @@
-import logging
-from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
+from itertools import chain
 from time import time
-from typing import Dict, Generic, Iterable, List, Sequence, Tuple
+from typing import Generic, Iterable, List
 
 import numpy as np
-from memoized_property import memoized_property
-from sklearn.metrics import classification_report, confusion_matrix
-from tqdm import tqdm
 
-from polystar.common.models.image import Image, load_images
-from polystar.common.pipeline.pipeline import Pipeline
+from polystar.common.models.image import file_images_to_images
+from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.common.utils.iterable_utils import flatten
+from research.common.datasets.image_dataset import FileImageDataset
 from research.common.datasets.lazy_dataset import TargetT
-from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets.union_dataset import UnionDataset
-from research.robots_at_robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator
+from research.robots_at_robots.evaluation.performance import (
+    ClassificationPerformance,
+    ClassificationPerformances,
+    ContextualizedClassificationPerformance,
+)
+from research.robots_at_robots.evaluation.set import Set
 
 
-@dataclass
-class SetClassificationResults(Generic[TargetT]):
-    labels: np.ndarray
-    predictions: np.ndarray
-    mean_inference_time: float
-
-    @property
-    def report(self) -> Dict:
-        return classification_report(self.labels, self.predictions, output_dict=True)
-
-    @property
-    def confusion_matrix(self) -> Dict:
-        return confusion_matrix(self.labels, self.predictions)
-
-    @property
-    def mistakes(self) -> Sequence[int]:
-        return np.where(self.labels != self.predictions)[0]
-
-    @memoized_property
-    def unique_labels(self) -> List[TargetT]:
-        return sorted(set(self.labels) | set(self.predictions))
-
-
-@dataclass
-class ClassificationResults(Generic[TargetT]):
-    train_results: SetClassificationResults[TargetT]
-    test_results: SetClassificationResults[TargetT]
-    full_pipeline_name: str
-
-    def on_set(self, set_: str) -> SetClassificationResults[TargetT]:
-        if set_ is "train":
-            return self.train_results
-        return self.test_results
-
-
-class ImagePipelineEvaluator(Generic[TargetT]):
+class ImageClassificationPipelineEvaluator(Generic[TargetT]):
     def __init__(
-        self,
-        train_roco_datasets: List[ROCODatasetBuilder],
-        test_roco_datasets: List[ROCODatasetBuilder],
-        image_dataset_generator: ArmorValueDatasetGenerator[TargetT],
+        self, train_datasets: List[FileImageDataset], test_datasets: List[FileImageDataset],
     ):
-        logging.info("Loading data")
-        self.train_roco_datasets = train_roco_datasets
-        self.test_roco_datasets = test_roco_datasets
-        (self.train_images_paths, self.train_images, self.train_labels, self.train_dataset_sizes) = load_datasets(
-            train_roco_datasets, image_dataset_generator
-        )
-        (self.test_images_paths, self.test_images, self.test_labels, self.test_dataset_sizes) = load_datasets(
-            test_roco_datasets, image_dataset_generator
-        )
+        self.train_datasets = train_datasets
+        self.test_datasets = test_datasets
 
-    def evaluate_pipelines(self, pipelines: Iterable[Pipeline]) -> Dict[str, ClassificationResults]:
-        tqdm_pipelines = tqdm(pipelines, desc="Training", unit="pipeline")
-        return {str(pipeline): self.evaluate_pipeline(pipeline, tqdm_pipelines) for pipeline in tqdm_pipelines}
+    def evaluate_pipelines(self, pipelines: Iterable[ClassificationPipeline]) -> ClassificationPerformances:
+        return ClassificationPerformances(flatten(self._evaluate_pipeline(pipeline) for pipeline in pipelines))
 
-    def evaluate_pipeline(self, pipeline: Pipeline, tqdm_pipelines: tqdm) -> ClassificationResults:
-        tqdm_pipelines.set_postfix({"pipeline": pipeline.name}, True)
-        pipeline.fit(self.train_images, self.train_labels)
-
-        train_results = self._evaluate_pipeline_on_set(pipeline, self.train_images, self.train_labels)
-        test_results = self._evaluate_pipeline_on_set(pipeline, self.test_images, self.test_labels)
-
-        return ClassificationResults(
-            train_results=train_results, test_results=test_results, full_pipeline_name=repr(pipeline),
+    def _evaluate_pipeline(self, pipeline: ClassificationPipeline) -> Iterable[ContextualizedClassificationPerformance]:
+        return chain(
+            self._evaluate_pipeline_on_set(pipeline, self.train_datasets, Set.TRAIN),
+            self._evaluate_pipeline_on_set(pipeline, self.test_datasets, Set.TEST),
         )
 
     @staticmethod
     def _evaluate_pipeline_on_set(
-        pipeline: Pipeline, images: List[Image], labels: List[TargetT]
-    ) -> SetClassificationResults:
-        t = time()
-        preds = pipeline.predict(images)
-        mean_time = (time() - t) / len(images)
-        return SetClassificationResults(_labels_to_numpy(labels), _labels_to_numpy(preds), mean_time)
-
-
-def load_datasets(
-    roco_datasets: List[ROCODatasetBuilder], image_dataset_generator: ArmorValueDatasetGenerator[TargetT],
-) -> Tuple[List[Path], List[Image], List[TargetT], List[int]]:
-    # TODO we should receive a list of FileImageDataset
-    datasets = [builder.build() for builder in image_dataset_generator.from_roco_datasets(roco_datasets)]
-    dataset_sizes = [len(d) for d in datasets]
-
-    dataset = UnionDataset(datasets)
-    paths, targets = list(dataset.examples), list(dataset.targets)
-    images = list(load_images(paths))
-    return paths, images, targets, dataset_sizes
+        pipeline: ClassificationPipeline, datasets: List[FileImageDataset], set_: Set
+    ) -> Iterable[ContextualizedClassificationPerformance]:
+        for dataset in datasets:
+            t = time()
+            proba, classes = pipeline.predict_proba_and_classes(file_images_to_images(dataset.examples))
+            mean_time = (time() - t) / len(dataset)
+            yield ContextualizedClassificationPerformance(
+                examples=dataset.examples,
+                labels=_labels_to_numpy(dataset.targets),
+                predictions=_labels_to_numpy(classes),
+                proba=proba,
+                mean_inference_time=mean_time,
+                set_=set_,
+                dataset_name=dataset.name,
+                pipeline_name=pipeline.name,
+            )
 
 
 def _labels_to_numpy(labels: List[Enum]) -> np.ndarray:
