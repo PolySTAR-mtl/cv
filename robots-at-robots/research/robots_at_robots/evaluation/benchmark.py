@@ -23,9 +23,7 @@ class Benchmarker:
         classes: List,
     ):
         self.trainer = ImageClassificationPipelineTrainer(train_datasets, validation_datasets)
-        self.evaluator = ImageClassificationPipelineEvaluator(
-            train_datasets + validation_datasets, test_datasets
-        )  # FIXME
+        self.evaluator = ImageClassificationPipelineEvaluator(train_datasets, validation_datasets, test_datasets)
         self.reporter = ImagePipelineEvaluationReporter(
             evaluation_project, experiment_name, classes, other_metrics=[F1Metric()]
         )

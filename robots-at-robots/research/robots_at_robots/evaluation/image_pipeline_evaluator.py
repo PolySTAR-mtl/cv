@@ -1,5 +1,4 @@
 from enum import Enum
-from itertools import chain
 from time import time
 from typing import Generic, Iterable, List
 
@@ -20,25 +19,24 @@ from research.robots_at_robots.evaluation.set import Set
 
 class ImageClassificationPipelineEvaluator(Generic[TargetT]):
     def __init__(
-        self, train_datasets: List[FileImageDataset], test_datasets: List[FileImageDataset],
+        self,
+        train_datasets: List[FileImageDataset],
+        validation_datasets: List[FileImageDataset],
+        test_datasets: List[FileImageDataset],
     ):
-        self.train_datasets = train_datasets
-        self.test_datasets = test_datasets
+        self.set2datasets = {Set.TRAIN: train_datasets, Set.VALIDATION: validation_datasets, Set.TEST: test_datasets}
 
     def evaluate_pipelines(self, pipelines: Iterable[ClassificationPipeline]) -> ClassificationPerformances:
         return ClassificationPerformances(flatten(self._evaluate_pipeline(pipeline) for pipeline in pipelines))
 
     def _evaluate_pipeline(self, pipeline: ClassificationPipeline) -> Iterable[ContextualizedClassificationPerformance]:
-        return chain(
-            self._evaluate_pipeline_on_set(pipeline, self.train_datasets, Set.TRAIN),
-            self._evaluate_pipeline_on_set(pipeline, self.test_datasets, Set.TEST),
-        )
+        for set_ in Set:
+            yield from self._evaluate_pipeline_on_set(pipeline, set_)
 
-    @staticmethod
     def _evaluate_pipeline_on_set(
-        pipeline: ClassificationPipeline, datasets: List[FileImageDataset], set_: Set
+        self, pipeline: ClassificationPipeline, set_: Set
     ) -> Iterable[ContextualizedClassificationPerformance]:
-        for dataset in datasets:
+        for dataset in self.set2datasets[set_]:
             t = time()
             proba, classes = pipeline.predict_proba_and_classes(file_images_to_images(dataset.examples))
             mean_time = (time() - t) / len(dataset)
