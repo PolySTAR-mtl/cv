@@ -204,7 +204,7 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
         ).sort_values(["set", self.main_metric.name], ascending=[True, False])
 
         df[f"{self.main_metric.name} "] = list(zip(df[self.main_metric.name], df.support))
-        df["time "] = list(zip(df[self.main_metric.name], df.support))
+        df["time "] = list(zip(df.time, df.support))
 
         return (
             _cat_pipeline_results(df, f"{self.main_metric.name} ", "{:.1%}", limits=(0, 1)),

@@ -11,7 +11,7 @@ class RandomClassifier(RuleBasedClassifierABC):
     def predict(self, examples: np.ndarray) -> List[int]:
         return choice(range(self.n_classes), size=len(examples), replace=True, p=self.weights_)
 
-    def fit(self, examples: List, label_indices: List[int]) -> "RandomClassifier":
+    def fit(self, examples: List, label_indices: List[int], validation_size: int) -> "RandomClassifier":
         indices2counts = Counter(label_indices)
         self.weights_ = [indices2counts[i] / len(label_indices) for i in range(self.n_classes)]
         return self
