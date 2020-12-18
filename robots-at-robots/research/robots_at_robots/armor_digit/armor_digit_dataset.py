@@ -20,7 +20,7 @@ class ArmorDigitTargetFactory(ArmorValueTargetFactory[ArmorDigit]):
         return ArmorDigit(armor.number) if armor.number else ArmorDigit.UNKNOWN
 
 
-def make_armor_digit_dataset_generator() -> ArmorValueDatasetGenerator[int]:
+def make_armor_digit_dataset_generator() -> ArmorValueDatasetGenerator[ArmorDigit]:
     return ArmorValueDatasetGenerator("digits", ArmorDigitTargetFactory(), ExcludeFilter({ArmorDigit.OUTDATED}))
 
 

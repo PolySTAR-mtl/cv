@@ -14,7 +14,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 from polystar.common.pipeline.classification.classification_pipeline import EnumT
 from polystar.common.utils.dataframe import Format, format_df_row, format_df_rows, make_formater
-from polystar.common.utils.markdown import MarkdownFile
+from polystar.common.utils.markdown import MarkdownFile, markdown_to_pdf
 from polystar.common.utils.time import create_time_id
 from research.common.constants import DSET_DIR, EVALUATION_DIR
 from research.robots_at_robots.evaluation.metrics.accuracy import AccuracyMetric
@@ -40,7 +40,8 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
     def report(self, performances: ClassificationPerformances):
         sns.set()
         self._performances = performances
-        with MarkdownFile(self.report_dir / "report.md") as self._mf:
+        report_path = self.report_dir / "report.md"
+        with MarkdownFile(report_path) as self._mf:
 
             self._mf.title(f"Evaluation report")
             self._report_datasets()
@@ -48,6 +49,7 @@ class ImagePipelineEvaluationReporter(Generic[EnumT]):
             self._report_pipelines_results()
 
             logging.info(f"Report generated at file:///{self.report_dir/'report.md'}")
+        markdown_to_pdf(report_path)
 
     def _report_datasets(self):
         self._mf.title("Datasets", level=2)
