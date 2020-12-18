@@ -41,11 +41,15 @@ def make_armor_value_benchmarker(
     experiment_name: str,
     dataset_generator: ArmorValueDatasetGenerator,
     classes: List,
+    train_datasets: List[FileImageDataset] = None,
+    validation_datasets: List[FileImageDataset] = None,
+    test_datasets: List[FileImageDataset] = None,
 ):
     return Benchmarker(
-        train_datasets=dataset_generator.from_roco_datasets(train_roco_datasets),
-        validation_datasets=dataset_generator.from_roco_datasets(validation_roco_datasets),
-        test_datasets=dataset_generator.from_roco_datasets(test_roco_datasets),
+        train_datasets=dataset_generator.from_roco_datasets(train_roco_datasets) + (train_datasets or []),
+        validation_datasets=dataset_generator.from_roco_datasets(validation_roco_datasets)
+        + (validation_datasets or []),
+        test_datasets=dataset_generator.from_roco_datasets(test_roco_datasets) + (test_datasets or []),
         evaluation_project=evaluation_project,
         experiment_name=experiment_name,
         classes=classes,
