@@ -2,6 +2,7 @@
 # experiments
 /experiments
 /resources/models
+/pipelines
 
 # TF models
 /models
