@@ -1,0 +1,33 @@
+trainingInput:
+  pythonVersion: "3.7"
+  runtimeVersion: "2.3"
+  scaleTier: BASIC_GPU
+  region: europe-west6
+
+  hyperparameters:
+    goal: MAXIMIZE
+    hyperparameterMetricTag: val_accuracy
+    maxTrials: 50
+    maxParallelTrials: 5
+    params:
+      - parameterName: lr
+        type: DOUBLE
+        minValue: 0.00001
+        maxValue: 0.1
+        scaleType: UNIT_LOG_SCALE
+      - parameterName: dropout
+        type: DOUBLE
+        minValue: 0
+        maxValue: .99
+      - parameterName: dense-size
+        type: DISCRETE
+        discreteValues:
+          - 16
+          - 32
+          - 64
+          - 128
+          - 256
+          - 512
+          - 1024
+          - 2048
+        scaleType: UNIT_LOG_SCALE

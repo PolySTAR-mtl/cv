@@ -1,8 +1,10 @@
 [tool.poetry]
-name = "polystar.cv"
+name = "polystar_cv"
 version = "0.2.0"
 description = "CV code for Polystar's RoboMaster team"
 authors = ["Polystar"]
+packages = [{ include = "polystar", from = "polystar_cv" }, { include = "research", from = "polystar_cv" }]
+include = ["**/.changes"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -24,15 +26,25 @@ dataclasses = "^0.6.0"
 imutils = "^0.5.3"
 more-itertools = "^8.4.0"
 
-[tool.poetry.dev-dependencies]
-tensorflow = "2.1.x"
-tensorflow-estimator = "2.1.x"
 opencv-python = "4.1.x"
 matplotlib = "^3.1.3"
-kivy = "^1.11.1"
 markdown = "^3.3.3"
 xhtml2pdf = "^0.2.5"
 google-cloud-storage = "^1.35.0"
+pyyaml = "^5.3.1"
+six = "1.15.0"  # https://github.com/googleapis/python-bigquery/issues/70
+
+[tool.poetry.dev-dependencies]
+tensorflow = "2.3.x"
+tensorflow-estimator = "2.3.x"
+kivy = "^1.11.1"
+cloudml-hypertune = "^0.1.0-alpha.6"
+google-api-python-client = "^1.12.8"
+wheel = "^0.36.2"
+optuna = "^2.3.0"
+hyperopt = "^0.2.5"
+plotly = "^4.14.1"
+pydot = "^1.4.1"
 
 [tool.black]
 line-length = 120
@@ -43,3 +55,7 @@ profile='black'
 line_length = 120
 known_first_party = ['polystar','tests','research','tools','scripts']
 skip = ['.eggs','.git','.hg','.mypy_cache','.nox','.pants.d','.tox','.venv','_build','buck-out','build','dist','node_modules','venv','__init__.py']
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

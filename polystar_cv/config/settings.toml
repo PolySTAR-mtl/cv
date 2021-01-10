@@ -1,0 +1,10 @@
+[default]
+CAMERA_WIDTH = 1920
+CAMERA_HEIGHT = 1080
+CAMERA_HORIZONTAL_FOV = 120
+
+MODEL_NAME = 'robots/TRT_ssd_mobilenet_v2_roco.bin'
+
+[development]
+
+[production]

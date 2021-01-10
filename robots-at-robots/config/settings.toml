@@ -1,6 +1,0 @@
-[default]
-MODEL_NAME = 'robots/TRT_ssd_mobilenet_v2_roco.bin'
-
-[development]
-
-[production]
