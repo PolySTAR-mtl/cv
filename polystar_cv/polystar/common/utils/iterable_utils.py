@@ -27,3 +27,14 @@ def group_by(it: Iterable[T], key: Callable[[T], U]) -> Dict[U, List[T]]:
     for item in it:
         rv[key(item)].append(item)
     return rv
+
+
+def chunk(it: Iterable[T], batch_size: float) -> Iterable[List[T]]:
+    batch = []
+    for el in it:
+        batch.append(el)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch

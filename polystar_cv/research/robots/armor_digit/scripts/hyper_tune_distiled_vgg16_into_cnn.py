@@ -4,7 +4,6 @@ from pathlib import Path
 
 from optuna import Trial
 
-from polystar.common.constants import PROJECT_DIR
 from polystar.common.utils.serialization import pkl_load
 from research.common.utils.experiment_dir import make_experiment_dir
 from research.robots.armor_digit.digit_benchmarker import make_default_digit_benchmarker
@@ -14,7 +13,7 @@ from research.robots.evaluation.hyper_tuner import HyperTuner
 
 class DistilledPipelineFactory:
     def __init__(self, teacher_name: str):
-        self.teacher: ArmorDigitKerasPipeline = pkl_load(PROJECT_DIR / "pipelines/armor-digit" / teacher_name)
+        self.teacher: ArmorDigitKerasPipeline = pkl_load(PIPELINES_DIR / "armor-digit" / teacher_name)
 
     def __call__(self, report_dir: Path, trial: Trial) -> ArmorDigitPipeline:
         return ArmorDigitKerasPipeline.from_distillation(

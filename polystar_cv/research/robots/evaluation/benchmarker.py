@@ -1,7 +1,8 @@
 import logging
 from dataclasses import dataclass
+from itertools import chain
 from pathlib import Path
-from typing import List
+from typing import List, Sequence
 
 from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
 from research.common.datasets.image_dataset import FileImageDataset
@@ -40,10 +41,10 @@ class Benchmarker:
         return pipeline_performances
 
     def benchmark(
-        self, pipelines: List[ClassificationPipeline], trained_pipelines: List[ClassificationPipeline] = None
+        self, pipelines: Sequence[ClassificationPipeline] = (), trained_pipelines: Sequence[ClassificationPipeline] = ()
     ):
         self.trainer.train_pipelines(pipelines)
-        self.performances += self.evaluator.evaluate_pipelines(pipelines + (trained_pipelines or []))
+        self.performances += self.evaluator.evaluate_pipelines(chain(pipelines, trained_pipelines))
         self.make_report()
 
     def make_report(self):

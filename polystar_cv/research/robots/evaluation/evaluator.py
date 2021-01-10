@@ -39,8 +39,9 @@ class ImageClassificationPipelineEvaluator(Generic[TargetT]):
         self, pipeline: ClassificationPipeline, set_: Set
     ) -> Iterable[ContextualizedClassificationPerformance]:
         for dataset in self.set2datasets[set_]:
+            images = file_images_to_images(dataset.examples)
             t = time()
-            proba, classes = pipeline.predict_proba_and_classes(file_images_to_images(dataset.examples))
+            proba, classes = pipeline.predict_proba_and_classes(images)
             mean_time = (time() - t) / len(dataset)
             yield ContextualizedClassificationPerformance(
                 examples=dataset.examples,

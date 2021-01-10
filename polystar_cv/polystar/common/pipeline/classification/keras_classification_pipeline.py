@@ -121,6 +121,7 @@ class KerasClassificationPipeline(ClassificationPipeline):
                 input_shape, conv_blocks=conv_blocks, dense_size=dense_size, output_size=cls.n_classes, dropout=dropout,
             ),
             trainer=KerasTrainer(
+                data_preparator=KerasDataPreparator(batch_size=32, steps=100),
                 model_preparator=Distiller(temperature=temperature, teacher_model=teacher_pipeline.classifier.model),
                 compilation_parameters=KerasCompilationParameters(
                     loss=DistillationLoss(temperature=temperature, n_classes=cls.n_classes),
