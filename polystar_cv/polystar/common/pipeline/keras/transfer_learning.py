@@ -1,6 +1,7 @@
 from typing import Callable, Tuple
 
-from tensorflow.python.keras import Input, Model, Sequential
+from tensorflow.python.keras import Sequential
+from tensorflow.python.keras.engine import InputLayer
 from tensorflow.python.keras.layers import Dense, Dropout, Flatten, Softmax
 from tensorflow.python.keras.models import Model
 
@@ -13,7 +14,7 @@ def make_transfer_learning_model(
 
     return Sequential(
         [
-            Input(input_shape),
+            InputLayer(input_shape),
             base_model,
             Flatten(),
             Dense(dense_size, activation="relu"),

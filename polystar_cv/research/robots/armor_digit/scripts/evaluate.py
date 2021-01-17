@@ -54,6 +54,8 @@ if __name__ == "__main__":
     setup_dev_logs()
     time_digit_pipeline(
         PIPELINES_DIR
-        / "armor-digit/20210110_135116_kd_cnn/distiled - temp 4.1e+01 - cnn - (32) - lr 7.8e-04 - drop 63.pkl"
+        / "armor-digit/20210117_145856_kd_cnn/distiled - temp 4.1e+01 - cnn - (32) - lr 7.8e-04 - drop 63.pkl"
     )
-    time_digit_pipeline(PIPELINES_DIR / "armor-digit/20201225_131957_vgg16/VGG16 (32) - lr 2.1e-04 - drop 0.pkl")
+    time_digit_pipeline(
+        PIPELINES_DIR / "armor-digit/20210110_220816_vgg16_full_dset/wrapper (32) - lr 2.1e-04 - drop 0.pkl"
+    )

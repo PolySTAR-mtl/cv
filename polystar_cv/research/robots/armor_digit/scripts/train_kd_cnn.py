@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     _kd_cnn_pipeline = ArmorDigitKerasPipeline.from_distillation(
         teacher_pipeline=pkl_load(
-            PIPELINES_DIR / "armor-digit/20201225_131957_vgg16/VGG16 (32) - lr 2.1e-04 - drop 0.pkl"
+            PIPELINES_DIR / "armor-digit/20210110_220816_vgg16_full_dset/wrapper (32) - lr 2.1e-04 - drop 0.pkl"
         ),
         conv_blocks=((32, 32), (64, 64)),
         logs_dir=str(_training_dir),

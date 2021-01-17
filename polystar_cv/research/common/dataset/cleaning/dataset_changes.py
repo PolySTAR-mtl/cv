@@ -1,5 +1,5 @@
 import json
-from contextlib import suppress
+import logging
 from pathlib import Path
 from typing import Dict, List, Set
 
@@ -10,13 +10,18 @@ from polystar.common.utils.time import create_time_id
 from research.common.gcloud.gcloud_storage import GCStorages
 
 INVALIDATED_KEY: str = "invalidated"
+logger = logging.getLogger(__name__)
 
 
 class DatasetChanges:
     def __init__(self, dataset_directory: Path):
         self.changes_file: Path = dataset_directory / ".changes"
-        with suppress(FileNotFoundError):
+        try:
             GCStorages.DEV.download_file_if_missing(self.changes_file)
+        except FileNotFoundError:
+            self.changes_file.write_text("{}")
+        except ConnectionError:
+            logger.warning(f"Can't load {self.changes_file} because of no internet connection")
 
     @property
     def invalidated(self) -> Set[str]:

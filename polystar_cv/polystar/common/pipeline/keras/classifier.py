@@ -46,7 +46,7 @@ class KerasClassifier(ClassifierABC):
         with NamedTemporaryFile(suffix=".hdf5", delete=True) as fd:
             fd.write(state.pop("model_str"))
             fd.flush()
-            self.model = load_model(fd.name)
+            self.model = load_model(fd.name, compile=False)
         self.trainer = None
 
     @property
