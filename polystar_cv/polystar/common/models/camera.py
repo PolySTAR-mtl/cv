@@ -3,7 +3,11 @@ from dataclasses import dataclass
 
 @dataclass
 class Camera:
-    horizontal_angle: float
+    horizontal_fov: float
+    vertical_fov: float
 
-    w: int
-    h: int
+    pixel_size_m: float
+    focal_m: float
+
+    vertical_resolution: int
+    horizontal_resolution: int
