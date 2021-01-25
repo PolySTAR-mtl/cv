@@ -10,8 +10,8 @@ from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
 
 from polystar.common.models.image import load_image
-from research.common.dataset.cleaning.dataset_changes import DatasetChanges
 from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
+from research.dataset.cleaning.dataset_changes import DatasetChanges
 
 
 class DatasetCleanerApp(App):

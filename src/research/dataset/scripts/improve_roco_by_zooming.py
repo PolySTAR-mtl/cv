@@ -5,13 +5,13 @@ from polystar.common.models.image import save_image
 from polystar.common.utils.str_utils import camel2snake
 from polystar.common.utils.tqdm import smart_tqdm
 from research.common.constants import DJI_ROCO_ZOOMED_DSET_DIR
-from research.common.dataset.improvement.zoom import Zoomer
-from research.common.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
-from research.common.dataset.perturbations.image_modifiers.contrast import ContrastModifier
-from research.common.dataset.perturbations.image_modifiers.saturation import SaturationModifier
-from research.common.dataset.perturbations.perturbator import ImagePerturbator
 from research.common.datasets.roco.roco_dataset import LazyROCODataset
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.dataset.improvement.zoom import Zoomer
+from research.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
+from research.dataset.perturbations.image_modifiers.contrast import ContrastModifier
+from research.dataset.perturbations.image_modifiers.saturation import SaturationModifier
+from research.dataset.perturbations.perturbator import ImagePerturbator
 
 
 def improve_dji_roco_dataset_by_zooming_and_perturbating(

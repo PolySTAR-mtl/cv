@@ -1,5 +1,5 @@
-from research.common.dataset.cleaning.dataset_cleaner_app import DatasetCleanerApp
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.dataset.cleaning.dataset_cleaner_app import DatasetCleanerApp
 from research.robots.armor_digit.armor_digit_dataset import make_armor_digit_dataset_generator
 
 if __name__ == "__main__":

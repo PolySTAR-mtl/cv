@@ -3,7 +3,7 @@ from pathlib import Path
 from skimage import io
 
 from research.common.constants import TWITCH_DSET_DIR
-from research.common.dataset.twitch.mask_detector import MaskDetector
+from research.dataset.twitch.mask_detector import MaskDetector
 
 aerial_view_detector = MaskDetector(
     Path(__file__).parent / "mask_aerial.jpg",

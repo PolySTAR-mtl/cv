@@ -5,13 +5,13 @@ import cv2
 from tqdm import trange
 
 from polystar.common.models.image import load_images_in_directory
-from research.common.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
-from research.common.dataset.perturbations.image_modifiers.contrast import ContrastModifier
-from research.common.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer
-from research.common.dataset.perturbations.image_modifiers.gaussian_noise import GaussianNoiser
-from research.common.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
-from research.common.dataset.perturbations.image_modifiers.saturation import SaturationModifier
-from research.common.dataset.perturbations.perturbator import ImagePerturbator
+from research.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
+from research.dataset.perturbations.image_modifiers.contrast import ContrastModifier
+from research.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer
+from research.dataset.perturbations.image_modifiers.gaussian_noise import GaussianNoiser
+from research.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
+from research.dataset.perturbations.image_modifiers.saturation import SaturationModifier
+from research.dataset.perturbations.perturbator import ImagePerturbator
 from research.runes.constants import RUNES_DATASET_DIR
 from research.runes.dataset.blend import LabeledImageScaler
 from research.runes.dataset.blend.image_blender import ImageBlender

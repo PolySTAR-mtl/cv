@@ -3,9 +3,9 @@ from pathlib import Path
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+
 from polystar.common.models.image import load_image
-from research.common.dataset.perturbations.image_modifiers.image_modifier_abc import \
-    ImageModifierABC
+from research.dataset.perturbations.image_modifiers.image_modifier_abc import ImageModifierABC
 
 EXAMPLE_DIR = Path(__file__).parent / "examples"
 

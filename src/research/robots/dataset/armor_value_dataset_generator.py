@@ -5,12 +5,12 @@ from polystar.common.filters.exclude_filter import ExcludeFilter
 from polystar.common.filters.filter_abc import FilterABC
 from polystar.common.filters.pass_through_filter import PassThroughFilter
 from polystar.common.models.image import FileImage
-from research.common.dataset.cleaning.dataset_changes import DatasetChanges
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
 from research.common.datasets.lazy_dataset import TargetT
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.dataset.cleaning.dataset_changes import DatasetChanges
 from research.robots.dataset.armor_value_dataset_cache import ArmorValueDatasetCache
 from research.robots.dataset.armor_value_target_factory import ArmorValueTargetFactory
 

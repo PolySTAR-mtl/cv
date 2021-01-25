@@ -2,11 +2,11 @@ import logging
 
 from tqdm import tqdm
 
-from research.common.dataset.cleaning.dataset_changes import DatasetChanges
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.roco_datasets import ROCODatasets
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.common.gcloud.gcloud_storage import GCStorages
+from research.dataset.cleaning.dataset_changes import DatasetChanges
 
 
 def upload_all_digit_datasets(roco_datasets: ROCODatasets):

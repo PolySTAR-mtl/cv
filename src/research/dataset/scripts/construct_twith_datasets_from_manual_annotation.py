@@ -4,8 +4,8 @@ from shutil import copy, make_archive, move, rmtree
 from research.common.constants import TWITCH_DSET_DIR, TWITCH_DSET_ROBOTS_VIEWS_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.roco_dataset_descriptor import make_markdown_dataset_report
-from research.common.scripts.construct_dataset_from_manual_annotation import construct_dataset_from_manual_annotations
-from research.common.scripts.correct_annotations import AnnotationFileCorrector
+from research.dataset.scripts.construct_dataset_from_manual_annotation import construct_dataset_from_manual_annotations
+from research.dataset.scripts.correct_annotations import AnnotationFileCorrector
 
 
 def _construct_mixed_twitch_dset():

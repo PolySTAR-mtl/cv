@@ -4,7 +4,7 @@ from skimage import io
 from tqdm import tqdm
 
 from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
-from research.common.dataset.twitch.aerial_view_detector import aerial_view_detector
+from research.dataset.twitch.aerial_view_detector import aerial_view_detector
 
 AERIAL_VIEWS_DIR = TWITCH_DSET_DIR / "aerial-views"
 

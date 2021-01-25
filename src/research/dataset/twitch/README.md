@@ -1,16 +1,6 @@
+# Twitch Dataset creation
 
-# Computer Vision Common code
-
-This code is designed to be shared across projects
-
-
-
-
-## Dataset creation
-
-### Twitch
-
-#### Idea
+## Idea
 
 There are a lot of video posted by RoboMaster on their [twitch channel](https://www.twitch.tv/robomaster).
 
@@ -20,44 +10,41 @@ There are a lot of video posted by RoboMaster on their [twitch channel](https://
  
 We found that it was possible to detect the HUD on the videos, to check if the image is a robot view or not. 
 
-#### Setup
+## Setup
 
-##### ffmpeg
+### ffmpeg
 
 To split the video into frames, we use ffmpeg.
 
 **Note:** If you get an error using ffmpeg, be sure that you installed the right python package (it should be `ffmpeg-python`, not `ffmpeg` or `python-ffmpeg`) 
 
-###### MAC
+#### MAC
 
 ```bash
 brew install ffmpeg
 ```
 
-###### Windows
+#### Windows
 
 You should follow [this tutorial](https://video.stackexchange.com/questions/20495/how-do-i-set-up-and-use-ffmpeg-in-windows).
 
 
-##### Twitch Video Downloader
+### Twitch Video Downloader
 
 You have 2 options to download the videos:
 
  - [TwitchLeecher](https://github.com/Franiac/TwitchLeecher/releases). Unfortunately, it is only available on Windows.
  - [4k Video Downloader](https://www.4kdownload.com/products/product-videodownloader). It works on windows, Mac and Linux.
 
-#### Procedure to process a video
+## Procedure to process a video
 
 1. First, go on the [google sheet](https://docs.google.com/spreadsheets/d/1kIrMOjcKJ8hslZoVMx1D0H7QYj9nQLFvzUAQ1U4Le-I/edit#gid=0), and choose a video that nobody already did, and put your name in the 2nd column
 2. Download the video, in **720p**
-3. Rename it using the video id on twitch, and place it in [../dataset/twitch/videos](../dataset/twitch/videos)
-5. Launch the python script [./research/common/scripts/extract_robots_views_from_video.py](research/common/scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id). You can put multiple video ids by separating them with spaces.
+3. Rename it using the video id on twitch, and place it in [dataset/twitch/videos](../../../../dataset/twitch/videos)
+5. Launch the python script [../scripts/extract_robots_views_from_video.py](../scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id). You can put multiple video ids by separating them with spaces.
 
-The frames will appear in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder.
+The frames will appear in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views) folder.
 
-#### Aerial dataset
+## Aerial dataset
 
-Once you have the robots views in the [../dataset/twitch/robots-views](../dataset/twitch/robots-views) folder, run the python script [./research/common/scripts/move_aerial_views.py](research/common/scripts/move_aerial_views.py). It will put the aerial views in the [../dataset/twitch/aerial-views](../dataset/twitch/aerial-views) directory.
-
-
-
+Once you have the robots views in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views) folder, run the python script [../scripts/move_aerial_views.py](../scripts/move_aerial_views.py). It will put the aerial views in the [dataset/twitch/aerial-views](../../../../dataset/twitch/aerial-views) directory.
