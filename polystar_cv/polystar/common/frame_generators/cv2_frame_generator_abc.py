@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 import cv2
-from dataclasses import dataclass, field
 
 from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.common.models.image import Image
@@ -15,6 +15,7 @@ class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
 
     def __enter__(self):
         self._cap = cv2.VideoCapture(*self._capture_params())
+        assert self._cap.isOpened()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._cap.release()

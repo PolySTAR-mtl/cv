@@ -14,8 +14,8 @@ class SimpleObjectsLinker(ObjectsLinkerABC):
     def __init__(self, min_percentage_intersection: float):
         super().__init__()
         self.min_percentage_intersection = min_percentage_intersection
-        self.robots_filter = NegationValidator(TypeObjectValidator(ObjectType.Armor))
-        self.armors_filter = TypeObjectValidator(ObjectType.Armor)
+        self.robots_filter = NegationValidator(TypeObjectValidator(ObjectType.ARMOR))
+        self.armors_filter = TypeObjectValidator(ObjectType.ARMOR)
 
     def link_armors_to_robots(
         self, robots: List[DetectedRobot], armors: List[DetectedArmor], image: Image

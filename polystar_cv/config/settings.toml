@@ -1,9 +1,8 @@
 [default]
-CAMERA_WIDTH = 1920
-CAMERA_HEIGHT = 1080
-CAMERA_HORIZONTAL_FOV = 120
+CAMERA = 'RASPI_V2'
 
-MODEL_NAME = 'robots/TRT_ssd_mobilenet_v2_roco.bin'
+OBJECTS_DETECTION_MODEL = "ssd_mobilenet_v2_roco_2018_03_29_20200314_015411_TWITCH_TEMP_733_IMGS_29595steps"
+ARMOR_DIGIT_MODEL = "20210117_145856_kd_cnn/distiled - temp 4.1e+01 - cnn - (32) - lr 7.8e-04 - drop 63.pkl"
 
 [development]
 

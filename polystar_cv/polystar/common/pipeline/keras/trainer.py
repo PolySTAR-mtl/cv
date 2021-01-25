@@ -14,7 +14,7 @@ from polystar.common.pipeline.keras.model_preparator import KerasModelPreparator
 class KerasTrainer:
     compilation_parameters: KerasCompilationParameters
     callbacks: List[Callback]
-    data_preparator: KerasDataPreparator = field(default_factory=KerasDataPreparator)
+    data_preparator: KerasDataPreparator
     model_preparator: KerasModelPreparator = field(default_factory=KerasModelPreparator)
     max_epochs: int = 300
     verbose: int = 0

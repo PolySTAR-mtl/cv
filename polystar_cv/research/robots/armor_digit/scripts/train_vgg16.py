@@ -1,21 +1,13 @@
-import logging
-import warnings
-
 from tensorflow.python.keras.applications.vgg16 import VGG16
 
-from polystar.common.constants import PROJECT_DIR
-from polystar.common.utils.serialization import pkl_dump
 from polystar.common.utils.time import create_time_id
-from research.robots.armor_digit.digit_benchmarker import make_default_digit_benchmarker
+from research.common.constants import PIPELINES_DIR
+from research.common.utils.logs import setup_dev_logs
 from research.robots.armor_digit.pipeline import ArmorDigitKerasPipeline
-
-PIPELINES_DIR = PROJECT_DIR / "pipelines"
+from research.robots.armor_digit.training import train_report_and_upload_digit_pipeline
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel("INFO")
-    logging.getLogger("tensorflow").setLevel("ERROR")
-    warnings.filterwarnings("ignore")
-    logging.info("Training vgg16")
+    setup_dev_logs()
 
     _training_dir = PIPELINES_DIR / "armor-digit" / f"{create_time_id()}_vgg16_full_dset"
 
@@ -29,9 +21,4 @@ if __name__ == "__main__":
         verbose=1,
     )
 
-    logging.info(f"Run `tensorboard --logdir={_training_dir}` for realtime logs")
-
-    _benchmarker = make_default_digit_benchmarker(_training_dir)
-    _benchmarker.benchmark([_vgg16_pipeline])
-
-    pkl_dump(_vgg16_pipeline, _training_dir / _vgg16_pipeline.name)
+    train_report_and_upload_digit_pipeline(_vgg16_pipeline, _training_dir)

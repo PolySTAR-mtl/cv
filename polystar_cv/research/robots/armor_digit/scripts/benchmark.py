@@ -2,7 +2,6 @@ import logging
 import warnings
 from pathlib import Path
 
-from polystar.common.constants import PROJECT_DIR
 from polystar.common.pipeline.classification.random_model import RandomClassifier
 from polystar.common.utils.serialization import pkl_load
 from research.common.utils.experiment_dir import prompt_experiment_dir
@@ -34,9 +33,7 @@ if __name__ == "__main__":
     #     input_size=32, logs_dir=_report_dir, dropout=0, lr=0.00021, dense_size=64, model_factory=VGG16
     # )
 
-    _vgg16_pipeline = pkl_load(
-        PROJECT_DIR / "pipelines/armor-digit/20201225_131957_vgg16/VGG16 (32) - lr 2.1e-04 - drop 0.pkl"
-    )
+    _vgg16_pipeline = pkl_load(PIPELINES_DIR / "armor-digit/20201225_131957_vgg16/VGG16 (32) - lr 2.1e-04 - drop 0.pkl")
     _vgg16_pipeline.name = "vgg16_tl"
 
     _distiled_vgg16_into_cnn_pipeline = ArmorDigitKerasPipeline.from_distillation(

@@ -40,6 +40,8 @@ class ClassificationPipeline(Pipeline, Generic[IT, EnumT], ABC):
         return self.predict_proba_and_classes(x)[1]
 
     def predict_proba(self, x: Sequence[IT]) -> ndarray:
+        if not len(x):
+            return asarray([])
         proba = super().predict_proba(x)
         missing_classes = self.classifier.n_classes - proba.shape[1]
         if not missing_classes:

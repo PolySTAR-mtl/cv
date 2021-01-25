@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
+from injector import inject
+
 from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.models.image import Image
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
@@ -17,6 +19,7 @@ class NoTargetFoundException(Exception):
     pass
 
 
+@inject
 @dataclass
 class TargetPipeline:
 

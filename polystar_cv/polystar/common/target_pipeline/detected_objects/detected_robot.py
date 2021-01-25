@@ -13,4 +13,4 @@ class DetectedRobot(DetectedObject):
 
 class FakeDetectedRobot(DetectedRobot):
     def __init__(self, armor: DetectedArmor):
-        super().__init__(type=ObjectType.Car, box=armor.box, confidence=0, armors=[armor])
+        super().__init__(type=ObjectType.CAR, box=armor.box, confidence=0, armors=[armor])

@@ -45,19 +45,23 @@ class ArmorDigit(NoCaseEnum):  # CHANGING
         # if self.value <= 5:
         #     return f"{self.value} ({self.name.title()})"
         # return self.name.title()
-        return f"{self.value + (self.value >= 2)} ({self.name.title()})"  # hacky, but a number is missing (2)
+        return f"{self.digit} ({self.name.title()})"  # hacky, but a number is missing (2)
 
     @property
     def short(self) -> str:
-        return self.name[0] if self != ArmorDigit.UNKNOWN else "?"
+        return self.digit if self != ArmorDigit.UNKNOWN else "?"
+
+    @property
+    def digit(self) -> int:
+        return self.value + (self.value >= 2)  # hacky, but a number is missing (2)
 
 
 class ObjectType(NoCaseEnum):
-    Car = auto()
-    Watcher = auto()
-    Base = auto()
-    Armor = auto()
-    Ignore = auto()
+    CAR = auto()
+    WATCHER = auto()
+    BASE = auto()
+    ARMOR = auto()
+    IGNORE = auto()
 
 
 @dataclass
@@ -93,7 +97,7 @@ class ObjectFactory:
 
         x, y = max(0, x), max(0, y)
 
-        if t is not ObjectType.Armor:
+        if t is not ObjectType.ARMOR:
             return Object(type=t, box=Box.from_size(x, y, w, h=h))
 
         armor_number = ArmorNumber(int(json["armor_class"])) if json["armor_class"] != "none" else 0

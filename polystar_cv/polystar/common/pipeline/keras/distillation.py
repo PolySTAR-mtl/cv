@@ -2,25 +2,22 @@ from typing import Callable
 
 from tensorflow.python.keras import Input, Model, Sequential
 from tensorflow.python.keras.layers import Softmax, concatenate
-from tensorflow.python.keras.losses import KLDivergence
-from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.losses import Loss, kullback_leibler_divergence
 from tensorflow.python.ops.nn_ops import softmax
 
 from polystar.common.pipeline.keras.model_preparator import KerasModelPreparator
 
 
-class DistillationLoss(KLDivergence):
+class DistillationLoss(Loss):
     def __init__(self, temperature: float, n_classes: int):
-        super().__init__()
+        super().__init__(name="kd_loss")
         self.n_classes = n_classes
         self.temperature = temperature
 
-    def __call__(self, y_true, y_pred, sample_weight=None):
+    def call(self, y_true, y_pred):
         teacher_logits, student_logits = y_pred[:, : self.n_classes], y_pred[:, self.n_classes :]
-        return super().__call__(
-            softmax(teacher_logits / self.temperature, axis=1),
-            softmax(student_logits / self.temperature, axis=1),
-            sample_weight=sample_weight,
+        return kullback_leibler_divergence(
+            softmax(teacher_logits / self.temperature, axis=1), softmax(student_logits / self.temperature, axis=1)
         )
 
 

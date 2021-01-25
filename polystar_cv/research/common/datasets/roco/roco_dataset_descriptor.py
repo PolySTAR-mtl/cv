@@ -33,11 +33,11 @@ class ROCODatasetStats:
             rv.n_images += 1
             rv.n_runes += annotation.has_rune
             for obj in annotation.objects:
-                if obj.type == ObjectType.Car:
+                if obj.type == ObjectType.CAR:
                     rv.n_robots += 1
-                elif obj.type == ObjectType.Base:
+                elif obj.type == ObjectType.BASE:
                     rv.n_bases += 1
-                elif obj.type == ObjectType.Watcher:
+                elif obj.type == ObjectType.WATCHER:
                     rv.n_watchers += 1
                 elif isinstance(obj, Armor):
                     rv.armors_color2num2count[obj.color.name.lower()][obj.number] += 1

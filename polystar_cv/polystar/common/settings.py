@@ -1,5 +1,4 @@
 from enum import Enum
-from pathlib import Path
 
 from dynaconf import LazySettings
 
@@ -12,18 +11,23 @@ class Environment(str, Enum):
 
 
 class Settings(LazySettings):
-    def get_env(self) -> Environment:
+    @property
+    def env(self) -> Environment:
         return Environment(self.current_env.lower())
 
+    @property
+    def is_prod(self) -> bool:
+        return self.env == Environment.PRODUCTION
 
-def _config_file_for_project(project_name: str) -> Path:
-    return PROJECT_DIR / "config" / "settings.toml"
+    @property
+    def is_dev(self) -> bool:
+        return self.env == Environment.DEVELOPMENT
 
 
 def make_settings() -> LazySettings:
-    return LazySettings(
+    return Settings(
         SILENT_ERRORS_FOR_DYNACONF=False,
-        SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR  / 'config' / 'settings.toml'}",
+        SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR / 'polystar_cv'  / 'config' / 'settings.toml'}",
         ENV_SWITCHER_FOR_DYNACONF="POLYSTAR_ENV",
     )
 

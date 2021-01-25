@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Tuple, Type, Union
 
+from injector import inject
+
 from polystar.common.models.box import Box
 from polystar.common.models.image import Image
 from polystar.common.models.label_map import LabelMap
@@ -21,6 +23,7 @@ class ObjectParams:
 
 
 class DetectedObjectFactory:
+    @inject
     def __init__(self, label_map: LabelMap, armors_descriptors: List[ArmorsDescriptorABC]):
         self.armors_descriptors = armors_descriptors
         self.label_map = label_map
@@ -57,4 +60,4 @@ class DetectedObjectFactory:
 
     @staticmethod
     def _get_object_class_from_type(object_type: ObjectType) -> Type[Union[DetectedRobot, DetectedArmor]]:
-        return DetectedArmor if object_type is ObjectType.Armor else DetectedRobot
+        return DetectedArmor if object_type is ObjectType.ARMOR else DetectedRobot

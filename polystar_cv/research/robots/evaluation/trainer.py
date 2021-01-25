@@ -1,4 +1,4 @@
-from typing import Generic, List
+from typing import Generic, Iterable, List
 
 from tqdm import tqdm
 
@@ -19,7 +19,7 @@ class ImageClassificationPipelineTrainer(Generic[TargetT]):
     def train_pipeline(self, pipeline: ClassificationPipeline):
         pipeline.fit(self.images, self.labels, validation_size=self.validation_size)
 
-    def train_pipelines(self, pipelines: List[ClassificationPipeline]):
+    def train_pipelines(self, pipelines: Iterable[ClassificationPipeline]):
         tqdm_pipelines = tqdm(pipelines, desc="Training Pipelines")
         for pipeline in tqdm_pipelines:
             tqdm_pipelines.set_postfix({"pipeline": pipeline.name}, True)
