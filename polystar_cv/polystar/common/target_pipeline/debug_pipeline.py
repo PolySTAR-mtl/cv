@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
+from injector import inject
+
 from polystar.common.models.image import Image
 from polystar.common.target_pipeline.detected_objects.detected_armor import DetectedArmor
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
@@ -18,6 +20,7 @@ class DebugInfo:
     target: TargetABC = field(init=False, default=None)
 
 
+@inject
 @dataclass
 class DebugTargetPipeline(TargetPipeline):
     """Wrap a pipeline with debug, to store debug infos"""

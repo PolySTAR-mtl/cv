@@ -23,7 +23,7 @@ class ArmorDataset(LazyDataset[Image, Armor]):
 
     @staticmethod
     def _generate_from_single(image: Image, annotation: ROCOAnnotation, name) -> Iterator[Tuple[Image, Armor, str]]:
-        armors: List[Armor] = TypeObjectValidator(ObjectType.Armor).filter(annotation.objects, image)
+        armors: List[Armor] = TypeObjectValidator(ObjectType.ARMOR).filter(annotation.objects, image)
 
         for i, obj in enumerate(armors):
             croped_img = image[obj.box.y1 : obj.box.y2, obj.box.x1 : obj.box.x2]

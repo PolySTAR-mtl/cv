@@ -1,20 +1,62 @@
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
 import tensorflow as tf
+from tensorflow import GraphDef, Session
+from tensorflow.python.platform.gfile import GFile
 
 from polystar.common.models.image import Image
 from polystar.common.models.tf_model import TFModel
 from polystar.common.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from polystar.common.target_pipeline.detected_objects.detected_objects_factory import (DetectedObjectFactory,
-                                                                                       ObjectParams)
+from polystar.common.target_pipeline.detected_objects.detected_objects_factory import ObjectParams
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 
 
 @dataclass
 class TFModelObjectsDetector(ObjectsDetectorABC):
+
+    model_path: InitVar[Path]
+
+    def __post_init__(self, model_path: Path):
+        self.graph = tf.Graph()
+        with self.graph.as_default():
+            od_graph_def = GraphDef()
+            with GFile(str(model_path / "frozen_inference_graph.pb"), "rb") as fid:
+                serialized_graph = fid.read()
+                od_graph_def.ParseFromString(serialized_graph)
+                tf.import_graph_def(od_graph_def, name="")
+
+    def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+        with self.graph.as_default(), Session(graph=self.graph) as session:
+            image_np_expanded = np.expand_dims(image, axis=0)
+            image_tensor = self.graph.get_tensor_by_name("image_tensor:0")
+            boxes = self.graph.get_tensor_by_name("detection_boxes:0")
+            scores = self.graph.get_tensor_by_name("detection_scores:0")
+            classes = self.graph.get_tensor_by_name("detection_classes:0")
+            num_detections = self.graph.get_tensor_by_name("num_detections:0")
+            boxes, scores, classes, num_detections = session.run(
+                [boxes, scores, classes, num_detections], feed_dict={image_tensor: image_np_expanded}
+            )
+            return self._construct_objects_from_tf_results(image, boxes[0], scores[0], classes[0])
+
+    def _construct_objects_from_tf_results(
+        self, image: Image, boxes: np.ndarray, scores: np.ndarray, classes: np.ndarray
+    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+        return self.objects_factory.make_lists(
+            [
+                ObjectParams(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id)
+                for (ymin, xmin, ymax, xmax), object_class_id, score in zip(boxes, classes, scores)
+                if score >= 0.1
+            ],
+            image,
+        )
+
+
+@dataclass
+class TFV2ModelObjectsDetector(ObjectsDetectorABC):
 
     model: TFModel
 
@@ -30,7 +72,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
         return input_tensor
 
     def _make_single_prediction(self, input_tensor: tf.Tensor) -> Dict[str, np.array]:
-        output_dict: Dict[str, tf.Tensor] = self.model(input_tensor)  # typing is correct despite PyCharm's saying
+        output_dict: Dict[str, tf.Tensor] = self.model(input_tensor)
         return self._normalize_prediction(output_dict)
 
     @staticmethod

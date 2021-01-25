@@ -3,11 +3,12 @@ from typing import List
 
 from injector import Injector, Module, multiprovider, provider, singleton
 from numpy.core._multiarray_umath import deg2rad
-from tensorflow.python import saved_model
 
 from polystar.common.communication.print_target_sender import PrintTargetSender
 from polystar.common.communication.target_sender_abc import TargetSenderABC
 from polystar.common.constants import LABEL_MAP_PATH, MODELS_DIR
+from polystar.common.frame_generators.camera_frame_generator import RaspiV2CameraFrameGenerator, WebcamFrameGenerator
+from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.common.models.camera import Camera
 from polystar.common.models.label_map import LabelMap
 from polystar.common.settings import Settings, settings
@@ -60,8 +61,9 @@ class CommonModule(Module):
     @singleton
     def provide_objects_detector(self, object_factory: DetectedObjectFactory) -> ObjectsDetectorABC:
         if self.settings.is_dev:
-            tf_model = saved_model.load(str(MODELS_DIR / "robots" / settings.OBJECTS_DETECTION_MODEL / "saved_model"))
-            return TFModelObjectsDetector(object_factory, tf_model.signatures["serving_default"])
+            return TFModelObjectsDetector(object_factory, MODELS_DIR / "robots" / settings.OBJECTS_DETECTION_MODEL)
+        import pycuda.autoinit  # This is needed for initializing CUDA driver
+
         raise NotImplementedError()
 
     @multiprovider
@@ -93,3 +95,10 @@ class CommonModule(Module):
     @singleton
     def provide_objects_linker(self) -> ObjectsLinkerABC:
         return SimpleObjectsLinker(min_percentage_intersection=0.8)
+
+    @provider
+    @singleton
+    def provide_webcam(self) -> FrameGeneratorABC:
+        if self.settings.is_prod:
+            return RaspiV2CameraFrameGenerator(1_280, 720)
+        return WebcamFrameGenerator()

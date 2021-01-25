@@ -10,7 +10,7 @@ from polystar.common.target_pipeline.detected_objects.detected_object import Det
 @dataclass
 class DetectedArmor(DetectedObject):
     def __post_init__(self):
-        assert self.type == ObjectType.Armor
+        assert self.type == ObjectType.ARMOR
 
     colors_proba: np.ndarray = field(init=False, default=None)
     digits_proba: np.ndarray = field(init=False, default=None)

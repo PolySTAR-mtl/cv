@@ -53,11 +53,11 @@ class ArmorDigit(NoCaseEnum):  # CHANGING
 
 
 class ObjectType(NoCaseEnum):
-    Car = auto()
-    Watcher = auto()
-    Base = auto()
-    Armor = auto()
-    Ignore = auto()
+    CAR = auto()
+    WATCHER = auto()
+    BASE = auto()
+    ARMOR = auto()
+    IGNORE = auto()
 
 
 @dataclass
@@ -93,7 +93,7 @@ class ObjectFactory:
 
         x, y = max(0, x), max(0, y)
 
-        if t is not ObjectType.Armor:
+        if t is not ObjectType.ARMOR:
             return Object(type=t, box=Box.from_size(x, y, w, h=h))
 
         armor_number = ArmorNumber(int(json["armor_class"])) if json["armor_class"] != "none" else 0
