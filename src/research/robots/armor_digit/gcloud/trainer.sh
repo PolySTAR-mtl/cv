@@ -17,9 +17,9 @@ poetry build -f wheel
 
 # 3. start job
 gcloud ai-platform jobs submit training "${job_id}" \
-    --config polystar_cv/research/robots/armor_digit/gcloud/hptuning_config.yaml \
+    --config src/research/robots/armor_digit/gcloud/hptuning_config.yaml \
     --job-dir="${job_dir}" \
-    --packages ./dist/polystar_cv-0.2.0-py3-none-any.whl \
+    --packages ./dist/src-0.2.0-py3-none-any.whl \
     --module-name=research.robots.armor_digit.gcloud.train_cnn \
     --labels task=${task_name},author="${author}"
 

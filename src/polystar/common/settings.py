@@ -27,7 +27,7 @@ class Settings(LazySettings):
 def make_settings() -> LazySettings:
     return Settings(
         SILENT_ERRORS_FOR_DYNACONF=False,
-        SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR / 'polystar_cv'  / 'config' / 'settings.toml'}",
+        SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR / 'settings.toml'}",
         ENV_SWITCHER_FOR_DYNACONF="POLYSTAR_ENV",
     )
 
