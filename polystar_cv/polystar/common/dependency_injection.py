@@ -14,6 +14,7 @@ from polystar.common.models.label_map import LabelMap
 from polystar.common.settings import Settings, settings
 from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.common.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
+from polystar.common.target_pipeline.armors_descriptors.armors_digit_descriptor import ArmorsDigitDescriptor
 from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
@@ -26,6 +27,8 @@ from polystar.common.target_pipeline.objects_validators.confidence_object_valida
 from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
+from polystar.common.utils.serialization import pkl_load
+from research.common.constants import PIPELINES_DIR
 from research.robots.armor_color.pipeline import ArmorColorPipeline
 from research.robots.armor_color.scripts.benchmark import MeanChannels, RedBlueComparisonClassifier
 
@@ -69,7 +72,10 @@ class CommonModule(Module):
     @multiprovider
     @singleton
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
-        return [ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()]))]
+        return [
+            ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
+            ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
+        ]
 
     @multiprovider
     @singleton

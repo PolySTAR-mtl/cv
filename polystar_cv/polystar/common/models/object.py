@@ -45,11 +45,15 @@ class ArmorDigit(NoCaseEnum):  # CHANGING
         # if self.value <= 5:
         #     return f"{self.value} ({self.name.title()})"
         # return self.name.title()
-        return f"{self.value + (self.value >= 2)} ({self.name.title()})"  # hacky, but a number is missing (2)
+        return f"{self.digit} ({self.name.title()})"  # hacky, but a number is missing (2)
 
     @property
     def short(self) -> str:
-        return self.name[0] if self != ArmorDigit.UNKNOWN else "?"
+        return self.digit if self != ArmorDigit.UNKNOWN else "?"
+
+    @property
+    def digit(self) -> int:
+        return self.value + (self.value >= 2)  # hacky, but a number is missing (2)
 
 
 class ObjectType(NoCaseEnum):

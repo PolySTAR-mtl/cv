@@ -4,7 +4,7 @@ from typing import Iterator, Optional, Tuple
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
-class SliceDataset(LazyDataset):
+class SliceDataset(LazyDataset[ExampleT, TargetT]):
     def __init__(
         self,
         source: LazyDataset[ExampleT, TargetT],

@@ -3,12 +3,14 @@ from tempfile import NamedTemporaryFile
 from typing import Dict, List, Optional, Sequence
 
 from numpy import asarray
+from tensorflow import Graph, Session
 from tensorflow.python.keras.models import Model, load_model
 from tensorflow.python.keras.utils.np_utils import to_categorical
 
 from polystar.common.models.image import Image
 from polystar.common.pipeline.classification.classifier_abc import ClassifierABC
 from polystar.common.pipeline.keras.trainer import KerasTrainer
+from polystar.common.settings import settings
 from polystar.common.utils.registry import registry
 
 
@@ -30,6 +32,9 @@ class KerasClassifier(ClassifierABC):
         return self
 
     def predict_proba(self, examples: List[Image]) -> Sequence[float]:
+        if settings.is_prod:  # FIXME
+            with self.graph.as_default(), self.session.as_default():
+                return self.model.predict(asarray(examples))
         return self.model.predict(asarray(examples))
 
     def __getstate__(self) -> Dict:
@@ -43,10 +48,14 @@ class KerasClassifier(ClassifierABC):
 
     def __setstate__(self, state: Dict):
         self.__dict__.update(state)
+        self.graph = Graph()
         with NamedTemporaryFile(suffix=".hdf5", delete=True) as fd:
             fd.write(state.pop("model_str"))
             fd.flush()
-            self.model = load_model(fd.name, compile=False)
+            with self.graph.as_default():
+                self.session = Session(graph=self.graph)
+                with self.session.as_default():
+                    self.model = load_model(fd.name, compile=False)
         self.trainer = None
 
     @property

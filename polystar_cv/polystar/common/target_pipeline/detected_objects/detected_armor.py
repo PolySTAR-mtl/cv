@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
 
 import numpy as np
-from numpy import argmax
 
 from polystar.common.models.object import ArmorColor, ArmorDigit, ObjectType
 from polystar.common.target_pipeline.detected_objects.detected_object import DetectedObject
+from research.robots.armor_color.pipeline import ArmorColorPipeline
+from research.robots.armor_digit.pipeline import ArmorDigitPipeline
 
 
 @dataclass
@@ -24,7 +25,7 @@ class DetectedArmor(DetectedObject):
             return self._color
 
         if self.colors_proba is not None:
-            self._color = ArmorColor(self.colors_proba.argmax() + 1)
+            self._color = ArmorDigitPipeline.classes[self.colors_proba.argmax()]
             return self._color
 
         return ArmorColor.UNKNOWN
@@ -34,8 +35,8 @@ class DetectedArmor(DetectedObject):
         if self._digit is not None:
             return self._digit
 
-        if self.digits_proba:
-            self._digit = ArmorDigit(argmax(self.colors_proba) + 1)
+        if self.digits_proba is not None:
+            self._digit = ArmorColorPipeline.classes[self.digits_proba.argmax()]
             return self._digit
 
         return ArmorDigit.UNKNOWN
