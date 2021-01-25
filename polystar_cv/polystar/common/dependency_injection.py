@@ -16,15 +16,14 @@ from polystar.common.target_pipeline.armors_descriptors.armors_color_descriptor 
 from polystar.common.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
 from polystar.common.target_pipeline.armors_descriptors.armors_digit_descriptor import ArmorsDigitDescriptor
 from polystar.common.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
-from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.common.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
+from polystar.common.target_pipeline.objects_filters.confidence_object_filter import ConfidenceObjectsFilter
+from polystar.common.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.common.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.common.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
-from polystar.common.target_pipeline.objects_validators.confidence_object_validator import ConfidenceObjectValidator
-from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 from polystar.common.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 from polystar.common.utils.serialization import pkl_load
@@ -79,8 +78,8 @@ class CommonModule(Module):
 
     @multiprovider
     @singleton
-    def provide_objects_validators(self) -> List[ObjectsValidatorABC[DetectedRobot]]:
-        return [ConfidenceObjectValidator(0.6)]
+    def provide_objects_validators(self) -> List[ObjectsFilterABC]:
+        return [ConfidenceObjectsFilter(0.6)]
 
     @provider
     @singleton

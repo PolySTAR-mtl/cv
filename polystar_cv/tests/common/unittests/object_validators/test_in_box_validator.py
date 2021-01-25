@@ -1,13 +1,13 @@
 import unittest
 
 from polystar.common.models.box import Box
-from polystar.common.models.object import Object
-from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
+from polystar.common.models.object import Object, ObjectType
+from polystar.common.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
 
 
-class TestInBoxValidator(unittest.TestCase):
+class TestInBoxObjectFilter(unittest.TestCase):
     def setUp(self) -> None:
-        self.in_box_validator = InBoxValidator(Box.from_size(2, 2, 6, 4), 0.5)
+        self.in_box_validator = InBoxObjectFilter(Box.from_size(2, 2, 6, 4), 0.5)
 
     def test_fully_inside(self):
         self._test_obj(3, 3, 2, 2, True)
@@ -44,5 +44,5 @@ class TestInBoxValidator(unittest.TestCase):
 
     def _test_obj(self, x: int, y: int, w: int, h: int, is_inside: bool):
         self.assertEqual(
-            is_inside, self.in_box_validator.validate_single(Object(None, Box.from_size(x, y, w, h)), None)
+            is_inside, self.in_box_validator.validate_single(Object(ObjectType.CAR, Box.from_size(x, y, w, h)))
         )

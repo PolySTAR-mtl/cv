@@ -9,8 +9,8 @@ from polystar.common.target_pipeline.detected_objects.detected_object import Det
 from polystar.common.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.common.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.common.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
+from polystar.common.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.common.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
-from polystar.common.target_pipeline.objects_validators.objects_validator_abc import ObjectsValidatorABC
 from polystar.common.target_pipeline.target_abc import TargetABC
 from polystar.common.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 
@@ -25,7 +25,7 @@ class TargetPipeline:
 
     objects_detector: ObjectsDetectorABC
     objects_linker: ObjectsLinkerABC
-    objects_validators: List[ObjectsValidatorABC[DetectedRobot]]
+    objects_filters: List[ObjectsFilterABC]
     object_selector: ObjectSelectorABC
     target_factory: TargetFactoryABC
     target_sender: TargetSenderABC
@@ -43,16 +43,16 @@ class TargetPipeline:
 
     def _get_robots_of_interest(self, image: Image) -> List[DetectedRobot]:
         robots = self._detect_robots(image)
-        robots = self._filter_robots(image, robots)
+        robots = self._filter_robots(robots)
 
         if not any(robot.armors for robot in robots):
             raise NoTargetFoundException()
 
         return robots
 
-    def _filter_robots(self, image: Image, robots: List[DetectedRobot]) -> List[DetectedRobot]:
-        for robots_validator in self.objects_validators:
-            robots = robots_validator.filter(robots, image)
+    def _filter_robots(self, robots: List[DetectedRobot]) -> List[DetectedRobot]:
+        for robots_validator in self.objects_filters:
+            robots = robots_validator.filter(robots)
         return robots
 
     def _detect_robots(self, image: Image) -> List[DetectedRobot]:
