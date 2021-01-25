@@ -5,7 +5,7 @@ from typing import Iterable, List, Tuple
 
 from polystar.common.models.box import Box
 from polystar.common.models.image import Image
-from polystar.common.target_pipeline.objects_validators.in_box_validator import InBoxValidator
+from polystar.common.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
 from polystar.common.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
@@ -14,7 +14,7 @@ from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 def crop_image_annotation(
     image: Image, annotation: ROCOAnnotation, box: Box, min_coverage: float, name: str
 ) -> Tuple[Image, ROCOAnnotation, str]:
-    objects = InBoxValidator(box, min_coverage).filter(annotation.objects, image)
+    objects = InBoxObjectFilter(box, min_coverage).filter(annotation.objects)
     objects = [copy(o) for o in objects]
     for obj in objects:
         obj.box = Box.from_positions(

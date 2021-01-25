@@ -10,7 +10,6 @@ from tensorflow.python.keras.utils.np_utils import to_categorical
 from polystar.common.models.image import Image
 from polystar.common.pipeline.classification.classifier_abc import ClassifierABC
 from polystar.common.pipeline.keras.trainer import KerasTrainer
-from polystar.common.settings import settings
 from polystar.common.utils.registry import registry
 
 
@@ -32,10 +31,11 @@ class KerasClassifier(ClassifierABC):
         return self
 
     def predict_proba(self, examples: List[Image]) -> Sequence[float]:
-        if settings.is_prod:  # FIXME
+        try:  # FIXME
             with self.graph.as_default(), self.session.as_default():
                 return self.model.predict(asarray(examples))
-        return self.model.predict(asarray(examples))
+        except AttributeError:
+            return self.model.predict(asarray(examples))
 
     def __getstate__(self) -> Dict:
         with NamedTemporaryFile(suffix=".hdf5", delete=True) as fd:
