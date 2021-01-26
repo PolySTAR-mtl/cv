@@ -17,11 +17,11 @@ You can use another IDE, but you need to find how to configure the following too
 
 ### Relative imports / PyCharm
 
-If you are using pycharm, then add [common](./common) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`). The project you are woking on should be added the same way.
+If you are using pycharm, then add [src](./src) as `Sources Root` (right click on common, then `Mark Directory As` > `Sources Root`).
 
-![Add common to Sources Root](./doc/add_common_to_source_root.png)
+![Add src to Sources Root](./doc/add_src_to_source_root.png)
 
-It will enable the relative imports (eg. `from polystar.common.utils.str_utils import snake2camel` will be understood by Pycharm).
+It will enable the relative imports (eg. `from polystar.utils.str_utils import snake2camel` will be understood by Pycharm).
 
 
 ### Dependency management / Poetry
@@ -45,14 +45,14 @@ We use [poetry](https://python-poetry.org/) to manage our dependencies.
      c. Hit `Ok`, then `Apply`. PyCharm should update its indexes. **Restart the terminal for the changes to apply in it if you use PyCharm's terminal**
 
 
-### Code formatter / Black
+### Code formatter / Black (optional but recommended)
 
 To format your code in the same way as everybody else, we use [Black](https://pypi.org/project/black/). They have a [nice install section](https://black.readthedocs.io/en/stable/editor_integration.html#pycharm-intellij-idea). I strongly recommend doing their 3rd step, using the File Watchers plugin to run Black on every file save. This way, your files will be nicely formatted every time you save them.
 
 For reference, the config used is in [./pyproject.toml](pyproject.toml).
 
 
-### Clean imports / Isort and AutoFlake
+### Clean imports / Isort and AutoFlake (optional but recommended)
 
 #### Isort
 
@@ -79,14 +79,14 @@ We install it and use it with the File Watchers plugin, as done for Black:
     
 #### AutoFlake    
 
-[AutoFlake](https://pypi.org/project/autoflake/) will remove the unused imports for you. Reproduce the steps you used to set up isort, and use the following for the `Arguments` field on FileWacher: `--in-place --remove-all-unused-imports $FilePath$`.
+[AutoFlake](https://pypi.org/project/autoflake/) will remove the unused imports for you. Reproduce the steps you used to set up isort, and use the following for the `Arguments` field on FileWatcher: `--in-place --remove-all-unused-imports $FilePath$`.
     
     
 ### Dataset
 
 #### ROCO
 
-Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB) in Drive, with the 4 datasets given by DJI, and unzip in folder [dataset/dji_roco](../dataset/dji_roco).
+Download the directory [PolySTAR/RoboMaster/Équipe-Computer vision/DJI ROCO](https://drive.google.com/drive/folders/1AM3PqwwHzlK3tAS-1R5Qk3edPv0T4NzB) in Drive, with the 4 datasets given by DJI, and unzip in folder [dataset/dji_roco](./dataset/dji_roco).
 
 The dji_roco directory should look like:
 
@@ -103,7 +103,7 @@ The twitch/v1 directory should look like:
 
 #### Check
 
-To verify that the datasets are correctly set upped, you can run the tests in [./common/tests/common/integration_tests/datasets](./common/tests/common/integration_tests/datasets).
+To verify that the datasets are correctly set upped, you can run the tests in [./common/tests/common/integration_tests/datasets](./src/tests/common/integration_tests/datasets).
 
 
 
@@ -111,20 +111,12 @@ To verify that the datasets are correctly set upped, you can run the tests in [.
 
 ### Repo Organisation
 
- - [./common](common) In this directory, we write common code that can be used by every sub-project
- - [./dataset](dataset) In this directory, we add the images that are part of our dataset
- - Sub projects
-    - [./robots-at-robots](robots-at-robots): The goal is to identify and track the robots 
-    - [./robots-at-runes](robots-at-runes): The goal is to infer the runes rotation angle and speed
-    
-  
-### Sub-project organisation
-
-The organisation for ech sub-project should follow the structure:
-
- - a `research/{sub_project_name}` directory, where all the tests / model training, and code that shouldn't be ran by the robots would go
- - a `polystar/{sub_project_name}` directory, where the code that should be run by the robots should go 
- - (optional) a `tests/{sub_project_name}` directory, where we test the code
+ - [src](src) You'll find all the code there
+ - [dataset](dataset) In this directory, we add the images that are part of our datasets
+ - [experiments](experiments) (not versioned) All reports for experiments will go there
+ - [pipelines](pipelines) (not versioned) Saved pipelines and models go there
+ - [resources](resources) Some files that have nowhere else to go (as external libs used on the nano)  
+ - [doc](doc) stores the images used for this readme
 
 
 
@@ -137,4 +129,10 @@ For each project, we defined a few steps toward the automatisation
 2. The pilot chooses a target, then select a "shoot" mode. The CV maintain the shooter facing toward the target, and make the shooting decision.
 3. The pilot let the CV system to decide when to shoot, and which robot to shoot, depending on the distance to the targets, the probability to hit, and the type of robots.
 
-The main goal is not to reach step 3 for every project: reaching step 1 would already help a lot the pilots ! 
+The main goal is not to reach step 3 for every project: reaching step 1 would already help a lot the pilots !
+
+
+
+## Control Team
+
+[This google doc](https://docs.google.com/document/d/1_WRp8hKwjJ7E_uIMwRmgCmimuRtpEut-U4GsiJyBkTw) serves as a CdC for the link with the Control Team.

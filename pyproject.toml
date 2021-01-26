@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "polystar_cv"
+name = "src"
 version = "0.2.0"
 description = "CV code for Polystar's RoboMaster team"
 authors = ["Polystar"]
-packages = [{ include = "polystar", from = "polystar_cv" }, { include = "research", from = "polystar_cv" }]
+packages = [{ include = "polystar", from = "src" }, { include = "research", from = "src" }]
 include = ["**/.changes"]
 
 [tool.poetry.dependencies]

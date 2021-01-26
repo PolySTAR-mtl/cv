@@ -1,0 +1,29 @@
+import logging
+import warnings
+from argparse import ArgumentParser
+
+from research.armors.armor_digit.gcloud.train import train_evaluate_digit_pipeline
+from research.armors.armor_digit.pipeline import ArmorDigitKerasPipeline
+
+if __name__ == "__main__":
+    logging.getLogger().setLevel("INFO")
+    logging.getLogger("tensorflow").setLevel("ERROR")
+    warnings.filterwarnings("ignore")
+
+    _parser = ArgumentParser()
+    _parser.add_argument("--job-dir", type=str, required=True)
+    _parser.add_argument("--lr", type=float, required=True)
+    _parser.add_argument("--dropout", type=float, required=True)
+    _parser.add_argument("--dense-size", type=int, required=True)
+    _args = _parser.parse_args()
+
+    _pipeline = ArmorDigitKerasPipeline.from_custom_cnn(
+        input_size=32,
+        conv_blocks=((32, 32), (64, 64)),
+        logs_dir=_args.job_dir,
+        lr=_args.lr,
+        dense_size=_args.dense_size,
+        dropout=_args.dropout,
+    )
+
+    train_evaluate_digit_pipeline(_pipeline, _args.job_dir)
