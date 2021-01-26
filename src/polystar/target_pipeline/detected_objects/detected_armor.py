@@ -4,8 +4,8 @@ import numpy as np
 
 from polystar.models.roco_object import ArmorColor, ArmorDigit, ObjectType
 from polystar.target_pipeline.detected_objects.detected_object import DetectedROCOObject
-from research.robots.armor_color.pipeline import ArmorColorPipeline
-from research.robots.armor_digit.pipeline import ArmorDigitPipeline
+from research.armors.armor_color.pipeline import ArmorColorPipeline
+from research.armors.armor_digit.pipeline import ArmorDigitPipeline
 
 
 @dataclass

@@ -27,9 +27,9 @@ from polystar.target_pipeline.objects_linker.simple_objects_linker import Simple
 from polystar.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 from polystar.utils.serialization import pkl_load
+from research.armors.armor_color.pipeline import ArmorColorPipeline
+from research.armors.armor_color.scripts.benchmark import MeanChannels, RedBlueComparisonClassifier
 from research.common.constants import PIPELINES_DIR
-from research.robots.armor_color.pipeline import ArmorColorPipeline
-from research.robots.armor_color.scripts.benchmark import MeanChannels, RedBlueComparisonClassifier
 
 
 def make_injector() -> Injector:

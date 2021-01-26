@@ -4,7 +4,7 @@ from typing import List
 from polystar.models.image import Image
 from polystar.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
 from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from research.robots.armor_color.pipeline import ArmorColorPipeline
+from research.armors.armor_color.pipeline import ArmorColorPipeline
 
 
 @dataclass
