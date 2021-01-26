@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from polystar.common.constants import PROJECT_DIR
+from polystar.constants import PROJECT_DIR
 
 DSET_DIR: Path = PROJECT_DIR / "dataset"
 

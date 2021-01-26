@@ -6,7 +6,8 @@ from xml.dom.minidom import parseString
 import cv2
 import xmltodict
 from dicttoxml import dicttoxml
-from polystar.common.models.image import Image, load_image, save_image
+
+from polystar.models.image import Image, load_image, save_image
 
 
 @dataclass

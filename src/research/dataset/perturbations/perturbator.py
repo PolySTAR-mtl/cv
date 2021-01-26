@@ -7,7 +7,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from polystar.common.models.image import Image
+from polystar.models.image import Image
 from research.dataset.perturbations.image_modifiers.horizontal_blur import HorizontalBlurrer
 
 

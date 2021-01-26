@@ -4,9 +4,9 @@ from typing import Dict, Iterable, List, Sequence
 import numpy as np
 from memoized_property import memoized_property
 
-from polystar.common.filters.filter_abc import FilterABC
-from polystar.common.models.image import FileImage
-from polystar.common.utils.iterable_utils import flatten, group_by
+from polystar.filters.filter_abc import FilterABC
+from polystar.models.image import FileImage
+from polystar.utils.iterable_utils import flatten, group_by
 from research.robots.evaluation.set import Set
 
 

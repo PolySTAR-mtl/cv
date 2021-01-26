@@ -6,8 +6,8 @@ from typing import List
 import tensorflow as tf
 from tensorflow_core.python.lib.io import python_io
 
-from polystar.common.models.label_map import label_map
-from polystar.common.utils.tqdm import smart_tqdm
+from polystar.models.label_map import label_map
+from polystar.utils.tqdm import smart_tqdm
 from research.common.constants import TENSORFLOW_RECORDS_DIR
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder

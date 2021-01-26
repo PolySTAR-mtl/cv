@@ -1,9 +1,9 @@
 from itertools import islice
 from typing import List, Set, Tuple
 
-from polystar.common.filters.exclude_filter import ExcludeFilter
-from polystar.common.models.image import FileImage
-from polystar.common.models.object import Armor, ArmorDigit
+from polystar.filters.exclude_filter import ExcludeFilter
+from polystar.models.image import FileImage
+from polystar.models.roco_object import Armor, ArmorDigit
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 from research.robots.dataset.armor_value_dataset_generator import ArmorValueDatasetGenerator

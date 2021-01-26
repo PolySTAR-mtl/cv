@@ -13,9 +13,9 @@ from matplotlib.figure import Figure
 from pandas import DataFrame
 from sklearn.metrics import ConfusionMatrixDisplay, classification_report, confusion_matrix
 
-from polystar.common.pipeline.classification.classification_pipeline import EnumT
-from polystar.common.utils.dataframe import Format, format_df_row, format_df_rows, make_formater
-from polystar.common.utils.markdown import MarkdownFile
+from polystar.pipeline.classification.classification_pipeline import EnumT
+from polystar.utils.dataframe import Format, format_df_row, format_df_rows, make_formater
+from polystar.utils.markdown import MarkdownFile
 from research.common.constants import DSET_DIR
 from research.robots.evaluation.metrics.accuracy import AccuracyMetric
 from research.robots.evaluation.metrics.metric_abc import MetricABC

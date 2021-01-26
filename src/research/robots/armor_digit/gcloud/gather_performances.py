@@ -3,8 +3,8 @@ import pickle
 from pathlib import Path
 from typing import List
 
-from polystar.common.models.object import ArmorDigit
-from polystar.common.utils.iterable_utils import flatten
+from polystar.models.roco_object import ArmorDigit
+from polystar.utils.iterable_utils import flatten
 from research.common.constants import EVALUATION_DIR
 from research.common.gcloud.gcloud_storage import GCStorages
 from research.robots.evaluation.metrics.f1 import F1Metric

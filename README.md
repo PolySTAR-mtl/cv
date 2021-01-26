@@ -21,7 +21,7 @@ If you are using pycharm, then add [src](./src) as `Sources Root` (right click o
 
 ![Add src to Sources Root](./doc/add_src_to_source_root.png)
 
-It will enable the relative imports (eg. `from polystar.common.utils.str_utils import snake2camel` will be understood by Pycharm).
+It will enable the relative imports (eg. `from polystar.utils.str_utils import snake2camel` will be understood by Pycharm).
 
 
 ### Dependency management / Poetry

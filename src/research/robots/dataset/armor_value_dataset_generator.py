@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Generic, Iterable, List, Tuple
 
-from polystar.common.filters.exclude_filter import ExcludeFilter
-from polystar.common.filters.filter_abc import FilterABC
-from polystar.common.filters.pass_through_filter import PassThroughFilter
-from polystar.common.models.image import FileImage
+from polystar.filters.exclude_filter import ExcludeFilter
+from polystar.filters.filter_abc import FilterABC
+from polystar.filters.pass_through_filter import PassThroughFilter
+from polystar.models.image import FileImage
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
 from research.common.datasets.lazy_dataset import TargetT

@@ -6,11 +6,11 @@ import seaborn
 from matplotlib.pyplot import show, title
 from pandas import DataFrame
 
-from polystar.common.models.image import FileImage, file_images_to_images
-from polystar.common.models.object import ArmorDigit
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
-from polystar.common.utils.iterable_utils import chunk
-from polystar.common.utils.serialization import pkl_load
+from polystar.models.image import FileImage, file_images_to_images
+from polystar.models.roco_object import ArmorDigit
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.utils.iterable_utils import chunk
+from polystar.utils.serialization import pkl_load
 from research.common.constants import PIPELINES_DIR
 from research.common.datasets.dataset import Dataset
 from research.common.gcloud.gcloud_storage import GCStorages

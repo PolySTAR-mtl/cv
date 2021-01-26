@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from imutils import rotate_bound
 
-from polystar.common.models.image import Image
+from polystar.models.image import Image
 from research.runes.dataset.blend.labeled_image_modifiers.labeled_image_modifier_abc import LabeledImageModifierABC
 from research.runes.dataset.labeled_image import PointOfInterest
 

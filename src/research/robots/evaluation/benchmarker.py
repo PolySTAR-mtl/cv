@@ -4,7 +4,7 @@ from itertools import chain
 from pathlib import Path
 from typing import List, Sequence
 
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
 from research.common.datasets.image_dataset import FileImageDataset
 from research.robots.evaluation.evaluator import ImageClassificationPipelineEvaluator
 from research.robots.evaluation.metrics.f1 import F1Metric

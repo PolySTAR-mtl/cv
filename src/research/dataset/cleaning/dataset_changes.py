@@ -5,8 +5,8 @@ from typing import Dict, List, Set
 
 from more_itertools import flatten
 
-from polystar.common.utils.git import get_git_username
-from polystar.common.utils.time import create_time_id
+from polystar.utils.git import get_git_username
+from polystar.utils.time import create_time_id
 from research.common.gcloud.gcloud_storage import GCStorages
 
 INVALIDATED_KEY: str = "invalidated"

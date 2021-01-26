@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from itertools import islice
 from typing import Iterable, List, Tuple
 
-from polystar.common.models.box import Box
-from polystar.common.models.image import Image
-from polystar.common.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
-from polystar.common.view.plt_results_viewer import PltResultViewer
+from polystar.models.box import Box
+from polystar.models.image import Image
+from polystar.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
+from polystar.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 

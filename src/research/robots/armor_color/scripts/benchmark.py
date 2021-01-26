@@ -5,14 +5,14 @@ from pathlib import Path
 from nptyping import Array
 from sklearn.linear_model import LogisticRegression
 
-from polystar.common.models.image import Image
-from polystar.common.models.object import ArmorColor
-from polystar.common.pipeline.classification.random_model import RandomClassifier
-from polystar.common.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
-from polystar.common.pipeline.featurizers.histogram_2d import Histogram2D
-from polystar.common.pipeline.featurizers.histogram_blocs_2d import HistogramBlocs2D
-from polystar.common.pipeline.pipe_abc import PipeABC
-from polystar.common.pipeline.preprocessors.rgb_to_hsv import RGB2HSV
+from polystar.models.image import Image
+from polystar.models.roco_object import ArmorColor
+from polystar.pipeline.classification.random_model import RandomClassifier
+from polystar.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
+from polystar.pipeline.featurizers.histogram_2d import Histogram2D
+from polystar.pipeline.featurizers.histogram_blocs_2d import HistogramBlocs2D
+from polystar.pipeline.pipe_abc import PipeABC
+from polystar.pipeline.preprocessors.rgb_to_hsv import RGB2HSV
 from research.common.utils.experiment_dir import prompt_experiment_dir
 from research.robots.armor_color.benchmarker import make_armor_color_benchmarker
 from research.robots.armor_color.pipeline import ArmorColorPipeline

@@ -1,8 +1,8 @@
 import unittest
 
-from polystar.common.models.box import Box
-from polystar.common.models.object import Object, ObjectType
-from polystar.common.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
+from polystar.models.box import Box
+from polystar.models.roco_object import ObjectType, ROCOObject
+from polystar.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
 
 
 class TestInBoxObjectFilter(unittest.TestCase):
@@ -44,5 +44,5 @@ class TestInBoxObjectFilter(unittest.TestCase):
 
     def _test_obj(self, x: int, y: int, w: int, h: int, is_inside: bool):
         self.assertEqual(
-            is_inside, self.in_box_validator.validate_single(Object(ObjectType.CAR, Box.from_size(x, y, w, h)))
+            is_inside, self.in_box_validator.validate_single(ROCOObject(ObjectType.CAR, Box.from_size(x, y, w, h)))
         )

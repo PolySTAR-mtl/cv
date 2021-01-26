@@ -4,7 +4,7 @@ from pathlib import Path
 import cv2
 from tqdm import trange
 
-from polystar.common.models.image import load_images_in_directory
+from polystar.models.image import load_images_in_directory
 from research.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
 from research.dataset.perturbations.image_modifiers.contrast import ContrastModifier
 from research.dataset.perturbations.image_modifiers.gaussian_blur import GaussianBlurrer

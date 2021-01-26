@@ -6,7 +6,7 @@ from unittest import TestCase
 from numpy import asarray, float32
 from numpy.testing import assert_array_almost_equal
 
-from polystar.common.models.image import save_image
+from polystar.models.image import save_image
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 

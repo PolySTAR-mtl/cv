@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from polystar.common.utils.time import create_time_id
+from polystar.utils.time import create_time_id
 from research.common.constants import EVALUATION_DIR
 
 

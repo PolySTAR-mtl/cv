@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polystar.common.filters.filter_abc import FilterABC
-from polystar.common.filters.keep_filter import KeepFilter
+from polystar.filters.filter_abc import FilterABC
+from polystar.filters.keep_filter import KeepFilter
 
 
 class OddFilter(FilterABC[int]):

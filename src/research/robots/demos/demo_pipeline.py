@@ -1,10 +1,10 @@
 from injector import inject
 
-from polystar.common.dependency_injection import make_injector
-from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
-from polystar.common.target_pipeline.objects_filters.armor_digit_filter import KeepArmorsDigitFilter
-from polystar.common.target_pipeline.target_pipeline import NoTargetFoundException
-from polystar.common.view.plt_results_viewer import PltResultViewer
+from polystar.dependency_injection import make_injector
+from polystar.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.target_pipeline.objects_filters.armor_digit_filter import KeepArmorsDigitFilter
+from polystar.target_pipeline.target_pipeline import NoTargetFoundException
+from polystar.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation_filters.roco_annotation_object_filter import (
     ROCOAnnotationObjectFilter,
 )

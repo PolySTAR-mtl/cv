@@ -2,7 +2,7 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Generic
 
-from polystar.common.models.object import Armor
+from polystar.models.roco_object import Armor
 from research.common.datasets.lazy_dataset import TargetT
 
 

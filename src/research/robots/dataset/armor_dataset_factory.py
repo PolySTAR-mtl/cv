@@ -3,8 +3,8 @@ from typing import Iterator, Tuple
 
 import matplotlib.pyplot as plt
 
-from polystar.common.models.image import Image
-from polystar.common.models.object import Armor
+from polystar.models.image import Image
+from polystar.models.roco_object import Armor
 from research.common.datasets.lazy_dataset import LazyDataset
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_dataset import LazyROCODataset

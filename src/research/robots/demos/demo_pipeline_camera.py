@@ -1,11 +1,11 @@
 from injector import inject
 
-from polystar.common.dependency_injection import make_injector
-from polystar.common.frame_generators.frames_generator_abc import FrameGeneratorABC
-from polystar.common.target_pipeline.debug_pipeline import DebugTargetPipeline
-from polystar.common.target_pipeline.target_pipeline import NoTargetFoundException
-from polystar.common.utils.fps import FPS
-from polystar.common.view.cv2_results_viewer import CV2ResultViewer
+from polystar.dependency_injection import make_injector
+from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
+from polystar.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.target_pipeline.target_pipeline import NoTargetFoundException
+from polystar.utils.fps import FPS
+from polystar.view.cv2_results_viewer import CV2ResultViewer
 
 
 @inject

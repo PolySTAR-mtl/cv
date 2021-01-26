@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Tuple
 
-from polystar.common.models.image import save_image
-from polystar.common.utils.str_utils import camel2snake
-from polystar.common.utils.tqdm import smart_tqdm
+from polystar.models.image import save_image
+from polystar.utils.str_utils import camel2snake
+from polystar.utils.tqdm import smart_tqdm
 from research.common.constants import DJI_ROCO_ZOOMED_DSET_DIR
 from research.common.datasets.roco.roco_dataset import LazyROCODataset
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo

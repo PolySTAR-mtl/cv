@@ -4,7 +4,7 @@ from pathlib import Path
 
 from optuna import Trial
 
-from polystar.common.utils.serialization import pkl_load
+from polystar.utils.serialization import pkl_load
 from research.common.utils.experiment_dir import make_experiment_dir
 from research.robots.armor_digit.digit_benchmarker import make_default_digit_benchmarker
 from research.robots.armor_digit.pipeline import ArmorDigitKerasPipeline, ArmorDigitPipeline

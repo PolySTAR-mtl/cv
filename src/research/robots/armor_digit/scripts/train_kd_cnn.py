@@ -1,5 +1,5 @@
-from polystar.common.utils.serialization import pkl_load
-from polystar.common.utils.time import create_time_id
+from polystar.utils.serialization import pkl_load
+from polystar.utils.time import create_time_id
 from research.common.constants import PIPELINES_DIR
 from research.common.utils.logs import setup_dev_logs
 from research.robots.armor_digit.pipeline import ArmorDigitKerasPipeline

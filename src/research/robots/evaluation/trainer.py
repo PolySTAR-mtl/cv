@@ -2,8 +2,8 @@ from typing import Generic, Iterable, List
 
 from tqdm import tqdm
 
-from polystar.common.models.image import file_images_to_images
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.models.image import file_images_to_images
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
 from research.common.datasets.image_dataset import FileImageDataset
 from research.common.datasets.lazy_dataset import TargetT
 from research.common.datasets.union_dataset import UnionDataset

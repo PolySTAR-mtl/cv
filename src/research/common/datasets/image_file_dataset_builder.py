@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Generic, Iterable, Iterator, Tuple
 
-from polystar.common.models.image import FileImage, Image, load_image
+from polystar.models.image import FileImage, Image, load_image
 from research.common.datasets.dataset_builder import DatasetBuilder
 from research.common.datasets.lazy_dataset import LazyDataset, TargetT
 

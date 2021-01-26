@@ -1,8 +1,8 @@
 from typing import Callable, Generic, Iterable, Iterator, Tuple
 
-from polystar.common.filters.filter_abc import FilterABC
-from polystar.common.filters.pass_through_filter import PassThroughFilter
-from polystar.common.utils.misc import identity
+from polystar.filters.filter_abc import FilterABC
+from polystar.filters.pass_through_filter import PassThroughFilter
+from polystar.utils.misc import identity
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.filter_dataset import ExampleU, FilterDataset, TargetU
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT

@@ -5,7 +5,7 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 
-from polystar.common.models.image import Image
+from polystar.models.image import Image
 from research.runes.dataset.blend.labeled_image_modifiers.labeled_image_modifier_abc import LabeledImageModifierABC
 from research.runes.dataset.labeled_image import LabeledImage, PointOfInterest
 

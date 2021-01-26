@@ -10,7 +10,7 @@ from typing import Iterable, Optional
 
 from google.cloud.storage import Bucket, Client
 
-from polystar.common.constants import PROJECT_DIR
+from polystar.constants import PROJECT_DIR
 
 logger = logging.getLogger(__name__)
 EXTENSIONS_TO_EXCLUDE = (".changes",)

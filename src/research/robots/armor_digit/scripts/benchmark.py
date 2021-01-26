@@ -2,8 +2,8 @@ import logging
 import warnings
 from pathlib import Path
 
-from polystar.common.pipeline.classification.random_model import RandomClassifier
-from polystar.common.utils.serialization import pkl_load
+from polystar.pipeline.classification.random_model import RandomClassifier
+from polystar.utils.serialization import pkl_load
 from research.common.utils.experiment_dir import prompt_experiment_dir
 from research.robots.armor_digit.digit_benchmarker import make_default_digit_benchmarker
 from research.robots.armor_digit.pipeline import ArmorDigitKerasPipeline, ArmorDigitPipeline

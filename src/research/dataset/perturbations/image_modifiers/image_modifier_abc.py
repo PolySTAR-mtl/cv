@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from polystar.common.models.image import Image
+from polystar.models.image import Image
 
 
 class ImageModifierABC(ABC):

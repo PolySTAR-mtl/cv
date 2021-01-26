@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from polystar.common.models.image import FileImage, Image
+from polystar.models.image import FileImage, Image
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.lazy_dataset import LazyDataset, TargetT
 

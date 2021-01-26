@@ -1,6 +1,6 @@
 from typing import Iterator, Tuple, TypeVar
 
-from polystar.common.filters.filter_abc import FilterABC
+from polystar.filters.filter_abc import FilterABC
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 ExampleU = TypeVar("ExampleU")

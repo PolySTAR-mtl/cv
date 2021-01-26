@@ -1,6 +1,6 @@
-from polystar.common.models.object import ArmorColor
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
-from polystar.common.pipeline.classification.keras_classification_pipeline import KerasClassificationPipeline
+from polystar.models.roco_object import ArmorColor
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.pipeline.classification.keras_classification_pipeline import KerasClassificationPipeline
 
 
 class ArmorColorPipeline(ClassificationPipeline):

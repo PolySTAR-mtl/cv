@@ -1,5 +1,5 @@
-from polystar.common.filters.filter_abc import FilterABC
-from polystar.common.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
+from polystar.filters.filter_abc import FilterABC
+from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 
 

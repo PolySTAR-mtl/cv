@@ -5,10 +5,10 @@ from numpy import array_equal, asarray, ndarray
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
-from polystar.common.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
-from polystar.common.pipeline.concat import Concat
-from polystar.common.pipeline.pipe_abc import PipeABC
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
+from polystar.pipeline.concat import Concat
+from polystar.pipeline.pipe_abc import PipeABC
 
 
 class Letter(IntEnum):

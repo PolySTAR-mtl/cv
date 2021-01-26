@@ -4,9 +4,9 @@ from typing import Dict
 
 from pandas import DataFrame
 
-from polystar.common.models.object import Armor, ObjectType
-from polystar.common.utils.markdown import MarkdownFile
-from polystar.common.utils.tqdm import smart_tqdm
+from polystar.models.roco_object import Armor, ObjectType
+from polystar.utils.markdown import MarkdownFile
+from polystar.utils.tqdm import smart_tqdm
 from research.common.datasets.roco.roco_dataset import LazyROCOFileDataset
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 

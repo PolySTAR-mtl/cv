@@ -7,12 +7,12 @@ from xml.dom.minidom import parseString
 import xmltodict
 from dicttoxml import dicttoxml
 
-from polystar.common.models.object import Armor, Object, ObjectFactory
+from polystar.models.roco_object import Armor, ObjectFactory, ROCOObject
 
 
 @dataclass
 class ROCOAnnotation:
-    objects: List[Object]
+    objects: List[ROCOObject]
 
     has_rune: bool
 

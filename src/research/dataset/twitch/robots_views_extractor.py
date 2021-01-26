@@ -3,7 +3,7 @@ import ffmpeg
 import numpy as np
 from tqdm import tqdm
 
-from polystar.common.frame_generators.fps_video_frame_generator import FPSVideoFrameGenerator
+from polystar.frame_generators.fps_video_frame_generator import FPSVideoFrameGenerator
 from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research.dataset.twitch.mask_detector import is_image_from_robot_view
 

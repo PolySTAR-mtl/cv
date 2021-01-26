@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from polystar.common.models.image import Image
+from polystar.models.image import Image
 from research.dataset.perturbations.image_modifiers.image_modifier_abc import ImageModifierABC
 
 

@@ -4,9 +4,9 @@ from typing import Generic, Iterable, List
 
 import numpy as np
 
-from polystar.common.models.image import file_images_to_images
-from polystar.common.pipeline.classification.classification_pipeline import ClassificationPipeline
-from polystar.common.utils.iterable_utils import flatten
+from polystar.models.image import file_images_to_images
+from polystar.pipeline.classification.classification_pipeline import ClassificationPipeline
+from polystar.utils.iterable_utils import flatten
 from research.common.datasets.image_dataset import FileImageDataset
 from research.common.datasets.lazy_dataset import TargetT
 from research.robots.evaluation.performance import (
