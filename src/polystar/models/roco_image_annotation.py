@@ -8,7 +8,7 @@ import xmltodict
 from dicttoxml import dicttoxml
 
 from polystar.models.image import Image, load_image, save_image
-from polystar.models.roco_object import ObjectFactory, ROCOObject
+from polystar.models.roco_object import ROCOObject, ROCOObjectFactory
 
 
 @dataclass
@@ -40,7 +40,7 @@ class ROCOImageAnnotation:
             json_objects = annotation.get("object", []) or []
             json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
             roco_json_objects = [obj_json for obj_json in json_objects if not obj_json["name"].startswith("rune")]
-            objects = [ObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
+            objects = [ROCOObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
 
             return ROCOImageAnnotation(
                 width=int(annotation["size"]["width"]),
@@ -61,7 +61,7 @@ class ROCOImageAnnotation:
                 {
                     "annotation": {
                         "size": {"width": self.width, "height": self.height},
-                        "object": [ObjectFactory.to_json(obj) for obj in self.objects],
+                        "object": [ROCOObjectFactory.to_json(obj) for obj in self.objects],
                     }
                 },
                 attr_type=False,

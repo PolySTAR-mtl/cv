@@ -64,6 +64,7 @@ def make_markdown_dataset_report(dataset: LazyROCOFileDataset, report_dir: Path)
             ]
         )
         mf.table(DataFrame(stats.armors_color2num2count))
+    print(f"file://{report_path}")
 
 
 if __name__ == "__main__":

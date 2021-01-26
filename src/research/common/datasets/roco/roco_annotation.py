@@ -7,7 +7,7 @@ from xml.dom.minidom import parseString
 import xmltodict
 from dicttoxml import dicttoxml
 
-from polystar.models.roco_object import Armor, ObjectFactory, ROCOObject
+from polystar.models.roco_object import Armor, ROCOObject, ROCOObjectFactory
 
 
 @dataclass
@@ -36,7 +36,7 @@ class ROCOAnnotation:
         json_objects = xml_dict.get("object", []) or []
         json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
         roco_json_objects = [obj_json for obj_json in json_objects if not obj_json["name"].startswith("rune")]
-        objects = [ObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
+        objects = [ROCOObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
 
         return ROCOAnnotation(
             objects=objects,
@@ -51,7 +51,7 @@ class ROCOAnnotation:
                 {
                     "annotation": {
                         "size": {"width": self.w, "height": self.h},
-                        "object": [ObjectFactory.to_json(obj) for obj in self.objects],
+                        "object": [ROCOObjectFactory.to_json(obj) for obj in self.objects],
                     }
                 },
                 attr_type=False,

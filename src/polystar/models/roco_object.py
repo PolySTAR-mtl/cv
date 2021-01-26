@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 from enum import auto
-from typing import Any, Dict, NewType
+from typing import Any, Dict, NewType, Set
 
 from polystar.models.box import Box
 from polystar.utils.no_case_enum import NoCaseEnum
 
 Json = NewType("Json", Dict[str, Any])
-
-ArmorNumber = NewType("ArmorNumber", int)
 
 
 class ArmorColor(NoCaseEnum):
@@ -23,6 +21,9 @@ class ArmorColor(NoCaseEnum):
     @property
     def short(self) -> str:
         return self.name[0] if self != ArmorColor.UNKNOWN else "?"
+
+
+VALID_NUMBERS_2021: Set[int] = {1, 3, 4}  # University League # CHANGING
 
 
 class ArmorDigit(NoCaseEnum):  # CHANGING
@@ -55,6 +56,16 @@ class ArmorDigit(NoCaseEnum):  # CHANGING
     def digit(self) -> int:
         return self.value + (self.value >= 2)  # hacky, but a number is missing (2)
 
+    @staticmethod
+    def from_number(n: int) -> "ArmorDigit":
+        if n == 0:
+            return ArmorDigit.UNKNOWN
+
+        if n not in VALID_NUMBERS_2021:
+            return ArmorDigit.OUTDATED
+
+        return ArmorDigit(n - (n >= 3))  # hacky, but digit 2 is absent
+
 
 class ObjectType(NoCaseEnum):
     CAR = auto()
@@ -75,15 +86,15 @@ class ROCOObject:
 
 @dataclass
 class Armor(ROCOObject):
-    number: ArmorNumber
-    type: ArmorDigit
+    number: int
+    digit: ArmorDigit
     color: ArmorColor
 
     def __repr__(self):
         return f"<{self} {self.color} {self.number}>"
 
 
-class ObjectFactory:
+class ROCOObjectFactory:
     @staticmethod
     def from_json(json: Json) -> ROCOObject:
         t: ObjectType = ObjectType(json["name"])
@@ -100,10 +111,14 @@ class ObjectFactory:
         if t is not ObjectType.ARMOR:
             return ROCOObject(type=t, box=Box.from_size(x, y, w, h=h))
 
-        armor_number = ArmorNumber(int(json["armor_class"])) if json["armor_class"] != "none" else 0
+        armor_number = int(json["armor_class"]) if json["armor_class"] != "none" else 0
 
         return Armor(
-            type=t, box=Box.from_size(x, y, w, h=h), number=armor_number, color=ArmorColor(json["armor_color"])
+            type=t,
+            box=Box.from_size(x, y, w, h=h),
+            number=armor_number,
+            digit=ArmorDigit.from_number(armor_number),
+            color=ArmorColor(json["armor_color"]),
         )
 
     @staticmethod
