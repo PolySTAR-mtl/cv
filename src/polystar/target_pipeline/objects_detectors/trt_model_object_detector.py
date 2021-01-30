@@ -1,16 +1,16 @@
 import ctypes
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar
 from pathlib import Path
 from typing import List, Tuple
 
 import cv2
 import numpy as np
+import pycuda.autoinit  # This is needed for initializing CUDA driver
 import pycuda.driver as cuda
 import tensorrt as trt
 
 from polystar.constants import RESOURCES_DIR
 from polystar.models.image import Image
-from polystar.models.trt_model import TRTModel
 from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
 from polystar.target_pipeline.detected_objects.detected_objects_factory import ObjectParams
 from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
@@ -19,7 +19,10 @@ from polystar.target_pipeline.objects_detectors.objects_detector_abc import Obje
 
 @dataclass
 class TRTModelObjectsDetector(ObjectsDetectorABC):
-    trt_model: TRTModel
+    model_dir: InitVar[Path]
+
+    def __post_init__(self, model_dir: Path):
+        self.trt_model = TRTModel(model_dir / "trt_model.bin", (300, 300))
 
     def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
         results = self.trt_model(image)
