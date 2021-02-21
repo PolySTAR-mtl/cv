@@ -1,6 +1,7 @@
 from polystar.communication.target_sender_abc import TargetSenderABC
+from polystar.target_pipeline.target_abc import SimpleTarget
 
 
 class PrintTargetSender(TargetSenderABC):
-    def _send_text(self, text: str):
-        print(text)
+    def send(self, target: SimpleTarget):
+        print(f"{target} ({bytes(target)})")
