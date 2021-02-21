@@ -16,6 +16,7 @@ class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
     def __enter__(self):
         self._cap = cv2.VideoCapture(*self._capture_params())
         assert self._cap.isOpened()
+        self._post_opening_operation()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._cap.release()
@@ -30,4 +31,7 @@ class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
 
     @abstractmethod
     def _capture_params(self) -> Iterable[Any]:
+        pass
+
+    def _post_opening_operation(self):
         pass
