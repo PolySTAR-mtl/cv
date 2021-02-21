@@ -1,45 +1,36 @@
-import shutil
 from dataclasses import dataclass
-from itertools import count
 from pathlib import Path
-from typing import Iterator
+from typing import List
 
-from research.common.constants import TWITCH_ROBOTS_VIEWS_DIR
+from more_itertools import ilen
+
+from polystar.utils.iterable_utils import chunk
+from polystar.utils.path import archive_directory, move_files
+from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 
 
 @dataclass
-class DatasetChunker:
+class ImagesChunker:
 
     dataset_dir: Path
+    chunks_dir: Path
 
     chunk_size: int = 100
 
     def make_chunks(self):
-        try:
-            image_paths_iterator = self.dataset_dir.glob("*.jpg")
-            for chunk_number in count(1 + self._get_number_existing_chunks()):
-                self._make_next_chunk(chunk_number, image_paths_iterator)
-        except StopIteration:
-            self._zip_chunk(self._get_chunk_dir(self._get_number_existing_chunks() + 1))
+        images = self.dataset_dir.glob("**/*.jpg")
+        for chunk_images in chunk(images, self.chunk_size):
+            self._make_chunk(chunk_images)
 
-    def _make_next_chunk(self, chunk_number: int, image_paths_iterator: Iterator[Path]):
-        chunk_dir = self._get_chunk_dir(chunk_number)
-        chunk_dir.mkdir()
-        for _ in range(self.chunk_size):
-            image_path = next(image_paths_iterator)
-            shutil.move(str(image_path), str(chunk_dir / image_path.name))
-        self._zip_chunk(chunk_dir)
+    def _make_chunk(self, images: List[Path]):
+        chunk_dir = self._get_next_available_chunk()
+        move_files(images, chunk_dir)
+        archive_directory(chunk_dir)
 
-    def _get_chunk_dir(self, chunk_number: int):
-        return self.dataset_dir / f"chunk_{chunk_number:03}"
-
-    def _get_number_existing_chunks(self):
-        return int(str(max(self.dataset_dir.glob("chunk_*.zip"), default="chunk_000.zip"))[-7:-4])
-
-    @staticmethod
-    def _zip_chunk(chunk_dir: Path):
-        shutil.make_archive(str(chunk_dir), "zip", str(chunk_dir))
+    def _get_next_available_chunk(self) -> Path:
+        chunk_number = ilen(self.chunks_dir.glob("chunk_*.zip"))
+        return self.chunks_dir / f"chunk_{chunk_number:03}"
 
 
 if __name__ == "__main__":
-    DatasetChunker(TWITCH_ROBOTS_VIEWS_DIR).make_chunks()
+    ImagesChunker(TWITCH_ROBOTS_VIEWS_DIR, TWITCH_DSET_DIR / "chunks-to-annotate").make_chunks()
