@@ -19,4 +19,4 @@ TWITCH_ROBOTS_VIEWS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 EVALUATION_DIR: Path = PROJECT_DIR / "experiments"
-PIPELINES_DIR = PROJECT_DIR / "pipelines"
+PIPELINES_DIR: Path = PROJECT_DIR / "pipelines"

@@ -19,7 +19,6 @@ from polystar.target_pipeline.detected_objects.detected_objects_factory import D
 from polystar.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
-from polystar.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 from polystar.target_pipeline.objects_filters.confidence_object_filter import ConfidenceObjectsFilter
 from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
@@ -28,7 +27,8 @@ from polystar.target_pipeline.target_factories.ratio_simple_target_factory impor
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 from polystar.utils.serialization import pkl_load
 from research.armors.armor_color.pipeline import ArmorColorPipeline
-from research.armors.armor_color.scripts.benchmark import MeanChannels, RedBlueComparisonClassifier
+from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
+from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from research.common.constants import PIPELINES_DIR
 
 
@@ -62,20 +62,19 @@ class CommonModule(Module):
     @provider
     @singleton
     def provide_objects_detector(self, object_factory: DetectedObjectFactory) -> ObjectsDetectorABC:
+        model_dir = PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
         if self.settings.is_dev:
-            return TFModelObjectsDetector(
-                object_factory, PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
-            )
-        import pycuda.autoinit  # This is needed for initializing CUDA driver
-
-        raise NotImplementedError()
+            from polystar.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
+            return TFModelObjectsDetector(object_factory, model_dir)
+        from polystar.target_pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
+        return TRTModelObjectsDetector(object_factory, model_dir)
 
     @multiprovider
     @singleton
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
         return [
             ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
-            ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
+            #ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
         ]
 
     @multiprovider
