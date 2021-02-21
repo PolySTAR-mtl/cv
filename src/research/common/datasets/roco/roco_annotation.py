@@ -8,6 +8,7 @@ import xmltodict
 from dicttoxml import dicttoxml
 
 from polystar.models.roco_object import Armor, ROCOObject, ROCOObjectFactory
+from polystar.utils.path import move_file
 
 
 @dataclass
@@ -45,6 +46,13 @@ class ROCOAnnotation:
             h=int(xml_dict["size"]["height"]),
         )
 
+    def save_in_directory(self, directory: Path, name: str):
+        directory.mkdir(exist_ok=True, parents=True)
+        self.save_in_file((directory / name).with_suffix(".xml"))
+
+    def save_in_file(self, file: Path):
+        file.write_text(self.to_xml())
+
     def to_xml(self) -> str:
         return parseString(
             dicttoxml(
@@ -61,3 +69,11 @@ class ROCOAnnotation:
             .replace(b"<object><object>", b"<object>")
             .replace(b"</object></object>", b"</object>")
         ).toprettyxml()
+
+
+def move_image_and_annotation(source_dataset_directory: Path, destination_dataset_directory: Path, name: str):
+    move_file((source_dataset_directory / "image" / name).with_suffix(".jpg"), destination_dataset_directory / "image")
+    move_file(
+        (source_dataset_directory / "image_annotation" / name).with_suffix(".xml"),
+        destination_dataset_directory / "image_annotation",
+    )
