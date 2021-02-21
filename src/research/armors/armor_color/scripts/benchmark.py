@@ -1,35 +1,17 @@
 import logging
-from dataclasses import dataclass
 from pathlib import Path
 
-from nptyping import Array
 from sklearn.linear_model import LogisticRegression
 
-from polystar.models.image import Image
-from polystar.models.roco_object import ArmorColor
 from polystar.pipeline.classification.random_model import RandomClassifier
-from polystar.pipeline.classification.rule_based_classifier import RuleBasedClassifierABC
+from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
 from polystar.pipeline.featurizers.histogram_2d import Histogram2D
 from polystar.pipeline.featurizers.histogram_blocs_2d import HistogramBlocs2D
-from polystar.pipeline.pipe_abc import PipeABC
+from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from polystar.pipeline.preprocessors.rgb_to_hsv import RGB2HSV
 from research.armors.armor_color.benchmarker import make_armor_color_benchmarker
 from research.armors.armor_color.pipeline import ArmorColorPipeline
 from research.common.utils.experiment_dir import prompt_experiment_dir
-
-
-@dataclass
-class MeanChannels(PipeABC):
-    def transform_single(self, image: Image) -> Array[float, float, float]:
-        return image.mean(axis=(0, 1))
-
-
-class RedBlueComparisonClassifier(RuleBasedClassifierABC):
-    """A very simple model that compares the blue and red values obtained by the MeanChannels"""
-
-    def predict_single(self, features: Array[float, float, float]) -> ArmorColor:
-        return ArmorColor.RED if features[0] >= features[2] else ArmorColor.BLUE
-
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")

@@ -15,6 +15,7 @@ class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
 
     def __enter__(self):
         self._cap = cv2.VideoCapture(*self._capture_params())
+        # self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         assert self._cap.isOpened()
         self._post_opening_operation()
 

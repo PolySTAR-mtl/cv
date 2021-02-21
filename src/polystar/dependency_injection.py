@@ -27,7 +27,8 @@ from polystar.target_pipeline.target_factories.ratio_simple_target_factory impor
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
 from polystar.utils.serialization import pkl_load
 from research.armors.armor_color.pipeline import ArmorColorPipeline
-from research.armors.armor_color.scripts.benchmark import MeanChannels, RedBlueComparisonClassifier
+from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
+from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from research.common.constants import PIPELINES_DIR
 
 
