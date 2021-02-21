@@ -33,6 +33,7 @@ xhtml2pdf = "^0.2.5"
 google-cloud-storage = "^1.35.0"
 pyyaml = "^5.3.1"
 six = "1.15.0"  # https://github.com/googleapis/python-bigquery/issues/70
+pyserial = "^3.5"
 
 [tool.poetry.dev-dependencies]
 tensorflow = "1.15.x"
