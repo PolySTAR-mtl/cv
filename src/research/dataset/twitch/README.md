@@ -43,8 +43,8 @@ You have 2 options to download the videos:
 3. Rename it using the video id on twitch, and place it in [dataset/twitch/videos](../../../../dataset/twitch/videos)
 5. Launch the python script [../scripts/extract_robots_views_from_video.py](../scripts/extract_robots_views_from_video.py), with the video id as parameter (In Pycharm, `Run` > `Edit Configurations...`, then in parameters enter the id). You can put multiple video ids by separating them with spaces.
 
-The frames will appear in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views) folder.
+The frames will appear in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views-hd-decalees) folder.
 
 ## Aerial dataset
 
-Once you have the robots views in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views) folder, run the python script [../scripts/move_aerial_views.py](../scripts/move_aerial_views.py). It will put the aerial views in the [dataset/twitch/aerial-views](../../../../dataset/twitch/aerial-views) directory.
+Once you have the robots views in the [dataset/twitch/robots-views](../../../../dataset/twitch/robots-views-hd-decalees) folder, run the python script [../scripts/move_aerial_views.py](../scripts/move_aerial_and_runes_views.py). It will put the aerial views in the [dataset/twitch/aerial-views](../../../../dataset/twitch/aerial-views) directory.
