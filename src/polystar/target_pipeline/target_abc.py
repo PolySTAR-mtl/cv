@@ -1,13 +1,13 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict
 
 from polystar.constants import BYTE_ORDER
 
 
 class TargetABC(ABC):
-    def to_json(self) -> Dict[str, Any]:
-        return self.__dict__
+    @abstractmethod
+    def __bytes__(self) -> bytes:
+        pass
 
 
 @dataclass

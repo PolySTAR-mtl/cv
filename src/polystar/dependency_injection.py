@@ -5,9 +5,9 @@ from injector import Injector, Module, multiprovider, provider, singleton
 from numpy.core._multiarray_umath import deg2rad
 from serial import Serial
 
-from polystar.communication.print_target_sender import PrintTargetSender
-from polystar.communication.target_sender_abc import TargetSenderABC
-from polystar.communication.uart_target_sender import UartTargetSender
+from polystar.communication.board_a import BoardA
+from polystar.communication.cs_link_abc import CSLinkABC
+from polystar.communication.screen import Screen
 from polystar.constants import LABEL_MAP_PATH
 from polystar.frame_generators.camera_frame_generator import RaspiV2CameraFrameGenerator, WebcamFrameGenerator
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
@@ -96,17 +96,10 @@ class CommonModule(Module):
 
     @provider
     @singleton
-    def provide_target_sender(self, serial: Serial) -> TargetSenderABC:
+    def provide_cs_link(self) -> CSLinkABC:
         if self.settings.is_dev:
-            return PrintTargetSender()
-        return UartTargetSender(serial)
-
-    @provider
-    @singleton
-    def provide_serial(self) -> Serial:
-        if self.settings.is_dev:
-            return  # TODO: Mock that, and get rid of TargetSender
-        return Serial(port=settings.SERIAL_PORT, baudrate=230_400)
+            return Screen()
+        return BoardA(Serial(settings.SERIAL_PORT))
 
     @provider
     @singleton
