@@ -3,18 +3,21 @@ from typing import List
 
 from injector import Injector, Module, multiprovider, provider, singleton
 from numpy.core._multiarray_umath import deg2rad
+from serial import Serial
 
-from polystar.communication.print_target_sender import PrintTargetSender
-from polystar.communication.target_sender_abc import TargetSenderABC
+from polystar.communication.board_a import BoardA
+from polystar.communication.cs_link_abc import CSLinkABC
+from polystar.communication.screen import Screen
 from polystar.constants import LABEL_MAP_PATH
 from polystar.frame_generators.camera_frame_generator import RaspiV2CameraFrameGenerator, WebcamFrameGenerator
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.camera import Camera
 from polystar.models.label_map import LabelMap
+from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
+from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from polystar.settings import Settings, settings
 from polystar.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
-from polystar.target_pipeline.armors_descriptors.armors_digit_descriptor import ArmorsDigitDescriptor
 from polystar.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
 from polystar.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
@@ -25,10 +28,7 @@ from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLi
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
 from polystar.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
-from polystar.utils.serialization import pkl_load
 from research.armors.armor_color.pipeline import ArmorColorPipeline
-from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
-from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from research.common.constants import PIPELINES_DIR
 
 
@@ -65,8 +65,10 @@ class CommonModule(Module):
         model_dir = PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
         if self.settings.is_dev:
             from polystar.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
+
             return TFModelObjectsDetector(object_factory, model_dir)
         from polystar.target_pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
+
         return TRTModelObjectsDetector(object_factory, model_dir)
 
     @multiprovider
@@ -74,7 +76,7 @@ class CommonModule(Module):
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
         return [
             ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
-            #ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
+            # ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
         ]
 
     @multiprovider
@@ -94,8 +96,10 @@ class CommonModule(Module):
 
     @provider
     @singleton
-    def provide_target_sender(self) -> TargetSenderABC:
-        return PrintTargetSender()
+    def provide_cs_link(self) -> CSLinkABC:
+        if self.settings.is_dev:
+            return Screen()
+        return BoardA(Serial(settings.SERIAL_PORT))
 
     @provider
     @singleton

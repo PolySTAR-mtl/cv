@@ -3,7 +3,6 @@ from typing import List
 
 from injector import inject
 
-from polystar.communication.target_sender_abc import TargetSenderABC
 from polystar.models.image import Image
 from polystar.target_pipeline.detected_objects.detected_object import DetectedROCOObject
 from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
@@ -28,12 +27,10 @@ class TargetPipeline:
     objects_filters: List[ObjectsFilterABC]
     object_selector: ObjectSelectorABC
     target_factory: TargetFactoryABC
-    target_sender: TargetSenderABC
 
     def predict_target(self, image: Image) -> TargetABC:
         selected_object = self.predict_best_object(image)
         target = self.target_factory.from_object(selected_object, image)
-        self.target_sender.send(target)
         return target
 
     def predict_best_object(self, image: Image) -> DetectedROCOObject:
