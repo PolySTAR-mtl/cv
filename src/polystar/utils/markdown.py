@@ -12,7 +12,9 @@ from polystar.utils.working_directory import working_directory
 
 
 class MarkdownFile:
-    def __init__(self, markdown_path: Path):
+    def __init__(self, markdown_path: Path, name: str = "report"):
+        if markdown_path.suffix != ".md":
+            markdown_path /= f"{name}.md"
         self.markdown_path = markdown_path
 
     def __enter__(self):
@@ -47,10 +49,13 @@ class MarkdownFile:
         close(figure)
         return self.image(name, alt)
 
-    def table(self, data: DataFrame) -> "MarkdownFile":
-        self.file.write(tabulate(data, tablefmt="pipe", headers="keys").replace(".0 ", "   "))
+    def table(self, data: Any) -> "MarkdownFile":
+        self.file.write(tabulate(DataFrame(data), tablefmt="pipe", headers="keys").replace(".0 ", "   "))
         self.file.write("\n\n")
         return self
+
+    def __repr__(self):
+        return f"file://{self.markdown_path}"
 
 
 def markdown_to_pdf(markdown_path: Path):
