@@ -34,16 +34,18 @@ class ROCOAnnotation:
 
     @staticmethod
     def from_xml_dict(xml_dict: Dict) -> "ROCOAnnotation":
+        image_h = int(xml_dict["size"]["height"])
+        image_w = int(xml_dict["size"]["width"])
+
         json_objects = xml_dict.get("object", []) or []
         json_objects = json_objects if isinstance(json_objects, list) else [json_objects]
         roco_json_objects = [obj_json for obj_json in json_objects if not obj_json["name"].startswith("rune")]
-        objects = [ROCOObjectFactory.from_json(obj_json) for obj_json in roco_json_objects]
+        objects = [
+            ROCOObjectFactory(image_w=image_w, image_h=image_h).from_json(obj_json) for obj_json in roco_json_objects
+        ]
 
         return ROCOAnnotation(
-            objects=objects,
-            has_rune=len(roco_json_objects) != len(json_objects),
-            w=int(xml_dict["size"]["width"]),
-            h=int(xml_dict["size"]["height"]),
+            objects=objects, has_rune=len(roco_json_objects) != len(json_objects), w=image_w, h=image_h,
         )
 
     def save_in_directory(self, directory: Path, name: str):
