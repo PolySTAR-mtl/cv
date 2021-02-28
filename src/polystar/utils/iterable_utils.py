@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import chain
-from typing import Callable, Dict, Iterable, List, TypeVar
+from typing import Any, Callable, Dict, Iterable, List, TypeVar
 
 from more_itertools import ilen
 
@@ -38,3 +38,8 @@ def chunk(it: Iterable[T], batch_size: float) -> Iterable[List[T]]:
             batch = []
     if batch:
         yield batch
+
+
+def apply(f: Callable[[T], Any], it: Iterable[T]):
+    for el in it:
+        f(el)

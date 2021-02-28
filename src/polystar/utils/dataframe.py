@@ -27,3 +27,7 @@ def make_formater(fmt: Format) -> Callable:
     if isinstance(fmt, str):
         return fmt.format
     return fmt
+
+
+def add_percentages_to_df(df: DataFrame, axis: int) -> DataFrame:
+    return df.applymap(str) + df.div(df.sum(axis=axis), axis=(1 - axis)).applymap(" ({:.1%})".format)

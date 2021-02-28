@@ -4,13 +4,15 @@ from research.common.datasets.roco.roco_datasets import ROCODatasets
 
 
 class TwitchROCODatasets(ROCODatasets):
-    main_dir = TWITCH_DSET_DIR / "v1"
+    main_dir = TWITCH_DSET_DIR / "v2"
 
+    T470149066: ROCODatasetBuilder = ()
     T470149568: ROCODatasetBuilder = ()
     T470150052: ROCODatasetBuilder = ()
     T470151286: ROCODatasetBuilder = ()
     T470152289: ROCODatasetBuilder = ()
     T470152730: ROCODatasetBuilder = ()
+    T470152932: ROCODatasetBuilder = ()
     T470152838: ROCODatasetBuilder = ()
     T470153081: ROCODatasetBuilder = ()
     T470158483: ROCODatasetBuilder = ()

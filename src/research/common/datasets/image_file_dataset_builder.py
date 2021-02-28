@@ -5,6 +5,8 @@ from polystar.models.image import FileImage, Image, load_image
 from research.common.datasets.dataset_builder import DatasetBuilder
 from research.common.datasets.lazy_dataset import LazyDataset, TargetT
 
+CORRUPTED_FILES = {"EvolutionVs华南虎_BO3_2_381.jpg"}  # TODO: cleaner way to do that
+
 
 class LazyFileDataset(LazyDataset[Path, TargetT]):
     def __init__(self, files: Iterable[Path], target_from_file: Callable[[Path], TargetT], name: str):
@@ -14,7 +16,8 @@ class LazyFileDataset(LazyDataset[Path, TargetT]):
 
     def __iter__(self) -> Iterator[Tuple[Path, TargetT, str]]:
         for file in self.files:
-            yield file, self.target_from_file(file), file.stem
+            if file.name not in CORRUPTED_FILES:
+                yield file, self.target_from_file(file), file.stem
 
     def __len__(self):
         return len(self.files)

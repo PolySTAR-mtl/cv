@@ -47,10 +47,16 @@ class TensorflowRecordFactory:
         xmin, ymin, xmax, ymax, classes, classes_text = [], [], [], [], [], []
 
         for obj in self.objects_filter.filter(annotation.objects):
-            xmin.append(float(obj.box.x1) / width)
-            ymin.append(float(obj.box.y1) / height)
-            xmax.append(float(obj.box.x2) / width)
-            ymax.append(float(obj.box.y2) / height)
+            x1 = max(0.0, obj.box.x1 / width)
+            y1 = max(0.0, obj.box.y1 / height)
+            x2 = min(1.0, obj.box.x2 / width)
+            y2 = min(1.0, obj.box.y2 / height)
+            if x1 >= x2 or y1 >= y2:
+                continue
+            xmin.append(x1)
+            ymin.append(y1)
+            xmax.append(x2)
+            ymax.append(y2)
             classes_text.append(obj.type.name.lower().encode("utf8"))
             classes.append(label_map.id_of(obj.type.name.lower()))
 

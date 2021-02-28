@@ -1,5 +1,7 @@
+import logging
 import re
 from pathlib import Path
+from typing.re import Match
 
 
 class AnnotationFileCorrector:
@@ -10,7 +12,7 @@ class AnnotationFileCorrector:
     ABV_RUNES_PATTERN = re.compile(r"<name>r(?P<color>\w)</name>", re.IGNORECASE)
     ABV_BASE_PATTERN = re.compile(r"<name>b</name>", re.IGNORECASE)
     ABV_WATCHER_PATTERN = re.compile(r"<name>w</name>", re.IGNORECASE)
-    ABV_CAR_PATTERN = re.compile(r"<name>(c|x|robot)</name>", re.IGNORECASE)
+    ABV_CAR_PATTERN = re.compile(r"<name>(c|x|o|robot)</name>", re.IGNORECASE)
 
     COLORS_MAP = {
         "r": "red",
@@ -36,7 +38,7 @@ class AnnotationFileCorrector:
             text = self._correct_annotation_text(text)
             annotation_file.write_text(text)
         except Exception as e:
-            print(f"Error processing annotation {annotation_file}")
+            logging.exception(f"Error processing annotation file://{annotation_file}")
             raise e
 
     def _correct_annotation_text(self, text: str) -> str:
@@ -64,9 +66,11 @@ class AnnotationFileCorrector:
     def _correct_armor_format(self, text: str) -> str:
         return self.FINAL_ARMOR_NAME_PATTERN.sub(self._armor_pattern_mapping, text)
 
-    def _armor_pattern_mapping(self, match: re.Match):
+    def _armor_pattern_mapping(self, match: Match):
         color = self.COLORS_MAP[match.group("color")]
         num = match.group("num")
+        if num == "p":
+            num = 4
         return f"<name>armor</name> <armor_class>{num}</armor_class> <armor_color>{color}</armor_color>"
 
     def _correct_armor_abbreviation(self, text: str) -> str:
@@ -82,7 +86,7 @@ class AnnotationFileCorrector:
         return self.ABV_WATCHER_PATTERN.sub("<name>watcher</name>", text)
 
     def _correct_runes_abbreviation(self, text: str) -> str:
-        def runes_abbreviation_mapping(match: re.Match):
+        def runes_abbreviation_mapping(match: Match):
             color = self.COLORS_MAP[match.group("color")]
             return f"<name>rune-{color}</name>"
 

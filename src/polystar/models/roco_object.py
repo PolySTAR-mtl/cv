@@ -95,27 +95,32 @@ class Armor(ROCOObject):
 
 
 class ROCOObjectFactory:
-    @staticmethod
-    def from_json(json: Json) -> ROCOObject:
+    def __init__(self, image_w: int, image_h: int):
+        self.image_w = image_w
+        self.image_h = image_h
+
+    def from_json(self, json: Json) -> ROCOObject:
         t: ObjectType = ObjectType(json["name"])
 
-        x, y, w, h = (
+        x1, y1, x2, y2 = (
             int(float(json["bndbox"]["xmin"])),
             int(float(json["bndbox"]["ymin"])),
-            int(float(json["bndbox"]["xmax"])) - int(float(json["bndbox"]["xmin"])),
-            int(float(json["bndbox"]["ymax"])) - int(float(json["bndbox"]["ymin"])),
+            int(float(json["bndbox"]["xmax"])),
+            int(float(json["bndbox"]["ymax"])),
         )
 
-        x, y = max(0, x), max(0, y)
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(x2, self.image_w - 1), min(y2, self.image_h - 1)
+        box = Box.from_positions(x1, y1, x2, y2)
 
         if t is not ObjectType.ARMOR:
-            return ROCOObject(type=t, box=Box.from_size(x, y, w, h=h))
+            return ROCOObject(type=t, box=box)
 
         armor_number = int(json["armor_class"]) if json["armor_class"] != "none" else 0
 
         return Armor(
             type=t,
-            box=Box.from_size(x, y, w, h=h),
+            box=box,
             number=armor_number,
             digit=ArmorDigit.from_number(armor_number),
             color=ArmorColor(json["armor_color"]),
