@@ -42,7 +42,7 @@ class TRTModelObjectsDetector(ObjectsDetectorABC):
                     object_class_id=int(object_class_id),
                 )
                 for (_, object_class_id, score, xmin, ymin, xmax, ymax) in results
-                if object_class_id >= 0
+                if object_class_id >= 0 and object_class_id == 4  # FIXME : remove me
             ],
             image,
         )
