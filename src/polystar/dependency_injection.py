@@ -85,7 +85,7 @@ class CommonModule(Module):
     @multiprovider
     @singleton
     def provide_objects_validators(self) -> List[ObjectsFilterABC]:
-        return [RobotArmorConfidenceObjectsFilter(0.4)]
+        return [RobotArmorConfidenceObjectsFilter(0.5)]
 
     @provider
     @singleton
