@@ -22,7 +22,10 @@ from polystar.target_pipeline.detected_objects.detected_objects_factory import D
 from polystar.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
-from polystar.target_pipeline.objects_filters.confidence_object_filter import ConfidenceObjectsFilter
+from polystar.target_pipeline.objects_filters.confidence_object_filter import (
+    ConfidenceObjectsFilter,
+    RobotArmorConfidenceObjectsFilter,
+)
 from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
@@ -82,7 +85,7 @@ class CommonModule(Module):
     @multiprovider
     @singleton
     def provide_objects_validators(self) -> List[ObjectsFilterABC]:
-        return [ConfidenceObjectsFilter(0.6)]
+        return [RobotArmorConfidenceObjectsFilter(0.4)]
 
     @provider
     @singleton
@@ -97,7 +100,7 @@ class CommonModule(Module):
     @provider
     @singleton
     def provide_cs_link(self) -> CSLinkABC:
-        if self.settings.is_dev:
+        if not self.settings.USE_UART:
             return Screen()
         return BoardA(Serial(settings.SERIAL_PORT))
 
