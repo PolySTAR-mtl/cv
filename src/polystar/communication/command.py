@@ -15,3 +15,6 @@ class Command:
 
 def make_target_command(target: SimpleTarget) -> Command:
     return Command(id=2, data=b"Y" + bytes(target))
+
+
+NO_TARGET_COMMAND = Command(id=2, data=b"N\x00\x00\x00\x00\x00\x00")

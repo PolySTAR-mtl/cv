@@ -1,11 +1,14 @@
 [default]
 CAMERA = 'RASPI_V2'
 
-OBJECTS_DETECTION_MODEL = "ssd_mobilenet_v2_roco_2018_03_29_20200314_015411_TWITCH_TEMP_733_IMGS_29595steps"
+OBJECTS_DETECTION_MODEL = "ssd_mobilenet_v2__210224_042137__Twitch2_Train_T470149066_T470150052_T470152289_T470153081_T470158483_1775_imgs__25297_steps"
 ARMOR_DIGIT_MODEL = "20210117_145856_kd_cnn/distiled - temp 4.1e+01 - cnn - (32) - lr 7.8e-04 - drop 63.pkl"
-SERIAL_PORT = "/dev/ttyTHS0"
-BAUD_RATE = 230_400
+
+USE_UART = false
 
 [development]
 
 [production]
+SERIAL_PORT = "/dev/ttyTHS0"
+BAUD_RATE = 230_400
+USE_UART = true
