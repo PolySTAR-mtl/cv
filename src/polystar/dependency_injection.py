@@ -102,7 +102,7 @@ class CommonModule(Module):
     def provide_cs_link(self) -> CSLinkABC:
         if not self.settings.USE_UART:
             return Screen()
-        return BoardA(Serial(settings.SERIAL_PORT))
+        return BoardA(Serial(settings.SERIAL_PORT, settings.BAUD_RATE))
 
     @provider
     @singleton
