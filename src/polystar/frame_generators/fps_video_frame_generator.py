@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterator
 
 from polystar.frame_generators.video_frame_generator import VideoFrameGenerator
 from polystar.models.image import Image
@@ -13,7 +13,7 @@ class FPSVideoFrameGenerator(VideoFrameGenerator):
     def __post_init__(self):
         self.frame_rate: int = self._video_fps // self.desired_fps
 
-    def generate(self) -> Iterable[Image]:
-        for i, frame in enumerate(super().generate(), -1):
+    def __iter__(self) -> Iterator[Image]:
+        for i, frame in enumerate(super().__iter__(), -1):
             if not i % self.frame_rate:
                 yield frame

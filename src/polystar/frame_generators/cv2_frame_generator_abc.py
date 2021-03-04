@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Any, Iterable
+from dataclasses import dataclass
+from typing import Any, Iterable, Iterator
 
 import cv2
 
@@ -10,7 +10,7 @@ from polystar.models.image import Image
 
 @dataclass
 class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
-    def generate(self) -> Iterable[Image]:
+    def __iter__(self) -> Iterator[Image]:
         _cap = self._open()
         while 1:
             is_open, frame = _cap.read()

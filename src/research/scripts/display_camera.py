@@ -11,7 +11,7 @@ def display_camera(webcam: FrameGeneratorABC):
     fps = FPS()
     fps_camera = FPS()
     with CV2ResultViewer("Live Camera") as viewer:
-        for image in webcam.generate():
+        for image in webcam:
             viewer.new(image)
             viewer.add_text(f"FPS: {fps.tick():.1f} / {fps_camera.tick():.1f}", 10, 10, (0, 0, 0))
             viewer.display()

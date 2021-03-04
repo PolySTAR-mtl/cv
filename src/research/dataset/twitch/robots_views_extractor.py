@@ -25,7 +25,7 @@ class RobotsViewExtractor:
 
     def run(self):
         self._progress_bar = tqdm(
-            enumerate(self.frame_generator.generate(), 1 + self.OFFSET_SECONDS * self.FPS),
+            enumerate(self.frame_generator, 1 + self.OFFSET_SECONDS * self.FPS),
             total=self._get_number_of_frames(),
             desc=f"Extracting robots views from video {self.video_name}.mp4",
             unit="frames",
