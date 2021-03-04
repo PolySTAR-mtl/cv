@@ -10,29 +10,21 @@ from polystar.models.image import Image
 
 @dataclass
 class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
-
-    _cap: cv2.VideoCapture = field(init=False, repr=False)
-
-    def __enter__(self):
-        self._cap = cv2.VideoCapture(*self._capture_params())
-        # self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        assert self._cap.isOpened()
-        self._post_opening_operation()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._cap.release()
-
     def generate(self) -> Iterable[Image]:
-        with self:
-            while 1:
-                is_open, frame = self._cap.read()
-                if not is_open:
-                    return
-                yield frame
+        _cap = self._open()
+        while 1:
+            is_open, frame = _cap.read()
+            if not is_open:
+                break
+            yield frame
+        _cap.release()
+
+    def _open(self) -> cv2.VideoCapture:
+        _cap = cv2.VideoCapture(*self._capture_params())
+        _cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
+        assert _cap.isOpened()
+        return _cap
 
     @abstractmethod
     def _capture_params(self) -> Iterable[Any]:
-        pass
-
-    def _post_opening_operation(self):
         pass

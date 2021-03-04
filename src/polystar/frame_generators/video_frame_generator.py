@@ -1,3 +1,5 @@
+import cv2
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -18,10 +20,6 @@ class VideoFrameGenerator(CV2FrameGeneratorABC):
     def _capture_params(self) -> Iterable[Any]:
         return (str(self.video_path),)
 
-    def _post_opening_operation(self):
-        if self.offset_seconds:
-            self._cap.set(CAP_PROP_POS_FRAMES, self._video_fps * self.offset_seconds - 2)
-
     @memoized_property
     def _video_fps(self) -> int:
         streams_info = ffmpeg.probe(str(self.video_path))["streams"]
@@ -30,3 +28,9 @@ class VideoFrameGenerator(CV2FrameGeneratorABC):
                 continue
             return round(eval(stream_info["avg_frame_rate"]))
         raise ValueError(f"No fps found for video {self.video_path.name}")
+
+    def _open(self) -> cv2.VideoCapture:
+        _cap = super()._open()
+        if self.offset_seconds:
+            _cap.set(CAP_PROP_POS_FRAMES, self._video_fps * self.offset_seconds - 2)
+        return _cap
