@@ -16,11 +16,11 @@ class RaspiV2CameraFrameGenerator(CV2FrameGeneratorABC):
             "nvarguscamerasrc ! "
             "video/x-raw(memory:NVMM), "
             f"width=(int){self.width}, height=(int){self.height}, "
-            "format=(string)NV12, framerate=(fraction)60/1 ! "
+            "format=(string)NV12, framerate=60/1 ! "
             "nvvidconv flip-method=0 ! "
             f"video/x-raw, width=(int){self.width}, height=(int){self.height}, "
             "format=(string)BGRx ! "
-            "videoconvert ! appsink",
+            "videoconvert ! appsink drop=true sync=false",
             cv2.CAP_GSTREAMER,
         )
 
