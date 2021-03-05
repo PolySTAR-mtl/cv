@@ -75,7 +75,7 @@ class CommonModule(Module):
     @singleton
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
         return [
-            ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
+            # ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
             # ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
         ]
 
