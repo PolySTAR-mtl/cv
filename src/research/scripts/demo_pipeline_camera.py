@@ -28,8 +28,6 @@ class CameraPipelineDemo:
                 self.pipeline_fps.tick(), self.fps.tick()
                 self._display(viewer)
                 self.fps.skip()
-                if viewer.finished:
-                    return
 
     def _detect(self, image: Image):
         try:

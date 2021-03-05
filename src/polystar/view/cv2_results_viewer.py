@@ -35,11 +35,11 @@ class CV2ResultViewer(ResultViewerABC):
         self.delay = delay
         self.name = name
         self._current_image: Image = None
-        self.finished = False
         super().__init__(COLORS)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         cv2.destroyWindow(self.name)
+        return exc_type is KeyboardInterrupt
 
     def new(self, image: Image):
         self.height, self.width, _ = image.shape
@@ -80,7 +80,7 @@ class CV2ResultViewer(ResultViewerABC):
             self.keycode_callbacks[keycode]()
 
     def stop(self):
-        self.finished = True
+        raise KeyboardInterrupt()
 
     def _make_keycode_callbacks(self, end_key: str, key_callbacks: Dict[str, Callback]) -> Dict[int, Callback]:
         key_callbacks[end_key] = self.stop

@@ -17,9 +17,6 @@ def display_camera(webcam: FrameGeneratorABC):
             viewer.display()
             fps_camera.skip()
 
-            if viewer.finished:
-                break
-
 
 if __name__ == "__main__":
     make_injector().call_with_injection(display_camera)
