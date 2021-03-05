@@ -46,6 +46,10 @@ class ResultViewerABC(ABC):
         for obj in objects:
             self.add_object(obj, forced_color=forced_color)
 
+    def display_image(self, image: Image):
+        self.new(image)
+        self.display()
+
     def display_image_with_objects(self, image: Image, objects: Iterable[ROCOObject]):
         self.new(image)
         self.add_objects(objects)
