@@ -9,8 +9,7 @@ from polystar.communication.board_a import BoardA
 from polystar.communication.cs_link_abc import CSLinkABC
 from polystar.communication.screen import Screen
 from polystar.constants import LABEL_MAP_PATH
-from polystar.frame_generators.camera_frame_generator import make_csi_camera_frame_generator
-from polystar.frame_generators.cv2_frame_generator_abc import CV2FrameGenerator
+from polystar.frame_generators.camera_frame_generator import CameraFrameGenerator, make_csi_camera_frame_generator
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.camera import Camera
 from polystar.models.label_map import LabelMap
@@ -108,8 +107,7 @@ class CommonModule(Module):
         return SimpleObjectsLinker(min_percentage_intersection=0.8)
 
     @provider
-    @singleton
     def provide_webcam(self) -> FrameGeneratorABC:
         if self.settings.is_prod:
             return make_csi_camera_frame_generator(1_280, 720)
-        return CV2FrameGenerator()
+        return CameraFrameGenerator()
