@@ -1,6 +1,6 @@
 from typing import Any, Iterable, Iterator
 
-from cv2.cv2 import CAP_PROP_BUFFERSIZE, VideoCapture
+from cv2 import CAP_PROP_BUFFERSIZE, VideoCapture
 
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.image import Image
