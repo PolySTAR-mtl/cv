@@ -9,7 +9,7 @@ from polystar.communication.board_a import BoardA
 from polystar.communication.cs_link_abc import CSLinkABC
 from polystar.communication.screen import Screen
 from polystar.constants import LABEL_MAP_PATH
-from polystar.frame_generators.camera_frame_generator import RaspiV2CameraFrameGenerator, WebcamFrameGenerator
+from polystar.frame_generators.camera_frame_generator import CameraFrameGenerator, make_csi_camera_frame_generator
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.camera import Camera
 from polystar.models.label_map import LabelMap
@@ -22,10 +22,7 @@ from polystar.target_pipeline.detected_objects.detected_objects_factory import D
 from polystar.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
-from polystar.target_pipeline.objects_filters.confidence_object_filter import (
-    ConfidenceObjectsFilter,
-    RobotArmorConfidenceObjectsFilter,
-)
+from polystar.target_pipeline.objects_filters.confidence_object_filter import RobotArmorConfidenceObjectsFilter
 from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
@@ -78,7 +75,7 @@ class CommonModule(Module):
     @singleton
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
         return [
-            ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
+            # ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
             # ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
         ]
 
@@ -110,8 +107,7 @@ class CommonModule(Module):
         return SimpleObjectsLinker(min_percentage_intersection=0.8)
 
     @provider
-    @singleton
     def provide_webcam(self) -> FrameGeneratorABC:
         if self.settings.is_prod:
-            return RaspiV2CameraFrameGenerator(1_280, 720)
-        return WebcamFrameGenerator()
+            return make_csi_camera_frame_generator(1_280, 720)
+        return CameraFrameGenerator()

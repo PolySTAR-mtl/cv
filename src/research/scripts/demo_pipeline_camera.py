@@ -22,14 +22,12 @@ class CameraPipelineDemo:
 
     def run(self):
         with CV2ResultViewer("TensorRT demo", key_callbacks={" ": self.cs_link.toggle}) as viewer:
-            for image in self.webcam.generate():
+            for image in self.webcam:
                 self.pipeline_fps.skip()
                 self._detect(image)
                 self.pipeline_fps.tick(), self.fps.tick()
                 self._display(viewer)
                 self.fps.skip()
-                if viewer.finished:
-                    return
 
     def _detect(self, image: Image):
         try:

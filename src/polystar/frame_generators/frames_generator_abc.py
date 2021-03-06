@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Iterator
 
 from polystar.models.image import Image
 
 
-class FrameGeneratorABC(ABC):
+class FrameGeneratorABC(ABC, Iterable[Image]):
     @abstractmethod
-    def generate(self) -> Iterable[Image]:
+    def __iter__(self) -> Iterator[Image]:
         pass

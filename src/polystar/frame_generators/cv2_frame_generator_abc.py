@@ -1,38 +1,33 @@
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import Any, Iterable, Iterator
 
-import cv2
+from cv2 import CAP_PROP_BUFFERSIZE, VideoCapture
 
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.image import Image
 
 
-@dataclass
-class CV2FrameGeneratorABC(FrameGeneratorABC, ABC):
+class CV2FrameGenerator(FrameGeneratorABC):
+    def __init__(self, *capture_params: Any):
+        self.capture_params = capture_params or (0,)
 
-    _cap: cv2.VideoCapture = field(init=False, repr=False)
+    def __iter__(self) -> Iterator[Image]:
+        return CV2Capture(self.capture_params)
 
-    def __enter__(self):
-        self._cap = cv2.VideoCapture(*self._capture_params())
-        # self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+class CV2Capture(Iterator[Image]):
+    def __init__(self, capture_params: Iterable):
+        self._cap = VideoCapture(*capture_params)
         assert self._cap.isOpened()
-        self._post_opening_operation()
+        self._cap.set(CAP_PROP_BUFFERSIZE, 0)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._cap.release()
+    def __next__(self) -> Image:
+        success, frame = self._cap.read()
 
-    def generate(self) -> Iterable[Image]:
-        with self:
-            while 1:
-                is_open, frame = self._cap.read()
-                if not is_open:
-                    return
-                yield frame
+        if success:
+            return frame
 
-    @abstractmethod
-    def _capture_params(self) -> Iterable[Any]:
-        pass
+        raise StopIteration()
 
-    def _post_opening_operation(self):
-        pass
+    def __del__(self):
+        if self._cap.isOpened():
+            self._cap.release()
