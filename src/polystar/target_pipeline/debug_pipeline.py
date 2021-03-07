@@ -5,10 +5,9 @@ from injector import inject
 
 from polystar.models.image import Image
 from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from polystar.target_pipeline.detected_objects.detected_object import DetectedROCOObject
 from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.target_pipeline.target_abc import TargetABC
-from polystar.target_pipeline.target_pipeline import TargetPipeline
+from polystar.target_pipeline.target_pipeline import TargetPipeline, _assert_armors_detected
 
 
 @dataclass
@@ -25,25 +24,13 @@ class DebugInfo:
 class DebugTargetPipeline(TargetPipeline):
     """Wrap a pipeline with debug, to store debug infos"""
 
-    debug_info_: DebugInfo = field(init=False, default_factory=DebugInfo)
+    debug_info_: DebugInfo = field(init=False)
 
     def predict_target(self, image: Image) -> TargetABC:
         self.debug_info_ = DebugInfo(image)
-        target = super().predict_target(image)
-        self.debug_info_.target = target
-        return target
-
-    def predict_best_object(self, image: Image) -> DetectedROCOObject:
-        best_object = super().predict_best_object(image)
-        self.debug_info_.selected_armor = best_object
-        return best_object
-
-    def _get_robots_of_interest(self, image: Image) -> List[DetectedRobot]:
-        objects = super()._get_robots_of_interest(image)
-        self.debug_info_.validated_robots = objects
-        return objects
-
-    def _detect_robots(self, image) -> List[DetectedRobot]:
-        objects = super()._detect_robots(image)
-        self.debug_info_.detected_robots = objects
-        return objects
+        self.debug_info_.detected_robots = self.robots_detector.detect_robots(image)
+        self.debug_info_.validated_robots = self.robots_filters.filter(self.debug_info_.detected_robots)
+        _assert_armors_detected(self.debug_info_.validated_robots)
+        self.debug_info_.selected_armor = self.object_selector.select(self.debug_info_.validated_robots, image)
+        self.debug_info_.target = self.target_factory.from_object(self.debug_info_.selected_armor, image)
+        return self.debug_info_.target

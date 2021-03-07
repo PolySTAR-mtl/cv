@@ -1,5 +1,5 @@
 import ctypes
-from dataclasses import dataclass, InitVar
+from dataclasses import InitVar, dataclass
 from pathlib import Path
 from typing import List, Tuple
 
@@ -12,8 +12,8 @@ import tensorrt as trt
 from polystar.constants import RESOURCES_DIR
 from polystar.models.image import Image
 from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from polystar.target_pipeline.detected_objects.detected_objects_factory import ObjectParams
 from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
+from polystar.target_pipeline.detected_objects.objects_params import ObjectParams
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 
 
@@ -42,7 +42,7 @@ class TRTModelObjectsDetector(ObjectsDetectorABC):
                     object_class_id=int(object_class_id),
                 )
                 for (_, object_class_id, score, xmin, ymin, xmax, ymax) in results
-                if object_class_id >= 0 and object_class_id == 4  # FIXME : remove me
+                if object_class_id >= 0
             ],
             image,
         )
