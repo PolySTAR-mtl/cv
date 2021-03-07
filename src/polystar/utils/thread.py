@@ -13,6 +13,7 @@ class MyThread(Thread):
     def run(self) -> None:
         self.running = True
         self.loop()
+        self.running = False
 
     def loop(self):
         while self.running:
@@ -25,6 +26,6 @@ class MyThread(Thread):
         self.running = False
 
     @staticmethod
-    def stop_all():
+    def close():
         for thread in MyThread.THREADS:
             thread.stop()

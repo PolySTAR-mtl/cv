@@ -1,3 +1,4 @@
+from contextlib import closing
 from typing import Optional
 
 from injector import inject
@@ -46,5 +47,5 @@ class CameraPipelineDemo:
 
 
 if __name__ == "__main__":
-    make_injector().get(CameraPipelineDemo).run()
-    MyThread().stop_all()
+    with closing(MyThread):
+        make_injector().get(CameraPipelineDemo).run()

@@ -1,8 +1,11 @@
+from contextlib import closing
+
 from injector import inject
 
 from polystar.dependency_injection import make_injector
 from polystar.target_pipeline.debug_pipeline import DebugTargetPipeline
 from polystar.target_pipeline.objects_filters.armor_digit_filter import KeepArmorsDigitFilter
+from polystar.utils.thread import MyThread
 from polystar.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation_filters.roco_annotation_object_filter import (
     ROCOAnnotationObjectFilter,
@@ -25,4 +28,5 @@ def demo_pipeline_on_images(pipeline: DebugTargetPipeline):
 
 
 if __name__ == "__main__":
-    make_injector().call_with_injection(demo_pipeline_on_images)
+    with closing(MyThread):
+        make_injector().call_with_injection(demo_pipeline_on_images)
