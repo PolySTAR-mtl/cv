@@ -6,7 +6,7 @@ from polystar.communication.cs_link_abc import CSLinkABC
 from polystar.communication.togglabe_cs_link import TogglableCSLink
 from polystar.dependency_injection import make_injector
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
-from polystar.target_pipeline.debug_pipeline import DebugTargetPipeline
+from polystar.target_pipeline.debug_pipeline import DebugInfo, DebugTargetPipeline
 from polystar.target_pipeline.target_abc import SimpleTarget
 from polystar.utils.fps import FPS
 from polystar.utils.thread import MyThread
@@ -24,9 +24,9 @@ class CameraPipelineDemo:
 
     def run(self):
         with CV2ResultViewer("Pipeline demo", key_callbacks={" ": self.cs_link.toggle}) as viewer:
-            for target in self.pipeline.flow_targets(self.webcam):
-                self._send_target(target)
-                self._display(viewer)
+            for debug_info in self.pipeline.flow_debug(self.webcam):
+                self._send_target(debug_info.target)
+                self._display(viewer, debug_info)
 
     def _send_target(self, target: Optional[SimpleTarget]):
         if target is not None:
@@ -38,8 +38,8 @@ class CameraPipelineDemo:
 
         self.persistence_last_detection -= 1
 
-    def _display(self, viewer: CV2ResultViewer):
-        viewer.add_debug_info(self.pipeline.debug_info_)
+    def _display(self, viewer: CV2ResultViewer, debug_info: DebugInfo):
+        viewer.add_debug_info(debug_info)
         viewer.add_text(f"FPS: {self.fps.tick():.1f}", 10, 10, (0, 0, 0))
         viewer.add_text("Communication: " + ("[ON]" if self.cs_link.is_on else "[OFF]"), 10, 30, (0, 0, 0))
         viewer.display()

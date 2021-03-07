@@ -12,6 +12,9 @@ class MyThread(Thread):
 
     def run(self) -> None:
         self.running = True
+        self.loop()
+
+    def loop(self):
         while self.running:
             self.step()
 
