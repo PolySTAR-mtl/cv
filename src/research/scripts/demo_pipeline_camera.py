@@ -8,6 +8,7 @@ from polystar.models.image import Image
 from polystar.target_pipeline.debug_pipeline import DebugTargetPipeline
 from polystar.target_pipeline.target_pipeline import NoTargetFoundException
 from polystar.utils.fps import FPS
+from polystar.utils.thread import MyThread
 from polystar.view.cv2_results_viewer import CV2ResultViewer
 
 
@@ -49,3 +50,4 @@ class CameraPipelineDemo:
 
 if __name__ == "__main__":
     make_injector().get(CameraPipelineDemo).run()
+    MyThread().stop_all()
