@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import Iterable, List, Tuple
 
 import numpy as np
 from injector import inject
@@ -27,6 +27,10 @@ class RobotsDetector:
     label_map: LabelMap
     object_detector: ObjectsDetectorABC
     objects_linker: ObjectsLinkerABC
+
+    def flow_robots(self, image_iterator: Iterable[Image]) -> Iterable[List[DetectedRobot]]:
+        for image in image_iterator:
+            yield image, self.detect_robots(image)
 
     def detect_robots(self, image: Image) -> List[DetectedRobot]:
         objects_params = self.object_detector.detect(image)
