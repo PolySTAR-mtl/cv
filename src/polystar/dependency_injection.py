@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Type
 
 from injector import Injector, Module, multiprovider, provider, singleton
 from numpy.core._multiarray_umath import deg2rad
@@ -25,7 +25,6 @@ from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLi
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
 from polystar.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
-from research.common.constants import PIPELINES_DIR
 
 
 def make_injector() -> Injector:
@@ -57,15 +56,14 @@ class CommonModule(Module):
 
     @provider
     @singleton
-    def provide_objects_detector(self) -> ObjectsDetectorABC:
-        model_dir = PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
+    def provide_objects_detector_class(self) -> Type[ObjectsDetectorABC]:
         if self.settings.is_dev:
             from polystar.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 
-            return TFModelObjectsDetector(model_dir)
+            return TFModelObjectsDetector
         from polystar.target_pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 
-        return TRTModelObjectsDetector(model_dir)
+        return TRTModelObjectsDetector
 
     @multiprovider
     @singleton
@@ -104,6 +102,7 @@ class CommonModule(Module):
         return SimpleObjectsLinker(min_percentage_intersection=0.8)
 
     @provider
+    @singleton
     def provide_webcam(self) -> FrameGeneratorABC:
         if self.settings.is_prod:
             return make_csi_camera_frame_generator(1_280, 720)

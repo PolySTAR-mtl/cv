@@ -28,6 +28,7 @@ class CameraPipelineDemo:
             for debug_info in self.pipeline.flow_debug(self.webcam):
                 self._send_target(debug_info.target)
                 self._display(viewer, debug_info)
+                self.fps.skip()
 
     def _send_target(self, target: Optional[SimpleTarget]):
         if target is not None:

@@ -11,8 +11,6 @@ import tensorrt as trt
 
 from polystar.constants import RESOURCES_DIR
 from polystar.models.image import Image
-from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.target_pipeline.detected_objects.objects_params import ObjectParams
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 
@@ -24,33 +22,31 @@ class TRTModelObjectsDetector(ObjectsDetectorABC):
     def __post_init__(self, model_dir: Path):
         self.trt_model = TRTModel(model_dir / "trt_model.bin", (300, 300))
 
-    def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+    def detect(self, image: Image) -> List[ObjectParams]:
         results = self.trt_model(image)
-        return self._construct_objects_from_trt_results(results, image)
+        return _construct_objects_from_trt_results(results)
 
-    def _construct_objects_from_trt_results(
-        self, results: np.ndarray, image: Image
-    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
-        return self.objects_factory.make_lists(
-            [
-                ObjectParams(
-                    ymin=float(ymin),
-                    xmin=float(xmin),
-                    ymax=float(ymax),
-                    xmax=float(xmax),
-                    score=float(score),
-                    object_class_id=int(object_class_id),
-                )
-                for (_, object_class_id, score, xmin, ymin, xmax, ymax) in results
-                if object_class_id >= 0
-            ],
-            image,
+
+def _construct_objects_from_trt_results(results: np.ndarray) -> List[ObjectParams]:
+    return [
+        ObjectParams(
+            ymin=float(ymin),
+            xmin=float(xmin),
+            ymax=float(ymax),
+            xmax=float(xmax),
+            score=float(score),
+            object_class_id=int(object_class_id),
         )
+        for (_, object_class_id, score, xmin, ymin, xmax, ymax) in results
+        if object_class_id == 4 and score >= 0.1
+    ]
 
 
 class TRTModel:
     def __init__(self, trt_model_path: Path, input_size: Tuple[int, int]):
         self.input_size = input_size
+
+        self.cuda_ctx = cuda.Device(0).make_context()
 
         self.trt_logger = trt.Logger(trt.Logger.INFO)
         self._load_plugins()
@@ -117,3 +113,4 @@ class TRTModel:
         del self.stream
         del self.cuda_outputs
         del self.cuda_inputs
+        self.cuda_ctx.pop()
