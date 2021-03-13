@@ -3,8 +3,8 @@ from tensorflow.python.keras.applications.vgg16 import VGG16
 from polystar.utils.time import create_time_id
 from research.armors.armor_digit.pipeline import ArmorDigitKerasPipeline
 from research.armors.armor_digit.training import train_report_and_upload_digit_pipeline
-from research.common.constants import PIPELINES_DIR
 from research.common.utils.logs import setup_dev_logs
+from research.constants import PIPELINES_DIR
 
 if __name__ == "__main__":
     setup_dev_logs()

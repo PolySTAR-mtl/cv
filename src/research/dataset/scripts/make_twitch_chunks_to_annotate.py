@@ -6,7 +6,7 @@ from more_itertools import ilen
 
 from polystar.utils.iterable_utils import chunk
 from polystar.utils.path import archive_directory, move_files
-from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
+from research.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 
 
 @dataclass

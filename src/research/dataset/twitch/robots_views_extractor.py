@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 from polystar.frame_generators.fps_video_frame_generator import FPSVideoFrameGenerator
-from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
+from research.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research.dataset.twitch.mask_detector import has_bonus_icon, robot_view_mask_hd
 
 

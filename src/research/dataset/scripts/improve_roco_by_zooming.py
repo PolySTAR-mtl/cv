@@ -4,9 +4,9 @@ from typing import Tuple
 from polystar.models.image import save_image
 from polystar.utils.str_utils import camel2snake
 from polystar.utils.tqdm import smart_tqdm
-from research.common.constants import DJI_ROCO_ZOOMED_DSET_DIR
 from research.common.datasets.roco.roco_dataset import LazyROCODataset
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.constants import DJI_ROCO_ZOOMED_DSET_DIR
 from research.dataset.improvement.zoom import Zoomer
 from research.dataset.perturbations.image_modifiers.brightness import BrightnessModifier
 from research.dataset.perturbations.image_modifiers.contrast import ContrastModifier

@@ -1,8 +1,8 @@
 from typing import List
 
-from research.common.constants import TENSORFLOW_RECORDS_DIR
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.constants import TENSORFLOW_RECORDS_DIR
 from research.dataset.tensorflow_record import ROCOTensorflowRecordFactory
 from research.roco_detection.robots_dataset import AnnotationHasObjectsFilter
 
