@@ -5,7 +5,6 @@
 /pipelines
 
 # TF models
-/models
 do_not_commit.py
 
 # Byte-compiled / optimized / DLL files
