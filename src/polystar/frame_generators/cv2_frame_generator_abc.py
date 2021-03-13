@@ -18,7 +18,8 @@ class CV2Capture(Iterator[Image]):
     def __init__(self, capture_params: Iterable):
         self._cap = VideoCapture(*capture_params)
         assert self._cap.isOpened()
-        self._cap.set(CAP_PROP_BUFFERSIZE, 0)
+
+    #     self._cap.set(CAP_PROP_BUFFERSIZE, 0)
 
     def __next__(self) -> Image:
         success, frame = self._cap.read()

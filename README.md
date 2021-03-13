@@ -33,7 +33,7 @@ We use [poetry](https://python-poetry.org/) to manage our dependencies.
     # LINUX / OSX
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-    # Windows
+    # Windows (you need to type this from PowerShell, *not* the regular terminal)
     (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
     ```
 2. In the root folder of this repo, use `poetry install`. It will create a virtualenv, and install all the dependencies in it.

@@ -1,6 +1,6 @@
 from dataclasses import InitVar, dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import numpy as np
 import tensorflow as tf
@@ -9,9 +9,7 @@ from tensorflow.python.eager.wrap_function import WrappedFunction
 from tensorflow.python.platform.gfile import GFile
 
 from polystar.models.image import Image
-from polystar.target_pipeline.detected_objects.detected_armor import DetectedArmor
-from polystar.target_pipeline.detected_objects.detected_objects_factory import ObjectParams
-from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
+from polystar.target_pipeline.detected_objects.objects_params import ObjectParams
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 
 
@@ -29,7 +27,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name="")
 
-    def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+    def detect(self, image: Image) -> List[ObjectParams]:
         with self.graph.as_default(), Session(graph=self.graph) as session:
             image_np_expanded = np.expand_dims(image, axis=0)
             image_tensor = self.graph.get_tensor_by_name("image_tensor:0")
@@ -40,19 +38,7 @@ class TFModelObjectsDetector(ObjectsDetectorABC):
             boxes, scores, classes, num_detections = session.run(
                 [boxes, scores, classes, num_detections], feed_dict={image_tensor: image_np_expanded}
             )
-            return self._construct_objects_from_tf_results(image, boxes[0], scores[0], classes[0])
-
-    def _construct_objects_from_tf_results(
-        self, image: Image, boxes: np.ndarray, scores: np.ndarray, classes: np.ndarray
-    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
-        return self.objects_factory.make_lists(
-            [
-                ObjectParams(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id)
-                for (ymin, xmin, ymax, xmax), object_class_id, score in zip(boxes, classes, scores)
-                if score >= 0.1
-            ],
-            image,
-        )
+            return _construct_objects_from_tf_results(boxes[0], scores[0], classes[0])
 
 
 @dataclass
@@ -60,10 +46,12 @@ class TFV2ModelObjectsDetector(ObjectsDetectorABC):
 
     model: WrappedFunction
 
-    def detect(self, image: Image) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+    def detect(self, image: Image) -> List[ObjectParams]:
         input_tensor = self._convert_image_to_input_tensor(image)
         output_dict = self._make_single_prediction(input_tensor)
-        return self._construct_objects_from_tf_results(image, output_dict)
+        return _construct_objects_from_tf_results(
+            output_dict["detection_boxes"], output_dict["detection_classes"], output_dict["detection_scores"]
+        )
 
     @staticmethod
     def _convert_image_to_input_tensor(image: np.ndarray) -> tf.Tensor:
@@ -82,16 +70,12 @@ class TFV2ModelObjectsDetector(ObjectsDetectorABC):
         output_dict["detection_classes"] = output_dict["detection_classes"].astype(np.int64)
         return output_dict
 
-    def _construct_objects_from_tf_results(
-        self, image: Image, output_dict: Dict[str, np.ndarray]
-    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
-        return self.objects_factory.make_lists(
-            [
-                ObjectParams(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id)
-                for (ymin, xmin, ymax, xmax), object_class_id, score in zip(
-                    output_dict["detection_boxes"], output_dict["detection_classes"], output_dict["detection_scores"]
-                )
-                if score >= 0.1
-            ],
-            image,
-        )
+
+def _construct_objects_from_tf_results(
+    boxes: np.ndarray, scores: np.ndarray, classes: np.ndarray
+) -> List[ObjectParams]:
+    return [
+        ObjectParams(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax, score=score, object_class_id=object_class_id)
+        for (ymin, xmin, ymax, xmax), object_class_id, score in zip(boxes, classes, scores)
+        if score >= 0.1
+    ]

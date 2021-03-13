@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Type
 
 from injector import Injector, Module, multiprovider, provider, singleton
 from numpy.core._multiarray_umath import deg2rad
@@ -9,27 +9,22 @@ from polystar.communication.board_a import BoardA
 from polystar.communication.cs_link_abc import CSLinkABC
 from polystar.communication.screen import Screen
 from polystar.constants import LABEL_MAP_PATH
+from polystar.filters.filter_abc import FilterABC
 from polystar.frame_generators.camera_frame_generator import CameraFrameGenerator, make_csi_camera_frame_generator
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.models.camera import Camera
 from polystar.models.label_map import LabelMap
-from polystar.pipeline.classification.red_blue_comparison_classifier import RedBlueComparisonClassifier
-from polystar.pipeline.featurizers.mean_channels import MeanChannels
 from polystar.settings import Settings, settings
-from polystar.target_pipeline.armors_descriptors.armors_color_descriptor import ArmorsColorDescriptor
 from polystar.target_pipeline.armors_descriptors.armors_descriptor_abc import ArmorsDescriptorABC
-from polystar.target_pipeline.detected_objects.detected_objects_factory import DetectedObjectFactory
+from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot
 from polystar.target_pipeline.object_selectors.closest_object_selector import ClosestObjectSelector
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.target_pipeline.objects_filters.confidence_object_filter import RobotArmorConfidenceObjectsFilter
-from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
 from polystar.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
 from polystar.target_pipeline.target_factories.target_factory_abc import TargetFactoryABC
-from research.armors.armor_color.pipeline import ArmorColorPipeline
-from research.common.constants import PIPELINES_DIR
 
 
 def make_injector() -> Injector:
@@ -61,28 +56,28 @@ class CommonModule(Module):
 
     @provider
     @singleton
-    def provide_objects_detector(self, object_factory: DetectedObjectFactory) -> ObjectsDetectorABC:
-        model_dir = PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
+    def provide_objects_detector_class(self) -> Type[ObjectsDetectorABC]:
         if self.settings.is_dev:
             from polystar.target_pipeline.objects_detectors.tf_model_objects_detector import TFModelObjectsDetector
 
-            return TFModelObjectsDetector(object_factory, model_dir)
+            return TFModelObjectsDetector
         from polystar.target_pipeline.objects_detectors.trt_model_object_detector import TRTModelObjectsDetector
 
-        return TRTModelObjectsDetector(object_factory, model_dir)
+        return TRTModelObjectsDetector
 
     @multiprovider
     @singleton
     def provide_armor_descriptors(self) -> List[ArmorsDescriptorABC]:
+        # TODO this needs to be mixed with filtering
         return [
             # ArmorsColorDescriptor(ArmorColorPipeline.from_pipes([MeanChannels(), RedBlueComparisonClassifier()])),
             # ArmorsDigitDescriptor(pkl_load(PIPELINES_DIR / "armor-digit" / settings.ARMOR_DIGIT_MODEL)),
         ]
 
-    @multiprovider
+    @provider
     @singleton
-    def provide_objects_validators(self) -> List[ObjectsFilterABC]:
-        return [RobotArmorConfidenceObjectsFilter(0.5)]
+    def provide_robots_filter(self) -> FilterABC[DetectedRobot]:
+        return RobotArmorConfidenceObjectsFilter(0.5)
 
     @provider
     @singleton
@@ -107,6 +102,7 @@ class CommonModule(Module):
         return SimpleObjectsLinker(min_percentage_intersection=0.8)
 
     @provider
+    @singleton
     def provide_webcam(self) -> FrameGeneratorABC:
         if self.settings.is_prod:
             return make_csi_camera_frame_generator(1_280, 720)
