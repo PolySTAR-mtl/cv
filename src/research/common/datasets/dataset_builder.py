@@ -9,6 +9,7 @@ from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 from research.common.datasets.shuffle_dataset import ShuffleDataset
 from research.common.datasets.slice_dataset import SliceDataset
 from research.common.datasets.transform_dataset import TransformDataset
+from research.common.datasets.union_dataset import UnionLazyDataset
 
 
 class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, TargetT, str]]):
@@ -69,6 +70,10 @@ class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, Target
 
     def skip(self, n: int) -> "DatasetBuilder[ExampleT, TargetT]":
         self.dataset = SliceDataset(self.dataset, start=n)
+        return self
+
+    def __or__(self, other: "DatasetBuilder[ExampleT, TargetT]"):
+        self.dataset = UnionLazyDataset((self.dataset, other.dataset))
         return self
 
     @property
