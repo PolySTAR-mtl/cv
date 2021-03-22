@@ -4,7 +4,7 @@ import numpy as np
 
 from polystar.models.image import Image, load_image
 
-DIR_PATH = Path(__file__).parent
+MASKS_DIR = Path(__file__).parent / "masks"
 
 
 class Mask:
@@ -20,14 +20,14 @@ class Mask:
         return value <= self._threshold
 
 
-robot_view_mask_hd = Mask(DIR_PATH / "mask_robot_view_hd.jpg", 20)
-aerial_view_mask_red_hd = Mask(DIR_PATH / "mask_aerial_red_hd.jpg", 15)
-aerial_view_mask_red_2_hd = Mask(DIR_PATH / "mask_aerial_red_2_hd.jpg", 15)
-aerial_view_mask_blue_hd = Mask(DIR_PATH / "mask_aerial_blue_hd.jpg", 15)
-aerial_view_mask_blue_2_hd = Mask(DIR_PATH / "mask_aerial_blue_2_hd.jpg", 15)
-bonus_view_mask_hd = Mask(DIR_PATH / "mask_bonus.jpg", 20)
-bonus_2_view_mask_hd = Mask(DIR_PATH / "mask_bonus_2.jpg", 20)
-bonus_3_view_mask_hd = Mask(DIR_PATH / "mask_bonus_3.jpg", 20)
+robot_view_mask_hd = Mask(MASKS_DIR / "mask_robot_view_hd.jpg", 20)
+aerial_view_mask_red_hd = Mask(MASKS_DIR / "mask_aerial_red_hd.jpg", 15)
+aerial_view_mask_red_2_hd = Mask(MASKS_DIR / "mask_aerial_red_2_hd.jpg", 15)
+aerial_view_mask_blue_hd = Mask(MASKS_DIR / "mask_aerial_blue_hd.jpg", 15)
+aerial_view_mask_blue_2_hd = Mask(MASKS_DIR / "mask_aerial_blue_2_hd.jpg", 15)
+bonus_view_mask_hd = Mask(MASKS_DIR / "mask_bonus.jpg", 20)
+bonus_2_view_mask_hd = Mask(MASKS_DIR / "mask_bonus_2.jpg", 20)
+bonus_3_view_mask_hd = Mask(MASKS_DIR / "mask_bonus_3.jpg", 20)
 
 
 def is_aerial_view(image: Image) -> bool:
@@ -41,11 +41,3 @@ def is_aerial_view(image: Image) -> bool:
 
 def has_bonus_icon(image: Image) -> bool:
     return bonus_view_mask_hd.match(image) or bonus_2_view_mask_hd.match(image) or bonus_3_view_mask_hd.match(image)
-
-
-if __name__ == "__main__":
-    has_bonus_icon(
-        load_image(
-            Path("/Users/cytadel/polystar/cv-code/dataset/twitch/robots-views/470152932/470152932-frame-007460.jpg")
-        )
-    )
