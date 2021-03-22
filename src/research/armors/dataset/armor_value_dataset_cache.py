@@ -6,14 +6,11 @@ from typing import ClassVar, Generic, Optional
 from google.cloud.exceptions import Forbidden
 
 from polystar.models.image import Image, save_image
-from polystar.utils.misc import identity
 from polystar.utils.time import create_time_id
 from polystar.utils.tqdm import smart_tqdm
-from research.armors.dataset.armor_dataset_factory import ArmorDataset
 from research.armors.dataset.armor_value_target_factory import ArmorValueTargetFactory
 from research.common.datasets.lazy_dataset import LazyDataset, TargetT
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
-from research.common.datasets.transform_dataset import TransformDataset
 from research.common.gcloud.gcloud_storage import GCStorages
 
 
@@ -63,9 +60,7 @@ class ArmorValueDatasetCache(Generic[TargetT]):
         self.lock_file.write_text(json.dumps({"version": self.VERSION, "date": create_time_id()}))
 
     def _generate(self) -> LazyDataset[Image, TargetT]:
-        return TransformDataset(
-            ArmorDataset(self.roco_dataset_builder.to_images().build_lazy()), identity, self.target_factory.from_armor
-        )
+        return self.roco_dataset_builder.to_armors().transform_targets(self.target_factory.from_armor).build_lazy()
 
     def _get_generation_cause(self) -> Optional[str]:
         if not self.lock_file.exists():

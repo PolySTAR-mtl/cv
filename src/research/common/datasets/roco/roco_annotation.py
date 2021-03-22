@@ -7,7 +7,7 @@ from xml.dom.minidom import parseString
 import xmltodict
 from dicttoxml import dicttoxml
 
-from polystar.models.roco_object import Armor, ROCOObject, ROCOObjectFactory
+from polystar.models.roco_object import ROCOObject, ROCOObjectFactory
 from polystar.utils.path import move_file
 
 
@@ -19,10 +19,6 @@ class ROCOAnnotation:
 
     w: int
     h: int
-
-    @property
-    def armors(self) -> List[Armor]:
-        return [obj for obj in self.objects if isinstance(obj, Armor)]
 
     @staticmethod
     def from_xml_file(xml_file: Path) -> "ROCOAnnotation":
