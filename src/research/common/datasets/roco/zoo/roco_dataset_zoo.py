@@ -32,25 +32,12 @@ class ROCODatasetsZooClass(Iterable[Type[ROCODatasets]]):
         return [self.TWITCH.T470152838, self.TWITCH.T470151286]
 
     @property
-    def DJI_TRAIN_DATASETS(self) -> List[ROCODatasets]:
-        return [self.DJI.FINAL, self.DJI.CENTRAL_CHINA, self.DJI.NORTH_CHINA, self.DJI.SOUTH_CHINA]
-
-    @property
-    def DJI_ZOOMED_TRAIN_DATASETS(self) -> List[ROCODatasets]:
-        return [
-            self.DJI_ZOOMED.FINAL,
-            self.DJI_ZOOMED.CENTRAL_CHINA,
-            self.DJI_ZOOMED.NORTH_CHINA,
-            self.DJI_ZOOMED.SOUTH_CHINA,
-        ]
-
-    @property
     def TWITCH_DJI_TRAIN_DATASETS(self) -> List[ROCODatasets]:
-        return self.TWITCH_TRAIN_DATASETS + self.DJI_TRAIN_DATASETS
+        return self.TWITCH_TRAIN_DATASETS + list(self.DJI)
 
     @property
     def TWITCH_DJI_ZOOMED_TRAIN_DATASETS(self) -> List[ROCODatasets]:
-        return self.TWITCH_TRAIN_DATASETS + self.DJI_TRAIN_DATASETS
+        return self.TWITCH_TRAIN_DATASETS + list(self.DJI_ZOOMED)
 
     DEFAULT_TEST_DATASETS = TWITCH_TEST_DATASETS
     DEFAULT_VALIDATION_DATASETS = TWITCH_VALIDATION_DATASETS

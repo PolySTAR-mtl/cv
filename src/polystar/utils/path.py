@@ -1,4 +1,4 @@
-from os import remove
+from os import PathLike, remove
 from pathlib import Path
 from shutil import copy, make_archive, move
 from typing import Iterable
@@ -24,3 +24,9 @@ def copy_file(source: Path, destination_directory: Path) -> Path:
 
 def archive_directory(directory:Path):
     make_archive(str(directory), "zip", str(directory))
+
+
+def make_path(p: PathLike) -> Path:
+    p = Path(p)
+    p.mkdir(exist_ok=True, parents=True)
+    return p

@@ -1,6 +1,8 @@
 from threading import Thread
 from typing import List
 
+from polystar.utils.iterable_utils import apply
+
 
 class MyThread(Thread):
     THREADS: List["MyThread"] = []
@@ -27,5 +29,8 @@ class MyThread(Thread):
 
     @staticmethod
     def close():
-        for thread in MyThread.THREADS:
-            thread.stop()
+        apply(MyThread.stop, MyThread.THREADS)
+
+    @staticmethod
+    def join_all():
+        apply(Thread.join, MyThread.THREADS)
