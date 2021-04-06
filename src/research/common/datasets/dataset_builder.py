@@ -6,6 +6,7 @@ from polystar.utils.misc import identity
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.filter_dataset import ExampleU, FilterDataset, TargetU
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
+from research.common.datasets.observable_dataset import ObservableDataset
 from research.common.datasets.shuffle_dataset import ShuffleDataset
 from research.common.datasets.slice_dataset import SliceDataset
 from research.common.datasets.transform_dataset import TransformDataset
@@ -58,6 +59,14 @@ class DatasetBuilder(Generic[ExampleT, TargetT], Iterable[Tuple[ExampleT, Target
         self, target_transformer: Callable[[TargetT], TargetU]
     ) -> "DatasetBuilder[ExampleT, TargetU]":
         self.dataset = TransformDataset(self.dataset, identity, target_transformer)
+        return self
+
+    def apply_to_examples(self, example_observable: Callable[[ExampleT], None]) -> "DatasetBuilder[ExampleU, TargetT]":
+        self.dataset = ObservableDataset(self.dataset, example_observable, identity)
+        return self
+
+    def apply_to_targets(self, target_observable: Callable[[TargetT], None]) -> "DatasetBuilder[ExampleT, TargetU]":
+        self.dataset = ObservableDataset(self.dataset, identity, target_observable)
         return self
 
     def shuffle(self) -> "DatasetBuilder[ExampleT, TargetU]":

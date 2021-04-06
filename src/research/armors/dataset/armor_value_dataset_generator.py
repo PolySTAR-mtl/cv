@@ -5,7 +5,7 @@ from polystar.filters.exclude_filter import ExcludeFilter
 from polystar.filters.filter_abc import FilterABC
 from polystar.filters.pass_through_filter import PassThroughFilter
 from polystar.models.image import FileImage
-from research.armors.dataset.armor_value_dataset_cache import ArmorValueDatasetCache
+from research.armors.dataset.armor_value_dataset_cache import DatasetCache
 from research.armors.dataset.armor_value_target_factory import ArmorValueTargetFactory
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
@@ -58,14 +58,13 @@ class ArmorValueDatasetGenerator(Generic[TargetT]):
 
     def from_roco_dataset(self, roco_dataset_builder: ROCODatasetBuilder) -> DirectoryDatasetBuilder[TargetT]:
         cache_dir = roco_dataset_builder.main_dir / self.task_name
-        dataset_name = roco_dataset_builder.name
 
-        ArmorValueDatasetCache(
-            roco_dataset_builder, cache_dir, dataset_name, self.target_factory
-        ).generate_or_download_if_needed()
+        DatasetCache(
+            cache_dir, roco_dataset_builder.to_armors().transform_targets(self.target_factory.from_armor).build_lazy()
+        ).generate_if_missing()
 
         return (
-            DirectoryDatasetBuilder(cache_dir, self.target_factory.from_file, dataset_name)
+            DirectoryDatasetBuilder(cache_dir, self.target_factory.from_file, roco_dataset_builder.name)
             .filter_targets(self.targets_filter)
             .filter_examples(ExcludeFilesFilter(DatasetChanges(cache_dir).invalidated))
         )

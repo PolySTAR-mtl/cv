@@ -20,19 +20,21 @@ from research.common.datasets.shuffle_dataset import ShuffleDataset
 from research.common.datasets.union_dataset import UnionDataset
 
 
-class TensorflowRecordFactory:
+class ROCOTensorflowRecordFactory:
+    RECORDS_DIR: Path = TENSORFLOW_RECORDS_DIR / "roco"
+
     def __init__(self, objects_filter: ObjectsFilterABC = PassThroughFilter(), n_images_per_file: int = 200):
         self.n_images_per_file = n_images_per_file
         self.objects_filter = objects_filter
 
-    def from_builders(self, builders: List[ROCODatasetBuilder], prefix: str = ""):
+    def from_builders(self, builders: Iterable[ROCODatasetBuilder], prefix: str = ""):
         dataset = UnionDataset(d.build() for d in builders)
         dataset.name = f"{prefix}_{dataset.name}_{len(dataset)}_imgs"
 
         self.from_dataset(dataset)
 
     def from_dataset(self, dataset: Dataset[Path, ROCOAnnotation]):
-        records_dir = make_path(TENSORFLOW_RECORDS_DIR / dataset.name)
+        records_dir = make_path(self.RECORDS_DIR / dataset.name)
         chunks = list(chunk(ShuffleDataset(dataset), self.n_images_per_file))
 
         for chunk_number, dataset_chunk in enumerate(chunks):

@@ -17,7 +17,9 @@ class ROCOObjectsDataset(LazyDataset[Image, ROCOObject]):
             yield from self._generate_from_single(image, annotation, name)
 
     @staticmethod
-    def _generate_from_single(image: Image, annotation: ROCOAnnotation, name) -> Iterator[Tuple[Image, Armor, str]]:
+    def _generate_from_single(
+        image: Image, annotation: ROCOAnnotation, name: str
+    ) -> Iterator[Tuple[Image, Armor, str]]:
         for i, obj in enumerate(annotation.objects):
             croped_img = image[obj.box.y1 : obj.box.y2, obj.box.x1 : obj.box.x2]
             yield croped_img, obj, f"{name}-{i}"

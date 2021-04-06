@@ -8,7 +8,6 @@ from polystar.models.image import Image
 from polystar.target_pipeline.objects_filters.in_box_filter import InBoxObjectFilter
 from polystar.view.plt_results_viewer import PltResultViewer
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
-from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
 
 
 def crop_image_annotation(
@@ -120,6 +119,8 @@ class Zoomer:
 
 
 if __name__ == "__main__":
+    from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+
     _zoomer = Zoomer(854, 480, 0.15, 0.5)
 
     for _img, _annot, _name in islice(ROCODatasetsZoo.DJI.NORTH_CHINA.lazy(), 0, 3):
