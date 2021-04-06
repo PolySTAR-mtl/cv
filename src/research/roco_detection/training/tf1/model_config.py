@@ -18,7 +18,9 @@ class ModelConfig:
         self.pretrained_dir = pretrained_dir
         self.config_name = config_name
 
-    def configure(self, record: Records, data_augm: bool, height: int, width: int, n_classes: int) -> TrainableModel:
+    def configure(
+        self, record: Records, task: str, data_augm: bool, height: int, width: int, n_classes: int
+    ) -> TrainableModel:
         config = self.read_config()
 
         self._update_config(config, record, data_augm, height, width, n_classes)
@@ -36,7 +38,7 @@ class ModelConfig:
             f"{record.train.stem}"
         )
 
-        return TrainableModel(config_path, full_name)
+        return TrainableModel(config_path, task, full_name)
 
     def _update_config(self, config, record: Records, data_augm: bool, height: int, width: int, n_classes: int):
         model_config = getattr(config.model, config.model.WhichOneof("model"))

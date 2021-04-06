@@ -12,17 +12,16 @@ from tensorflow_estimator.python.estimator.training import EvalSpec, TrainSpec, 
 from polystar.utils.path import make_path
 from research.constants import EVALUATION_DIR, PIPELINES_DIR
 
-EXPERIMENTS_DIR = make_path(EVALUATION_DIR / "roco-detection" / "tf1")
-
 
 class TrainableModel:
     SAVE_CHECKPOINTS_STEPS: ClassVar[int] = 5  # 1_000
     EVAL_EVERY_SECS: ClassVar[int] = 30 * 60
 
-    def __init__(self, config_path: Path, name: str):
+    def __init__(self, config_path: Path, task: str, name: str):
         self.config_path = config_path
         self.name = name
-        self.training_path = EXPERIMENTS_DIR / self.name
+        self.task = task
+        self.training_path = make_path(EVALUATION_DIR / self.task / "tf1" / self.name)
 
     def train_and_export(self, nb_steps: int):
         self.launch_training(nb_steps=nb_steps)
@@ -62,7 +61,7 @@ class TrainableModel:
             input_type="image_tensor",
             pipeline_config=pipeline_config,
             trained_checkpoint_prefix=str(last_ckpt),
-            output_directory=str(PIPELINES_DIR / "roco-detection" / f"{self.name}__{n_steps}_steps"),
+            output_directory=str(PIPELINES_DIR / self.task / f"{self.name}__{n_steps}_steps"),
         )
 
 
