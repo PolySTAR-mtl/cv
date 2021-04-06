@@ -45,8 +45,12 @@ def load_images_in_directory(
 
 
 def save_image(image: Image, image_path: Path, conversion: int = cv2.COLOR_RGB2BGR):
-    image_path.parent.mkdir(exist_ok=True, parents=True)
-    cv2.imwrite(str(image_path), cv2.cvtColor(image, conversion))
+    try:
+        image_path.parent.mkdir(exist_ok=True, parents=True)
+        cv2.imwrite(str(image_path), cv2.cvtColor(image, conversion))
+    except:
+        print(f"Failed to save image {image_path}")
+        raise
 
 
 def file_images_to_images(file_images: Iterable[FileImage]) -> List[Image]:
