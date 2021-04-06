@@ -3,7 +3,6 @@ from itertools import cycle
 from typing import Iterable, Sequence, Tuple
 
 from polystar.models.image import Image
-from polystar.models.roco_image_annotation import ROCOImageAnnotation
 from polystar.models.roco_object import ROCOObject
 from polystar.target_pipeline.debug_pipeline import DebugInfo
 from polystar.target_pipeline.detected_objects.detected_robot import DetectedRobot, FakeDetectedRobot
@@ -54,9 +53,6 @@ class ResultViewerABC(ABC):
         self.new(image)
         self.add_objects(objects)
         self.display()
-
-    def display_image_annotation(self, annotation: ROCOImageAnnotation):
-        self.display_image_with_objects(annotation.image, annotation.objects)
 
     def display_debug_info(self, debug_info: DebugInfo):
         self.add_debug_info(debug_info)

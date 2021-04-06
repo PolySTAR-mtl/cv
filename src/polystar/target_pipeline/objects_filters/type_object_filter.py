@@ -12,3 +12,6 @@ class TypeObjectsFilter(ObjectsFilterABC):
 
     def validate_single(self, obj: ROCOObject) -> bool:
         return obj.type in self.desired_types
+
+
+ARMORS_FILTER: ObjectsFilterABC = -TypeObjectsFilter({ObjectType.ARMOR})

@@ -13,7 +13,7 @@ class FilterABC(Generic[T], ABC):
 
     def split(self, examples: List[T]) -> Tuple[List[T], List[T]]:
         splits = self.split_with_siblings(examples)
-        return (splits[False][0], splits[True][0])
+        return splits[False][0], splits[True][0]
 
     def split_with_siblings(
         self, examples: List[T], *siblings: List
@@ -43,6 +43,9 @@ class FilterABC(Generic[T], ABC):
     def __and__(self, other: "FilterABC") -> "FilterABC[T]":
         return IntersectionFilter(self, other)
 
+    def __neg__(self) -> "FilterABC[T]":
+        return NegationFilter(self)
+
 
 class IntersectionFilter(FilterABC[T]):
     def __init__(self, *filters: FilterABC[T]):
@@ -55,12 +58,19 @@ class IntersectionFilter(FilterABC[T]):
 
 class UnionFilter(FilterABC[T]):
     def __init__(self, *filters: FilterABC[T]):
-        print(self, filters)
         self.filters = filters
         assert self.filters
 
     def validate_single(self, example: T) -> bool:
         return any(f.validate_single(example) for f in self.filters)
+
+
+class NegationFilter(FilterABC[T]):
+    def __init__(self, base_filter: FilterABC[T]):
+        self.base_filter = base_filter
+
+    def validate_single(self, example: T) -> bool:
+        return not self.base_filter.validate_single(example)
 
 
 def _filter_with_siblings_from_preds(

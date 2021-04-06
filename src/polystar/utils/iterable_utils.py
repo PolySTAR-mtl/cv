@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import chain
+from random import shuffle
 from typing import Any, Callable, Dict, Iterable, List, TypeVar
 
 from more_itertools import ilen
@@ -43,3 +44,9 @@ def chunk(it: Iterable[T], batch_size: float) -> Iterable[List[T]]:
 def apply(f: Callable[[T], Any], it: Iterable[T]):
     for el in it:
         f(el)
+
+
+def shuffle_iterable(it: Iterable[T]) -> List[T]:
+    rv = list(it)
+    shuffle(rv)
+    return rv

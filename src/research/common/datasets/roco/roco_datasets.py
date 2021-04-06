@@ -7,7 +7,6 @@ from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilde
 from research.common.datasets.union_dataset import UnionLazyDataset
 
 
-# FIXME : we should be able to access a builder 2 times
 class ROCODatasetsMeta(type):
     def __init__(cls, name: str, bases, dct):
         super().__init__(name, bases, dct)

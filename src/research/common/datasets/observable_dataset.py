@@ -4,21 +4,23 @@ from research.common.datasets.filter_dataset import ExampleU, TargetU
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
-class TransformDataset(LazyDataset[ExampleU, TargetU]):
+class ObservableDataset(LazyDataset[ExampleT, TargetT]):
     def __init__(
         self,
         source: LazyDataset[ExampleT, TargetT],
-        example_transformer: Callable[[ExampleT], ExampleU],
-        target_transformer: Callable[[TargetT], TargetU],
+        example_observable: Callable[[ExampleT], None],
+        target_observable: Callable[[TargetT], None],
     ):
-        self.target_transformer = target_transformer
-        self.example_transformer = example_transformer
+        self.target_observable = target_observable
+        self.example_observable = example_observable
         self.source = source
         super().__init__(source.name)
 
     def __iter__(self) -> Iterator[Tuple[ExampleU, TargetU, str]]:
         for example, target, name in self.source:
-            yield self.example_transformer(example), self.target_transformer(target), name
+            self.example_observable(example)
+            self.target_observable(target)
+            yield example, target, name
 
     def __len__(self):
         return len(self.source)

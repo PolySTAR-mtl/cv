@@ -7,7 +7,8 @@ from xml.dom.minidom import parseString
 import xmltodict
 from dicttoxml import dicttoxml
 
-from polystar.models.roco_object import Armor, ROCOObject, ROCOObjectFactory
+from polystar.models.image import Image, save_image
+from polystar.models.roco_object import ROCOObject, ROCOObjectFactory
 from polystar.utils.path import move_file
 
 
@@ -19,10 +20,6 @@ class ROCOAnnotation:
 
     w: int
     h: int
-
-    @property
-    def armors(self) -> List[Armor]:
-        return [obj for obj in self.objects if isinstance(obj, Armor)]
 
     @staticmethod
     def from_xml_file(xml_file: Path) -> "ROCOAnnotation":
@@ -43,6 +40,7 @@ class ROCOAnnotation:
         objects = [
             ROCOObjectFactory(image_w=image_w, image_h=image_h).from_json(obj_json) for obj_json in roco_json_objects
         ]
+        objects = [obj for obj in objects if obj.box.w > 0 and obj.box.h > 0]
 
         return ROCOAnnotation(
             objects=objects, has_rune=len(roco_json_objects) != len(json_objects), w=image_w, h=image_h,
@@ -51,6 +49,10 @@ class ROCOAnnotation:
     def save_in_directory(self, directory: Path, name: str):
         directory.mkdir(exist_ok=True, parents=True)
         self.save_in_file((directory / name).with_suffix(".xml"))
+
+    def save_with_image(self, directory: Path, image: Image, name: str):
+        self.save_in_directory(directory / "image_annotation", name)
+        save_image(image, (directory / "image" / name).with_suffix(".jpg"))
 
     def save_in_file(self, file: Path):
         file.write_text(self.to_xml())

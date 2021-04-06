@@ -1,6 +1,6 @@
-from random import shuffle
 from typing import Iterator, Tuple
 
+from polystar.utils.iterable_utils import shuffle_iterable
 from research.common.datasets.lazy_dataset import ExampleT, LazyDataset, TargetT
 
 
@@ -10,6 +10,4 @@ class ShuffleDataset(LazyDataset):
         self.source = source
 
     def __iter__(self) -> Iterator[Tuple[ExampleT, TargetT]]:
-        data = list(self.source)
-        shuffle(data)
-        return iter(data)
+        return iter(shuffle_iterable(self.source))
