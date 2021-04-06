@@ -66,11 +66,11 @@ class UnionFilter(FilterABC[T]):
 
 
 class NegationFilter(FilterABC[T]):
-    def __init__(self, filter_: FilterABC[T]):
-        self.filter = filter_
+    def __init__(self, base_filter: FilterABC[T]):
+        self.base_filter = base_filter
 
     def validate_single(self, example: T) -> bool:
-        return not self.filter.validate_single(example)
+        return not self.base_filter.validate_single(example)
 
 
 def _filter_with_siblings_from_preds(
