@@ -1,8 +1,11 @@
+from contextlib import closing
+
 from injector import inject
 
 from polystar.dependency_injection import make_injector
 from polystar.frame_generators.frames_generator_abc import FrameGeneratorABC
 from polystar.utils.fps import FPS
+from polystar.utils.thread import MyThread
 from polystar.view.cv2_results_viewer import CV2ResultViewer
 
 
@@ -19,4 +22,5 @@ def display_camera(webcam: FrameGeneratorABC):
 
 
 if __name__ == "__main__":
-    make_injector().call_with_injection(display_camera)
+    with closing(MyThread):
+        make_injector().call_with_injection(display_camera)
