@@ -12,12 +12,12 @@ from polystar.models.label_map import label_map
 from polystar.target_pipeline.objects_filters.objects_filter_abc import ObjectsFilterABC
 from polystar.utils.iterable_utils import chunk
 from polystar.utils.path import make_path
-from research.common.constants import TENSORFLOW_RECORDS_DIR
 from research.common.datasets.dataset import Dataset
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.shuffle_dataset import ShuffleDataset
 from research.common.datasets.union_dataset import UnionDataset
+from research.constants import TENSORFLOW_RECORDS_DIR
 
 
 class ROCOTensorflowRecordFactory:

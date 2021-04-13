@@ -1,6 +1,6 @@
-from research.common.constants import TWITCH_DSET_DIR
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.roco_datasets import ROCODatasets
+from research.constants import TWITCH_DSET_DIR
 
 
 class TwitchROCODatasets(ROCODatasets):

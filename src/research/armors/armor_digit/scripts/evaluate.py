@@ -12,10 +12,10 @@ from polystar.pipeline.classification.classification_pipeline import Classificat
 from polystar.utils.iterable_utils import chunk
 from polystar.utils.serialization import pkl_load
 from research.armors.armor_digit.armor_digit_dataset import make_armor_digit_dataset_generator
-from research.common.constants import PIPELINES_DIR
 from research.common.datasets.dataset import Dataset
 from research.common.gcloud.gcloud_storage import GCStorages
 from research.common.utils.logs import setup_dev_logs
+from research.constants import PIPELINES_DIR
 
 
 def time_digit_pipeline(pipeline_path: Path):

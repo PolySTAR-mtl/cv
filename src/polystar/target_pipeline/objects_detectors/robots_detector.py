@@ -15,8 +15,7 @@ from polystar.target_pipeline.detected_objects.objects_params import ObjectParam
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.utils.thread import MyThread
-from polystar.utils.time import time_it
-from research.common.constants import PIPELINES_DIR
+from research.constants import PIPELINES_DIR
 
 
 @inject

@@ -3,8 +3,8 @@ from pathlib import Path
 from tqdm import tqdm
 
 from polystar.utils.path import copy_file
-from research.common.constants import TWITCH_DSET_DIR
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation, move_image_and_annotation_from_directory
+from research.constants import TWITCH_DSET_DIR
 from research.dataset.twitch.annotation_file_corrector import AnnotationFileCorrector
 
 

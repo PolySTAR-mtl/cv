@@ -5,10 +5,10 @@ from pathlib import Path
 from polystar.models.box import Box
 from polystar.models.image import load_image
 from polystar.utils.path import copy_file, move_file
-from research.common.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_dataset_builder import ROCODatasetBuilder
 from research.common.datasets.roco.zoo.roco_dataset_zoo import ROCODatasetsZoo
+from research.constants import TWITCH_DSET_DIR, TWITCH_ROBOTS_VIEWS_DIR
 from research.dataset.twitch.mask_detector import has_bonus_icon, is_aerial_view
 
 AERIAL_DIR = TWITCH_DSET_DIR / "v2" / "aerial-views"

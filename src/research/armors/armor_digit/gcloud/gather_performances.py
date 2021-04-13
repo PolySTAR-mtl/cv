@@ -8,8 +8,8 @@ from polystar.utils.iterable_utils import flatten
 from research.armors.evaluation.metrics.f1 import F1Metric
 from research.armors.evaluation.performance import ClassificationPerformances
 from research.armors.evaluation.reporter import ImagePipelineEvaluationReporter
-from research.common.constants import EVALUATION_DIR
 from research.common.gcloud.gcloud_storage import GCStorages
+from research.constants import EVALUATION_DIR
 
 
 def load_performances(performances_paths: List[Path]) -> ClassificationPerformances:

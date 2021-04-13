@@ -20,7 +20,7 @@ from research.armors.evaluation.metrics.accuracy import AccuracyMetric
 from research.armors.evaluation.metrics.metric_abc import MetricABC
 from research.armors.evaluation.performance import ClassificationPerformance, ClassificationPerformances
 from research.armors.evaluation.set import Set
-from research.common.constants import DSET_DIR
+from research.constants import DSET_DIR
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from polystar.utils.time import create_time_id
-from research.common.constants import EVALUATION_DIR
+from research.constants import EVALUATION_DIR
 
 
 def prompt_experiment_dir(project_name: str) -> Path:
