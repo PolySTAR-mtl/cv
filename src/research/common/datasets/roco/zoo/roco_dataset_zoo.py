@@ -21,6 +21,7 @@ class ROCODatasetsZooClass(Iterable[Type[ROCODatasets]]):
             self.TWITCH.T470152289,
             self.TWITCH.T470153081,
             self.TWITCH.T470158483,
+            self.TWITCH.T470152730,
         ]
 
     @property
