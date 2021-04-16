@@ -16,8 +16,9 @@ EVALUATION_DIR = make_path(PROJECT_DIR / "experiments")
 
 
 if settings.is_colab:
-    TENSORFLOW_RECORDS_DIR = make_path(settings.DRIVE_PATH / "dataset/tf_records")
-    PIPELINES_DIR = make_path(settings.DRIVE_PATH / "pipelines")
+    DRIVE_PATH = Path(settings.DRIVE_PATH)
+    TENSORFLOW_RECORDS_DIR = make_path(DRIVE_PATH / "dataset/tf_records")
+    PIPELINES_DIR = make_path(DRIVE_PATH / "pipelines")
 else:
     TENSORFLOW_RECORDS_DIR = make_path(DSET_DIR / "tf_records")
     PIPELINES_DIR = make_path(PROJECT_DIR / "pipelines")
