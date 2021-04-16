@@ -3,12 +3,12 @@ from pathlib import Path
 from polystar.models.image import Image
 from polystar.models.roco_object import Armor, ObjectType, ROCOObject
 from polystar.target_pipeline.objects_filters.type_object_filter import TypeObjectsFilter
-from research.common.constants import DSET_DIR
 from research.common.datasets.dataset_builder import DatasetBuilder
 from research.common.datasets.image_file_dataset_builder import DirectoryDatasetBuilder
 from research.common.datasets.roco.air_dataset import AIRDataset, AIRDatasetCache
 from research.common.datasets.roco.roco_annotation import ROCOAnnotation
 from research.common.datasets.roco.roco_objects_dataset import ROCOObjectsDataset
+from research.constants import DSET_DIR
 from research.roco_detection.small_base_filter import SMALL_BASE_FILTER
 
 

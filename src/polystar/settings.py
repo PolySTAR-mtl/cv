@@ -8,6 +8,7 @@ from polystar.constants import PROJECT_DIR
 class Environment(str, Enum):
     DEVELOPMENT = "development"
     PRODUCTION = "production"
+    COLAB = "colab"
 
 
 class Settings(LazySettings):
@@ -23,13 +24,13 @@ class Settings(LazySettings):
     def is_dev(self) -> bool:
         return self.env == Environment.DEVELOPMENT
 
-
-def make_settings() -> LazySettings:
-    return Settings(
-        SILENT_ERRORS_FOR_DYNACONF=False,
-        SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR / 'settings.toml'}",
-        ENV_SWITCHER_FOR_DYNACONF="POLYSTAR_ENV",
-    )
+    @property
+    def is_colab(self) -> bool:
+        return self.env == Environment.COLAB
 
 
-settings = make_settings()
+settings = Settings(
+    SILENT_ERRORS_FOR_DYNACONF=False,
+    SETTINGS_FILE_FOR_DYNACONF=f"{PROJECT_DIR / 'settings.toml'}",
+    ENV_SWITCHER_FOR_DYNACONF="POLYSTAR_ENV",
+)

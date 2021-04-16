@@ -1,22 +1,23 @@
 from pathlib import Path
 
 from polystar.constants import PROJECT_DIR
+from polystar.settings import settings
+from polystar.utils.path import make_path
 
 DSET_DIR: Path = PROJECT_DIR / "dataset"
 
-TWITCH_DSET_DIR: Path = DSET_DIR / "twitch"
-DJI_ROCO_DSET_DIR: Path = DSET_DIR / "dji_roco"
-DJI_ROCO_ZOOMED_DSET_DIR: Path = DSET_DIR / "dji_roco_zoomed_v2"
-TENSORFLOW_RECORDS_DIR: Path = DSET_DIR / "tf_records"
-TWITCH_ROBOTS_VIEWS_DIR: Path = TWITCH_DSET_DIR / "robots-views"
+TWITCH_DSET_DIR = make_path(DSET_DIR / "twitch")
+DJI_ROCO_DSET_DIR = make_path(DSET_DIR / "dji_roco")
+DJI_ROCO_ZOOMED_DSET_DIR = make_path(DSET_DIR / "dji_roco_zoomed_v2")
+
+TWITCH_ROBOTS_VIEWS_DIR = make_path(TWITCH_DSET_DIR / "robots-views")
+
+EVALUATION_DIR = make_path(PROJECT_DIR / "experiments")
 
 
-TWITCH_DSET_DIR.mkdir(parents=True, exist_ok=True)
-DJI_ROCO_DSET_DIR.mkdir(parents=True, exist_ok=True)
-DJI_ROCO_ZOOMED_DSET_DIR.mkdir(parents=True, exist_ok=True)
-TENSORFLOW_RECORDS_DIR.mkdir(parents=True, exist_ok=True)
-TWITCH_ROBOTS_VIEWS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-EVALUATION_DIR: Path = PROJECT_DIR / "experiments"
-PIPELINES_DIR: Path = PROJECT_DIR / "pipelines"
+if settings.is_colab:
+    TENSORFLOW_RECORDS_DIR = make_path(settings.DRIVE_PATH / "dataset/tf_records")
+    PIPELINES_DIR = make_path(settings.DRIVE_PATH / "pipelines")
+else:
+    TENSORFLOW_RECORDS_DIR = make_path(DSET_DIR / "tf_records")
+    PIPELINES_DIR = make_path(PROJECT_DIR / "pipelines")
