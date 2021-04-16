@@ -12,13 +12,8 @@ DJI_ROCO_ZOOMED_DSET_DIR = make_path(DSET_DIR / "dji_roco_zoomed_v2")
 
 TWITCH_ROBOTS_VIEWS_DIR = make_path(TWITCH_DSET_DIR / "robots-views")
 
-EVALUATION_DIR = make_path(PROJECT_DIR / "experiments")
+IO_DIR = Path(settings.DRIVE_PATH) if settings.is_colab else PROJECT_DIR
 
-
-if settings.is_colab:
-    DRIVE_PATH = Path(settings.DRIVE_PATH)
-    TENSORFLOW_RECORDS_DIR = make_path(DRIVE_PATH / "dataset/tf_records")
-    PIPELINES_DIR = make_path(DRIVE_PATH / "pipelines")
-else:
-    TENSORFLOW_RECORDS_DIR = make_path(DSET_DIR / "tf_records")
-    PIPELINES_DIR = make_path(PROJECT_DIR / "pipelines")
+EVALUATION_DIR = make_path(IO_DIR / "experiments")
+TENSORFLOW_RECORDS_DIR = make_path(IO_DIR / "dataset/tf_records")
+PIPELINES_DIR = make_path(IO_DIR / "pipelines")
