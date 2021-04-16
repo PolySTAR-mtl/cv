@@ -17,6 +17,7 @@ class Records(Enum):
 
     def __init__(self, record_name: str):
         self.train = self.records_path(record_name)
+        self.full_name = record_name
 
     def records_path(self, record_name):
         return TENSORFLOW_RECORDS_DIR / self.task_name / record_name / "*.record"

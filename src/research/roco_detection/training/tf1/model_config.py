@@ -33,7 +33,7 @@ class ModelConfig:
             f"{self.pretrained_dir.stem[:-16]}__"
             f"{size}"
             f'{"AUGM__" * data_augm}'
-            f"{record.train.stem}"
+            f"{record.full_name}"
         )
 
         return TrainableModel(config_path, record.task_name, full_name)
