@@ -5,13 +5,14 @@ from enum import Enum
 from urllib.request import urlretrieve
 
 from polystar.utils.path import make_path
+from research.constants import EVALUATION_DIR
 from research.roco_detection.training.tf1.model_config import ModelConfig
 from research.roco_detection.training.tf1.records import Records
-from research.roco_detection.training.tf1.trainable_model import EXPERIMENTS_DIR, TrainableModel
+from research.roco_detection.training.tf1.trainable_model import TrainableModel
 
 logger = logging.getLogger(__name__)
 
-PRETRAINED_MODELS_DIR = make_path(EXPERIMENTS_DIR / "pretrained")
+PRETRAINED_MODELS_DIR = make_path(EVALUATION_DIR / "pretrained")
 
 
 class PretrainedModels(Enum):
