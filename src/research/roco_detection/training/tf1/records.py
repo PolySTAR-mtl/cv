@@ -11,6 +11,10 @@ class Records(Enum):
     def val(self) -> Path:
         pass
 
+    @property
+    def task_name(self) -> str:
+        return self.__class__.__name__.replace("Records", "").lower()
+
     def __init__(self, train_file: str):
         self.train = (TENSORFLOW_RECORDS_DIR / train_file).with_suffix(".record")
 

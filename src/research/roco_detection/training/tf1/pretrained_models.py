@@ -27,16 +27,10 @@ class PretrainedModels(Enum):
         self.config = ModelConfig(self.pretrained_dir, self.config_name)
 
     def setup(
-        self,
-        record: Records,
-        task: str,
-        data_augm: bool = False,
-        height: int = None,
-        width: int = None,
-        n_classes: int = 5,
+        self, record: Records, data_augm: bool = False, height: int = None, width: int = None, n_classes: int = 5,
     ) -> TrainableModel:
         self._download()
-        return self.config.configure(record, task, data_augm=data_augm, height=height, width=width, n_classes=n_classes)
+        return self.config.configure(record, data_augm=data_augm, height=height, width=width, n_classes=n_classes)
 
     def _download(self):
         if self.pretrained_dir.exists():
