@@ -5,13 +5,14 @@ from enum import Enum
 from urllib.request import urlretrieve
 
 from polystar.utils.path import make_path
+from research.constants import EVALUATION_DIR
 from research.roco_detection.training.tf1.model_config import ModelConfig
 from research.roco_detection.training.tf1.records import Records
-from research.roco_detection.training.tf1.trainable_model import EXPERIMENTS_DIR, TrainableModel
+from research.roco_detection.training.tf1.trainable_model import TrainableModel
 
 logger = logging.getLogger(__name__)
 
-PRETRAINED_MODELS_DIR = make_path(EXPERIMENTS_DIR / "pretrained")
+PRETRAINED_MODELS_DIR = make_path(EVALUATION_DIR / "pretrained")
 
 
 class PretrainedModels(Enum):
@@ -26,16 +27,10 @@ class PretrainedModels(Enum):
         self.config = ModelConfig(self.pretrained_dir, self.config_name)
 
     def setup(
-        self,
-        record: Records,
-        task: str,
-        data_augm: bool = False,
-        height: int = None,
-        width: int = None,
-        n_classes: int = 5,
+        self, record: Records, data_augm: bool = False, height: int = None, width: int = None, n_classes: int = 5,
     ) -> TrainableModel:
         self._download()
-        return self.config.configure(record, task, data_augm=data_augm, height=height, width=width, n_classes=n_classes)
+        return self.config.configure(record, data_augm=data_augm, height=height, width=width, n_classes=n_classes)
 
     def _download(self):
         if self.pretrained_dir.exists():

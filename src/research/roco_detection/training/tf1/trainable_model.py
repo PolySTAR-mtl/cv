@@ -14,7 +14,7 @@ from research.constants import EVALUATION_DIR, PIPELINES_DIR
 
 
 class TrainableModel:
-    SAVE_CHECKPOINTS_STEPS: ClassVar[int] = 5  # 1_000
+    SAVE_CHECKPOINTS_STEPS: ClassVar[int] = 1_000
     EVAL_EVERY_SECS: ClassVar[int] = 30 * 60
 
     def __init__(self, config_path: Path, task: str, name: str):

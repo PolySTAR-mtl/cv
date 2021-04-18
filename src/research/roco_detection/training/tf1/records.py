@@ -11,22 +11,31 @@ class Records(Enum):
     def val(self) -> Path:
         pass
 
-    def __init__(self, train_file: str):
-        self.train = (TENSORFLOW_RECORDS_DIR / train_file).with_suffix(".record")
+    @property
+    def task_name(self) -> str:
+        return self.__class__.__name__.replace("Records", "").lower()
+
+    def __init__(self, record_name: str):
+        self.train = self.records_path(record_name)
+        self.full_name = record_name
+
+    def records_path(self, record_name):
+        return TENSORFLOW_RECORDS_DIR / self.task_name / record_name / "*.record"
 
 
 class ROCORecords(Records):
-    TWITCH = "Twitch2_Train_T470149066_T470150052_T470152289_T470153081_T470158483_1775_imgs"
-    DJI_TWITCH = "Twitch2_Dji_Train_T470149066_T470150052_T470152289_T470153081_T470158483_FINAL_CENTRAL_CHINA_NORTH_CHINA_SOUTH_CHINA_12143_imgs"
+    TWITCH = "Twitch2_Train_T470149066_T470150052_T470152289_T470153081_T470158483_T470152730_1891_imgs"
+    DJI = "Dji_CENTRAL_CHINA_FINAL_NORTH_CHINA_SOUTH_CHINA_10368_imgs"
 
     @property
     def val(self) -> Path:
-        return TENSORFLOW_RECORDS_DIR / "Twitch2_Val_T470152932_T470149568_477_imgs.record"
+        return self.records_path("Twitch2_Val_T470152932_T470149568_477_imgs")
 
 
 class AIRRecords(Records):
-    TWITCH = "air/Twitch2_Train_T470149066_AIR_T470150052_AIR_T470152289_AIR_T470153081_AIR_T470158483_AIR_2837_imgs"
+    TWITCH = "Twitch2_Train_T470149066_AIR_T470150052_AIR_T470152289_AIR_T470153081_AIR_T470158483_AIR_2837_imgs"
+    DJI = "Dji_CENTRAL_CHINA_AIR_FINAL_AIR_NORTH_CHINA_AIR_SOUTH_CHINA_AIR_66750_imgs"
 
     @property
     def val(self) -> Path:
-        return TENSORFLOW_RECORDS_DIR / "air/Twitch2_Val_T470152932_AIR_T470149568_AIR_793_imgs"
+        return self.records_path("Twitch2_Val_T470152932_AIR_T470149568_AIR_793_imgs")
