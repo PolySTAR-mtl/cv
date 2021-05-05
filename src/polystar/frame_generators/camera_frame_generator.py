@@ -31,8 +31,8 @@ class CameraThread(MyThread):
             self.running = False
 
 
-def make_csi_camera_frame_generator(width: int, height: int) -> CameraFrameGenerator:
-    return CameraFrameGenerator(
+def make_csi_camera_frame_generator(width: int, height: int) -> CV2FrameGenerator:
+    return CV2FrameGenerator(
         "nvarguscamerasrc ! "
         "video/x-raw(memory:NVMM), "
         f"width=(int){width}, height=(int){height}, "
