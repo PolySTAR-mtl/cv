@@ -21,6 +21,7 @@ from polystar.target_pipeline.object_selectors.closest_object_selector import Cl
 from polystar.target_pipeline.object_selectors.object_selector_abc import ObjectSelectorABC
 from polystar.target_pipeline.objects_detectors.objects_detector_abc import ObjectsDetectorABC
 from polystar.target_pipeline.objects_filters.confidence_object_filter import RobotArmorConfidenceObjectsFilter
+from polystar.target_pipeline.objects_filters.size_filter import SmallObjectFilter
 from polystar.target_pipeline.objects_linker.objects_linker_abs import ObjectsLinkerABC
 from polystar.target_pipeline.objects_linker.simple_objects_linker import SimpleObjectsLinker
 from polystar.target_pipeline.target_factories.ratio_simple_target_factory import RatioSimpleTargetFactory
@@ -77,7 +78,7 @@ class CommonModule(Module):
     @provider
     @singleton
     def provide_robots_filter(self) -> FilterABC[DetectedRobot]:
-        return RobotArmorConfidenceObjectsFilter(0.5)
+        return RobotArmorConfidenceObjectsFilter(0.6) & SmallObjectFilter(500)
 
     @provider
     @singleton

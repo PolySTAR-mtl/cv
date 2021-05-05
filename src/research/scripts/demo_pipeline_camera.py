@@ -32,7 +32,7 @@ class CameraPipelineDemo:
 
     def _send_target(self, target: Optional[SimpleTarget]):
         if target is not None:
-            self.persistence_last_detection = 5
+            self.persistence_last_detection = 1
             return self.cs_link.send_target(target)
 
         if not self.persistence_last_detection:
