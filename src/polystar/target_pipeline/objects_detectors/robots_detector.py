@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar
 from threading import Condition
 from typing import Iterable, List, Tuple, Type
 
@@ -21,6 +21,46 @@ from research.constants import PIPELINES_DIR
 @inject
 @dataclass
 class RobotsDetector:
+    label_map: LabelMap
+    object_detector_class: Type[ObjectsDetectorABC]
+    objects_linker: ObjectsLinkerABC
+
+    def __post_init__(self):
+        self.objects_detector = self.object_detector_class(
+            PIPELINES_DIR / "roco-detection" / settings.OBJECTS_DETECTION_MODEL
+        )
+
+    def flow_robots(self, images: Iterable[Image]) -> Iterable[List[DetectedRobot]]:
+        for image in images:
+            objects_params = self.objects_detector.detect(image)
+            robots, armors = self.make_robots_and_armors(objects_params, image)
+            yield image, list(self.objects_linker.link_armors_to_robots(robots, armors, image))
+
+    def make_robots_and_armors(
+        self, objects_params: List[ObjectParams], image: Image
+    ) -> Tuple[List[DetectedRobot], List[DetectedArmor]]:
+        image_height, image_width, *_ = image.shape
+
+        robots, armors = [], []
+        for object_params in objects_params:
+            object_type = ObjectType(self.label_map.name_of(object_params.object_class_id))
+            box = Box.from_positions(
+                # TODO what about using relative coordinates ?
+                x1=int(object_params.xmin * image_width),
+                y1=int(object_params.ymin * image_height),
+                x2=int(object_params.xmax * image_width),
+                y2=int(object_params.ymax * image_height),
+            )
+            if object_type is ObjectType.ARMOR:
+                armors.append(DetectedArmor(object_type, box, object_params.score))
+            else:
+                robots.append(DetectedRobot(object_type, box, object_params.score))
+        return robots, armors
+
+
+@inject
+@dataclass
+class RobotsDetectorThreaded:
     label_map: LabelMap
     object_detector_class: Type[ObjectsDetectorABC]
     objects_linker: ObjectsLinkerABC
