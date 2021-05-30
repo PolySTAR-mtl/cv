@@ -16,9 +16,9 @@ class RatioTargetFactoryABC(TargetFactoryABC, ABC):
         self._horizontal_angle_distance = camera.horizontal_resolution / (2 * tan(camera.horizontal_fov / 2))
 
     def _calculate_angles(self, obj: DetectedROCOObject, image: np.ndarray) -> Tuple[float, float]:
-        x, y = obj.box.x + obj.box.w // 2 - image.shape[1] // 2, image.shape[0] // 2 - obj.box.y + obj.box.h // 2
+        x, y = obj.box.x + obj.box.w // 2 - image.shape[1] // 2, obj.box.y + obj.box.h // 2 - image.shape[0] // 2
         phi = -atan2(x, self._horizontal_angle_distance)
-        theta = pi / 2 - atan2(y, self._vertical_angle_distance)
+        theta = pi / 2 + atan2(y, self._vertical_angle_distance)
         return phi, theta
 
     def _calculate_distance(self, obj: DetectedROCOObject) -> float:
