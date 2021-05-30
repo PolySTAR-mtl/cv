@@ -1,4 +1,5 @@
 from cmath import pi
+from typing import Tuple, Union
 from unittest import TestCase
 
 from numpy import empty
@@ -36,6 +37,22 @@ class TestRatioTargetFactory(TestCase):
     def test_full_right(self):
         self.assert_correct_horizontal_angle(center_x=self.w, phi=-self.camera.horizontal_fov / 2)
 
+    def test_somewhat_up_right(self):
+        self.assert_correct_angles(
+            center_y=self.h // 3,
+            theta=(pi / 2 - self.camera.vertical_fov / 2, pi / 2),
+            center_x=self.w // 3,
+            phi=(0, self.camera.horizontal_fov / 2),
+        )
+
+    def test_somewhat_down_left(self):
+        self.assert_correct_angles(
+            center_y=3 * self.h // 4,
+            theta=(pi / 2, pi / 2 + -self.camera.vertical_fov / 2),
+            center_x=3 * self.w // 4,
+            phi=(-self.camera.horizontal_fov / 2, 0),
+        )
+
     # HELPERS
 
     def assert_correct_vertical_angle(self, *, center_y: int, theta: float):
@@ -45,12 +62,26 @@ class TestRatioTargetFactory(TestCase):
         self.assert_correct_angles(center_x=center_x, phi=phi, center_y=self.h // 2, theta=pi / 2)
 
     def assert_correct_angles(
-        self, *, center_x: int, center_y: int, w: int = 10, h: int = 10, phi: float, theta: float
+        self,
+        *,
+        center_x: int,
+        center_y: int,
+        w: int = 10,
+        h: int = 10,
+        phi: Union[float, Tuple[float, float]],
+        theta: Union[float, Tuple[float, float]],
     ):
         obj = DetectedROCOObject(
-            ObjectType.ARMOR, Box.from_size(center_x - w // 2, center_y + h // 2, w, h), confidence=1
+            ObjectType.ARMOR, Box.from_size(center_x - w // 2, center_y - h // 2, w, h), confidence=1
         )
         img = empty((self.h, self.w, 3))
         target: SimpleTarget = self.target_factory.from_object(obj, img)
-        self.assertAlmostEqual(theta, target.theta)
-        self.assertAlmostEqual(phi, target.phi)
+        if isinstance(theta, float):
+            self.assertAlmostEqual(theta, target.theta)
+            self.assertAlmostEqual(phi, target.phi)
+        else:
+            print(theta, target.theta)
+            self.assertLess(theta[0], target.theta)
+            self.assertGreater(theta[1], target.theta)
+            self.assertLess(phi[0], target.phi)
+            self.assertGreater(phi[1], target.phi)
